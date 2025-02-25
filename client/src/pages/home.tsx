@@ -122,8 +122,9 @@ export default function Home() {
           <PhotoStrip
             photos={photos}
             backgroundColor={backgroundColor}
-            stripName={stripName}
+            name={stripName}
             showDate={showDate}
+            layout="strip-vertical"
           />
         </div>
       </div>

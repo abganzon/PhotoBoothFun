@@ -32,14 +32,18 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStr
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     const padding = 20;
-    const photoSize = (canvas.width - (padding * 3)) / 2; // Calculate size for 2x2 grid
-    const gridHeight = photoSize * 2 + padding * 3; // Height for photos
-    const totalHeight = gridHeight + 100; // Add space for title and date
+    let photoWidth, photoHeight, gridHeight;
 
-    canvas.height = totalHeight; // Adjust canvas height
-    tempCanvas.height = totalHeight;
+    // For vertical strip layout
+    photoWidth = canvas.width - (padding * 2);
+    photoHeight = (canvas.width - (padding * 2)) * 0.75;
+    gridHeight = (photoHeight * 4) + (padding * 5);
+
+
+    canvas.height = gridHeight + 100; // Adjust canvas height
+    tempCanvas.height = gridHeight + 100;
     tempCtx.fillStyle = backgroundColor;
-    tempCtx.fillRect(0, 0, canvas.width, totalHeight);
+    tempCtx.fillRect(0, 0, canvas.width, gridHeight + 100);
 
     // Load and draw photos
     const loadImage = (src: string): Promise<HTMLImageElement> => {
@@ -56,16 +60,16 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStr
       for (let i = 0; i < photos.length; i++) {
         try {
           const img = await loadImage(photos[i]);
-          const row = Math.floor(i / 2);
-          const col = i % 2;
-          const x = padding + col * (photoSize + padding);
-          const y = padding + row * (photoSize + padding);
+          const row = i;
+          const col = 0;
+          const x = padding + col * (photoWidth + padding);
+          const y = padding + row * (photoHeight + padding);
           tempCtx.drawImage(
             img,
             x,
             y,
-            photoSize,
-            photoSize
+            photoWidth,
+            photoHeight
           );
         } catch (error) {
           console.error("Error loading photo:", error);
@@ -76,7 +80,7 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStr
       tempCtx.font = "bold 48px Arial";
       tempCtx.fillStyle = "#000000";
       tempCtx.textAlign = "center";
-      const titleY = canvas.height - 80;
+      const titleY = gridHeight + 20;
       tempCtx.fillText(name || "Photo Strip", canvas.width / 2, titleY);
 
       // Draw date if enabled
