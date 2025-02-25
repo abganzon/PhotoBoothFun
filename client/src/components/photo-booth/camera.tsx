@@ -2,7 +2,7 @@
 import React, { useRef, useCallback, useState } from "react";
 import Webcam from "react-webcam";
 import { Button } from "@/components/ui/button";
-import { Camera } from "lucide-react";
+import { Camera, RotateCw } from "lucide-react";
 
 interface CameraProps {
   onCapture: (photo: string) => void;
@@ -35,35 +35,38 @@ export function PhotoBoothCamera({ onCapture, isCountingDown }: CameraProps) {
   };
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto">
-      <Webcam
-        audio={false}
-        ref={webcamRef}
-        screenshotFormat="image/jpeg"
-        videoConstraints={{
-          width: 1280,
-          height: 720,
-          facingMode: facingMode,
-        }}
-        className="w-full rounded-lg shadow-lg"
-      />
+    <div className="relative w-full max-w-[800px] mx-auto px-4 sm:px-6">
+      <div className="aspect-[4/3] w-full">
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          videoConstraints={{
+            width: 1280,
+            height: 960,
+            facingMode: facingMode,
+          }}
+          className="w-full h-full rounded-lg shadow-lg"
+        />
+      </div>
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
         {isMobile && (
           <Button 
             onClick={toggleCamera} 
             variant="secondary"
-            size="lg"
-            className="opacity-75"
+            size="icon"
+            className="opacity-75 h-12 w-12"
           >
-            Flip Camera
+            <RotateCw className="h-6 w-6" />
           </Button>
         )}
         <Button
           onClick={capture}
           disabled={isCountingDown}
           size="lg"
+          className="h-12"
         >
-          <Camera className="mr-2 h-4 w-4" />
+          <Camera className="mr-2 h-5 w-5" />
           Take Photo
         </Button>
       </div>
