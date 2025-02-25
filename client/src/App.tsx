@@ -11,6 +11,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Landing} />
       <Route path="/booth" component={Home} />
+      <Route path="/privacy" component={Privacy} />
       <Route component={NotFound} />
     </Switch>
   );

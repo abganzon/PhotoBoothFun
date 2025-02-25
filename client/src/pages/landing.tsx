@@ -101,6 +101,8 @@ export default function Landing() {
         <span>v1.0.0</span>
         <span>•</span>
         <span>{visitors} visitors</span>
+        <span>•</span>
+        <a href="/privacy" className="text-blue-600 hover:underline">Privacy Policy</a>
       </div>
     </div>
   );
