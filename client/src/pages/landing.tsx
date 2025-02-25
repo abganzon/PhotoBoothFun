@@ -75,3 +75,7 @@ export default function Landing() {
           </DialogContent>
         </Dialog>
       </div>
+    </div>
+  </div>
+  );
+}
