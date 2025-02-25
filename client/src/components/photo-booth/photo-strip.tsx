@@ -170,13 +170,24 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
               x = padding;
               y = gridStartY + (i * (placeholderHeight + padding));
               
-              // Fill the entire placeholder width
+              // Calculate dimensions to cover the area while maintaining aspect ratio
+              const scale = Math.max(
+                placeholderWidth / img.width,
+                placeholderHeight / img.height
+              );
+              const scaledWidth = img.width * scale;
+              const scaledHeight = img.height * scale;
+              
+              // Center the image and crop overflow
+              const sourceX = (scaledWidth - placeholderWidth) / 2 / scale;
+              const sourceY = (scaledHeight - placeholderHeight) / 2 / scale;
+              
               tempCtx.drawImage(
                 img,
-                x,
-                y,
-                placeholderWidth,
-                placeholderHeight
+                sourceX, sourceY,                           // Source position
+                placeholderWidth / scale, placeholderHeight / scale,  // Source dimensions
+                x, y,                                      // Destination position
+                placeholderWidth, placeholderHeight        // Destination dimensions
               );
               
               // Draw border using placeholder dimensions
