@@ -5,23 +5,25 @@ import { format } from "date-fns";
 
 interface PhotoStripProps {
   photos: string[];
-  backgroundColor: string;
-  name: string;
-  showDate: boolean;
-  nameColor: string;
-  dateColor: string;
   layout: "strip" | "collage";
+  name?: string;
+  showDate?: boolean;
+  showName?: boolean;
+  backgroundColor?: string;
+  nameColor?: string;
+  dateColor?: string;
 }
 
-export function PhotoStrip({ 
-  photos, 
-  backgroundColor = "#ffffff",
-  name = "",
+export const PhotoStrip: React.FC<PhotoStripProps> = ({
+  photos,
+  layout,
+  name,
   showDate = true,
+  showName = true,
+  backgroundColor = "#ffffff",
   nameColor = "#000000",
   dateColor = "#666666",
-  layout = "strip"
-}: PhotoStripProps) {
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -38,8 +40,12 @@ export function PhotoStrip({
 
     // Set initial canvas dimensions
     const padding = 25; // Consistent padding for both layouts
-    const bottomPadding = 100; // Consistent bottom padding for title and date
     const titlePadding = 35; // Space between grid and title
+    
+    // Calculate bottom padding based on what's shown
+    const bottomPadding = (showName || showDate) ? 
+      (showName && showDate ? 100 : 60) : // Both: 100px, One: 60px
+      padding; // Neither: just regular padding
     
     // Define placeholder dimensions for strip layout
     const placeholderWidth = 250; // Fixed width for placeholder images
@@ -47,13 +53,13 @@ export function PhotoStrip({
 
     if (layout === "strip") {
       canvas.width = placeholderWidth + (padding * 2); // Set width to fit placeholder
-      canvas.height = (placeholderHeight * 4) + (padding * 5) + bottomPadding; // Include space for title
+      canvas.height = (placeholderHeight * 4) + (padding * 5) + bottomPadding; // Include space for title if needed
     } else {
       // For collage layout, make it square with space for title
       canvas.width = 800;
       const gridSize = canvas.width - (padding * 3); // Total space for grid
       const cellSize = gridSize / 2; // Size for each image cell
-      canvas.height = gridSize + (padding * 2) + bottomPadding; // Square grid plus bottom padding for title
+      canvas.height = gridSize + (padding * 2) + bottomPadding; // Square grid plus bottom padding if needed
     }
     
     tempCanvas.width = canvas.width;
@@ -192,11 +198,13 @@ export function PhotoStrip({
       const titleY = padding + gridHeight + titlePadding;
       
       // Draw title with consistent styling
-      const titleSize = layout === "strip" ? 28 : 36;
-      tempCtx.font = `bold ${titleSize}px Arial`;
-      tempCtx.fillStyle = nameColor;
-      tempCtx.textAlign = "center";
-      tempCtx.fillText(name || "Photo Strip", canvas.width / 2, titleY);
+      if (showName) {
+        const titleSize = layout === "strip" ? 28 : 36;
+        tempCtx.font = `bold ${titleSize}px Arial`;
+        tempCtx.fillStyle = nameColor;
+        tempCtx.textAlign = "center";
+        tempCtx.fillText(name || "Photo Strip", canvas.width / 2, titleY);
+      }
 
       // Draw date if enabled
       if (showDate) {
@@ -204,7 +212,8 @@ export function PhotoStrip({
         tempCtx.font = `${dateSize}px Arial`;
         tempCtx.fillStyle = dateColor;
         const dateText = format(new Date(), "MMMM dd, yyyy");
-        tempCtx.fillText(dateText, canvas.width / 2, titleY + (layout === "strip" ? 30 : 35));
+        const dateY = showName ? titleY + (layout === "strip" ? 30 : 35) : titleY;
+        tempCtx.fillText(dateText, canvas.width / 2, dateY);
       }
 
       // Update main canvas with the final content
@@ -215,7 +224,7 @@ export function PhotoStrip({
     };
 
     drawAllPhotos();
-  }, [photos, backgroundColor, name, showDate, nameColor, dateColor, layout]);
+  }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout]);
 
   const handleDownload = () => {
     const canvas = canvasRef.current;
