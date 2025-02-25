@@ -44,7 +44,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     // Calculate text space needed for name and date with layout-specific spacing
     const hasText = showName || showDate;
     const textSpace = hasText ? (showName && showDate ? 
-      (layout === "strip" ? 90 : 120) : // More space for collage when both are shown
+      (layout === "strip" ? 100 : 120) : // More space for collage when both are shown
       (layout === "strip" ? 50 : 70) // More space for collage when only one is shown
     ) : 0;
     
@@ -195,14 +195,14 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       }
 
       // Calculate text position with layout-specific spacing
-      const namePadding = layout === "strip" ? padding : padding * 2; // More padding for collage
-      const datePadding = layout === "strip" ? padding : padding * 1.5; // More bottom padding for collage
+      const namePadding = layout === "strip" ? padding * 2 : padding * 2; // Consistent padding for strip
+      const datePadding = layout === "strip" ? padding * 2 : padding * 1.5; // Consistent padding for strip
       
       const textStartY = layout === "strip"
-        ? canvas.height - textSpace + namePadding
+        ? canvas.height - textSpace + namePadding // Add consistent padding for strip
         : canvas.height - textSpace + namePadding;
       
-      const lineHeight = layout === "strip" ? 40 : 50; // Increased spacing between name and date
+      const lineHeight = layout === "strip" ? 50 : 50; // Consistent line height
       
       // Draw title with consistent styling
       if (showName) {
