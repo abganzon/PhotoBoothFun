@@ -39,10 +39,10 @@ export function PhotoStrip({
     // Set canvas dimensions based on layout
     if (layout === "strip") {
       canvas.width = 600;
-      canvas.height = 900;
+      canvas.height = 1000; // Increased height for better proportions
     } else {
       canvas.width = 800;
-      canvas.height = 1000; // Increased height to accommodate title and date
+      canvas.height = 1000;
     }
     
     tempCanvas.width = canvas.width;
@@ -52,14 +52,14 @@ export function PhotoStrip({
     tempCtx.fillStyle = backgroundColor;
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const padding = layout === "strip" ? 20 : 30; // Larger padding for collage
+    const padding = layout === "strip" ? 30 : 30; // Consistent padding for both layouts
     let photoWidth: number;
     let photoHeight: number;
     let gridHeight: number;
 
     if (layout === "strip") {
       // Strip layout (1x4)
-      photoWidth = canvas.width - (padding * 2);
+      photoWidth = canvas.width - (padding * 2) - 20; // Account for border
       photoHeight = Math.floor(photoWidth * 0.75); // 4:3 aspect ratio for strip layout
       gridHeight = photos.length > 0 
         ? (photoHeight * 4) + (padding * 5)
@@ -75,7 +75,7 @@ export function PhotoStrip({
     }
 
     // Adjust canvas height for both layouts
-    const titleSpace = 120; // Increased space for title and date
+    const titleSpace = 140; // Increased space for title and decorative elements
     canvas.height = gridHeight + titleSpace;
     tempCanvas.height = canvas.height;
     tempCtx.fillStyle = backgroundColor;
@@ -83,13 +83,25 @@ export function PhotoStrip({
 
     // Draw border for strip layout
     if (layout === "strip") {
+      // Draw outer border
       tempCtx.strokeStyle = '#e5e5e5';
       tempCtx.lineWidth = 3;
+      const borderPadding = 15;
       tempCtx.strokeRect(
-        padding - 10, 
-        padding - 10, 
-        photoWidth + 20, 
-        (photoHeight * 4) + (padding * 3) + 20
+        padding - borderPadding, 
+        padding - borderPadding, 
+        photoWidth + (borderPadding * 2), 
+        (photoHeight * 4) + (padding * 3) + (borderPadding * 2)
+      );
+
+      // Draw inner border
+      tempCtx.strokeStyle = '#f3f4f6';
+      tempCtx.lineWidth = 1;
+      tempCtx.strokeRect(
+        padding - borderPadding + 5, 
+        padding - borderPadding + 5, 
+        photoWidth + (borderPadding * 2) - 10, 
+        (photoHeight * 4) + (padding * 3) + (borderPadding * 2) - 10
       );
     }
 
@@ -158,22 +170,36 @@ export function PhotoStrip({
         }
       }
 
-      // Draw title
-      const titleY = gridHeight + (titleSpace / 2); // Consistent positioning for both layouts
+      // Draw title section with improved styling
+      const titleY = gridHeight + (titleSpace / 2);
       
-      // Draw a decorative line above the title for both layouts
-      tempCtx.strokeStyle = '#e5e5e5';
+      // Draw decorative lines with gradient
+      const gradient = tempCtx.createLinearGradient(padding, 0, canvas.width - padding, 0);
+      gradient.addColorStop(0, '#e5e5e5');
+      gradient.addColorStop(0.5, '#d1d5db');
+      gradient.addColorStop(1, '#e5e5e5');
+
+      // Top line
+      tempCtx.strokeStyle = gradient;
       tempCtx.lineWidth = 2;
       tempCtx.beginPath();
-      tempCtx.moveTo(padding, titleY - 30);
-      tempCtx.lineTo(canvas.width - padding, titleY - 30);
+      tempCtx.moveTo(padding * 2, titleY - 35);
+      tempCtx.lineTo(canvas.width - (padding * 2), titleY - 35);
       tempCtx.stroke();
 
-      // Draw title
+      // Draw title with shadow
+      tempCtx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+      tempCtx.shadowBlur = 3;
+      tempCtx.shadowOffsetY = 2;
       tempCtx.font = "bold 48px Arial";
       tempCtx.fillStyle = nameColor;
       tempCtx.textAlign = "center";
       tempCtx.fillText(name || "Photo Strip", canvas.width / 2, titleY);
+      
+      // Reset shadow
+      tempCtx.shadowColor = 'transparent';
+      tempCtx.shadowBlur = 0;
+      tempCtx.shadowOffsetY = 0;
 
       // Draw date if enabled
       if (showDate) {
@@ -183,12 +209,12 @@ export function PhotoStrip({
         tempCtx.fillText(dateText, canvas.width / 2, titleY + 40);
       }
 
-      // Draw a decorative line below the date for both layouts
-      tempCtx.strokeStyle = '#e5e5e5';
+      // Bottom line
+      tempCtx.strokeStyle = gradient;
       tempCtx.lineWidth = 2;
       tempCtx.beginPath();
-      tempCtx.moveTo(padding, titleY + 60);
-      tempCtx.lineTo(canvas.width - padding, titleY + 60);
+      tempCtx.moveTo(padding * 2, titleY + 60);
+      tempCtx.lineTo(canvas.width - (padding * 2), titleY + 60);
       tempCtx.stroke();
 
       // Copy the final result to the main canvas
