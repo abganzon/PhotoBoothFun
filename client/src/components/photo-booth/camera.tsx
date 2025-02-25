@@ -54,12 +54,22 @@ export function PhotoBoothCamera({ onCapture, isCountingDown }: CameraProps) {
           className="w-full h-full rounded-lg shadow-lg"
         />
       </div>
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-4">
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-6">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleSwitchCamera}
+          className="bg-white/90 hover:bg-white"
+          title="Switch Camera"
+        >
+          <Repeat className="h-5 w-5" />
+        </Button>
         <Button
           variant="outline"
           size="icon"
           onClick={() => setMirrored(!mirrored)}
           className="bg-white/90 hover:bg-white"
+          title="Flip Camera"
         >
           <FlipHorizontal className="h-5 w-5" />
         </Button>
@@ -67,17 +77,10 @@ export function PhotoBoothCamera({ onCapture, isCountingDown }: CameraProps) {
           size="icon"
           onClick={capture}
           disabled={isCountingDown}
-          className="w-16 h-16 bg-white/90 hover:bg-white rounded-full"
+          className="w-14 h-14 bg-white/90 hover:bg-white rounded-full ring-2 ring-offset-2 ring-white/50"
+          title="Take Photo"
         >
-          <CameraIcon className="h-8 w-8" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleSwitchCamera}
-          className="bg-white/90 hover:bg-white"
-        >
-          <Repeat className="h-5 w-5" />
+          <CameraIcon className="h-7 w-7" />
         </Button>
       </div>
     </div>
