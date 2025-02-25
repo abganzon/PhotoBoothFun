@@ -52,7 +52,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     if (layout === "strip") {
       canvas.width = placeholderWidth + (padding * 2); // Set width to fit placeholder with padding
       const gridHeight = (placeholderHeight * 4) + (padding * 3); // Height of just the photos and spacing between them
-      canvas.height = gridHeight + (hasText ? textSpace : padding);
+      canvas.height = gridHeight + (hasText ? textSpace + padding : padding); // Add padding above text
     } else {
       // For collage layout
       canvas.width = 800;
@@ -60,8 +60,8 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       const cellSize = (gridSize - padding) / 2; // Size for each image cell, accounting for middle padding
       const gridHeight = (cellSize * 2) + padding; // Height of the 2x2 grid including middle padding
       
-      // Set canvas height to maintain aspect ratio plus text space
-      canvas.height = gridHeight + padding + (hasText ? textSpace : 0);
+      // Set canvas height to maintain aspect ratio plus text space and padding
+      canvas.height = gridHeight + padding + (hasText ? textSpace + padding : 0);
     }
     
     tempCanvas.width = canvas.width;
@@ -89,7 +89,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
     // Calculate grid starting position - for strip it's centered, for collage it starts at padding
     const gridStartY = layout === "strip" 
-      ? (canvas.height - textSpace - gridHeight) / 2 
+      ? (canvas.height - textSpace + padding - gridHeight) / 2 
       : padding;
 
     const loadImage = (src: string): Promise<HTMLImageElement> => {
@@ -191,10 +191,10 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         }
       }
 
-      // Calculate text position - align to bottom with minimal spacing
+      // Calculate text position - align to bottom with consistent padding
       const textStartY = layout === "strip"
-        ? canvas.height - (showName && showDate ? textSpace - 10 : textSpace / 2)
-        : canvas.height - (showName && showDate ? textSpace - 10 : textSpace / 2);
+        ? canvas.height - textSpace + padding // Add padding above text
+        : canvas.height - textSpace + padding;
       
       const lineHeight = layout === "strip" ? 30 : 35;
       
