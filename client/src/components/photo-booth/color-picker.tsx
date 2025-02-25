@@ -5,12 +5,13 @@ import { Input } from "@/components/ui/input";
 interface ColorPickerProps {
   color: string;
   onChange: (color: string) => void;
+  label: string;
 }
 
 export function ColorPicker({ color, onChange }: ColorPickerProps) {
   return (
     <div className="flex items-center gap-4">
-      <Label htmlFor="strip-color">Strip Color</Label>
+      <Label htmlFor="strip-color">{label}</Label>
       <Input
         id="strip-color"
         type="color"

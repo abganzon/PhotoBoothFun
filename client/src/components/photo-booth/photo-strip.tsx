@@ -8,6 +8,8 @@ interface PhotoStripProps {
   backgroundColor: string;
   name: string;
   showDate: boolean;
+  nameColor: string;
+  dateColor: string;
 }
 
 export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStripProps) {
@@ -80,7 +82,7 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStr
 
       // Draw title
       tempCtx.font = "bold 48px Arial";
-      tempCtx.fillStyle = "#000000";
+      tempCtx.fillStyle = nameColor;
       tempCtx.textAlign = "center";
       const titleY = gridHeight + padding + 20;
       tempCtx.fillText(name || "Photo Strip", canvas.width / 2, titleY);
@@ -88,7 +90,7 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStr
       // Draw date if enabled
       if (showDate) {
         tempCtx.font = "24px Arial";
-        tempCtx.fillStyle = "#666666";
+        tempCtx.fillStyle = dateColor;
         const dateText = format(new Date(), "MMMM dd, yyyy");
         tempCtx.fillText(dateText, canvas.width / 2, titleY + 40);
       }

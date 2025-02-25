@@ -16,6 +16,8 @@ export default function Home() {
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [stripName, setStripName] = useState("");
   const [showDate, setShowDate] = useState(true);
+  const [nameColor, setNameColor] = useState("#000000");
+  const [dateColor, setDateColor] = useState("#666666");
   const { toast } = useToast();
 
   const handleCapture = (photo: string) => {
@@ -114,6 +116,17 @@ export default function Home() {
             <ColorPicker
               color={backgroundColor}
               onChange={setBackgroundColor}
+              label="Strip Color"
+            />
+            <ColorPicker
+              color={nameColor}
+              onChange={setNameColor}
+              label="Name Color"
+            />
+            <ColorPicker
+              color={dateColor}
+              onChange={setDateColor}
+              label="Date Color"
             />
           </div>
         </div>
@@ -124,6 +137,8 @@ export default function Home() {
             backgroundColor={backgroundColor}
             name={stripName}
             showDate={showDate}
+            nameColor={nameColor}
+            dateColor={dateColor}
             layout="strip-vertical"
           />
         </div>
