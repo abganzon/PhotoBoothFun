@@ -11,7 +11,7 @@ interface PhotoStripProps {
   layout: 'vertical' | 'horizontal';
 }
 
-export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStripProps) {
+export function PhotoStrip({ photos, backgroundColor, name, showDate, layout }: PhotoStripProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
