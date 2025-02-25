@@ -59,7 +59,7 @@ export default function Landing() {
               <div className="flex flex-col items-center gap-6">
                 <div className="bg-gradient-to-b from-blue-50 via-white to-purple-50 p-8 rounded-2xl shadow-lg border border-gray-100">
                   <img 
-                    src="gcash-qr.png" 
+                    src="/public/IMG_9239.jpeg" 
                     alt="GCash QR Code" 
                     className="w-64 h-64 object-contain rounded-xl shadow-inner bg-white p-2" 
                   />
