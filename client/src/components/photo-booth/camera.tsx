@@ -7,6 +7,7 @@ import { Camera as CameraIcon, Repeat, FlipHorizontal } from "lucide-react";
 interface CameraProps {
   onCapture: (photo: string) => void;
   isCountingDown: boolean;
+  timerDuration: number;
 }
 
 export function PhotoBoothCamera({ onCapture, isCountingDown }: CameraProps) {

@@ -20,6 +20,7 @@ export default function Home() {
   const [nameColor, setNameColor] = useState("#000000");
   const [dateColor, setDateColor] = useState("#666666");
   const [layout, setLayout] = useState<"strip" | "collage">("strip");
+  const [timerDuration, setTimerDuration] = useState(5);
   const { toast } = useToast();
 
   const handleCapture = (photo: string) => {
@@ -69,10 +70,12 @@ export default function Home() {
             <PhotoBoothCamera
               onCapture={handleCapture}
               isCountingDown={isCountingDown}
+              timerDuration={timerDuration}
             />
             <Countdown
               isActive={isCountingDown}
               onComplete={handleCapture}
+              duration={timerDuration}
             />
           </div>
 
@@ -96,15 +99,30 @@ export default function Home() {
           <div className="space-y-4 bg-gray-50 rounded-lg p-6">
             <h2 className="text-lg font-semibold">Customize Your Strip</h2>
 
-            <div className="space-y-2">
-              <Label htmlFor="strip-name">Strip Name</Label>
-              <Input
-                id="strip-name"
-                value={stripName}
-                onChange={(e) => setStripName(e.target.value)}
-                placeholder="Enter a name for your strip"
-                className="bg-white"
-              />
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="strip-name">Strip Name</Label>
+                <Input
+                  id="strip-name"
+                  value={stripName}
+                  onChange={(e) => setStripName(e.target.value)}
+                  placeholder="Enter a name for your strip"
+                  className="bg-white"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="timer-duration">Timer Duration (seconds)</Label>
+                <Input
+                  id="timer-duration"
+                  type="number"
+                  min="1"
+                  max="10"
+                  defaultValue="5"
+                  onChange={(e) => setTimerDuration(parseInt(e.target.value) || 5)}
+                  placeholder="Enter countdown duration"
+                  className="bg-white"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">

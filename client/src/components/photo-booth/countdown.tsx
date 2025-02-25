@@ -3,14 +3,15 @@ import React, { useEffect, useState } from "react";
 interface CountdownProps {
   isActive: boolean;
   onComplete: (image: string) => void;
+  duration?: number;
 }
 
-export function Countdown({ isActive, onComplete }: CountdownProps) {
-  const [count, setCount] = useState(5);
+export function Countdown({ isActive, onComplete, duration = 5 }: CountdownProps) {
+  const [count, setCount] = useState(duration);
 
   useEffect(() => {
     if (!isActive) {
-      setCount(5);
+      setCount(duration);
       return;
     }
 
@@ -40,7 +41,7 @@ export function Countdown({ isActive, onComplete }: CountdownProps) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isActive, onComplete]);
+  }, [isActive, onComplete, duration]);
 
   if (!isActive) return null;
 

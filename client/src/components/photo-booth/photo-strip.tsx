@@ -170,24 +170,27 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
             if (layout === "strip") {
               x = padding;
               y = gridStartY + (i * (placeholderHeight + padding));
-              // Calculate aspect ratio preservation
+              
+              // Calculate dimensions to maintain aspect ratio and fill placeholder
               const aspectRatio = img.width / img.height;
-              let drawWidth = photoWidth;
-              let drawHeight = photoHeight;
-              let offsetX = x;
-              let offsetY = y;
+              let drawWidth = placeholderWidth;
+              let drawHeight = placeholderHeight;
+              let sourceX = 0;
+              let sourceY = 0;
+              let sourceWidth = img.width;
+              let sourceHeight = img.height;
 
-              if (aspectRatio > (photoWidth / photoHeight)) {
-                // Image is wider than placeholder
-                drawHeight = photoWidth / aspectRatio;
-                offsetY = y + (photoHeight - drawHeight) / 2;
+              if (aspectRatio > (placeholderWidth / placeholderHeight)) {
+                // Image is wider - crop sides
+                sourceWidth = Math.floor((placeholderWidth / placeholderHeight) * img.height);
+                sourceX = Math.floor((img.width - sourceWidth) / 2);
               } else {
-                // Image is taller than placeholder
-                drawWidth = photoHeight * aspectRatio;
-                offsetX = x + (photoWidth - drawWidth) / 2;
+                // Image is taller - crop top/bottom
+                sourceHeight = Math.floor((placeholderHeight / placeholderWidth) * img.width);
+                sourceY = Math.floor((img.height - sourceHeight) / 2);
               }
 
-              tempCtx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+              tempCtx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, x, y, drawWidth, drawHeight);
             } else {
               // For collage layout (2x2 grid)
               const col = i % 2;
