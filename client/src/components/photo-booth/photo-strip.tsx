@@ -38,7 +38,7 @@ export function PhotoStrip({
 
     // Set canvas dimensions based on layout
     if (layout === "strip") {
-      canvas.width = 600;
+      canvas.width = 500; // Reduced width for better proportions
       canvas.height = 1000;
     } else {
       canvas.width = 800;
@@ -52,7 +52,7 @@ export function PhotoStrip({
     tempCtx.fillStyle = backgroundColor;
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const padding = layout === "strip" ? 40 : 30; // Increased padding for strip layout
+    const padding = layout === "strip" ? 25 : 30; // Adjusted padding for strip layout
     let photoWidth: number;
     let photoHeight: number;
     let gridHeight: number;
@@ -62,7 +62,7 @@ export function PhotoStrip({
       photoWidth = canvas.width - (padding * 2);
       photoHeight = Math.floor(photoWidth * 0.75); // 4:3 aspect ratio for strip layout
       gridHeight = photos.length > 0 
-        ? (photoHeight * 4) + (padding * 5)
+        ? (photoHeight * 4) + (padding * 3) // Reduced padding between photos
         : 480;
     } else {
       // Collage layout (2x2)
@@ -75,8 +75,9 @@ export function PhotoStrip({
     }
 
     // Adjust canvas height for both layouts
-    const titleSpace = 100; // Reduced space since we removed decorative lines
-    canvas.height = gridHeight + titleSpace;
+    const titleSpace = 140; // Increased space for title area and bottom padding
+    const bottomPadding = 30; // Added padding at the bottom
+    canvas.height = gridHeight + titleSpace + bottomPadding;
     tempCanvas.height = canvas.height;
     tempCtx.fillStyle = backgroundColor;
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
@@ -137,19 +138,19 @@ export function PhotoStrip({
           
           // Draw border around each photo
           if (layout === "strip") {
-            // Draw outer border
+            // Draw outer border exactly around the image
             tempCtx.strokeStyle = '#e5e5e5';
             tempCtx.lineWidth = 3;
-            tempCtx.strokeRect(x, y, photoWidth, photoHeight);
+            tempCtx.strokeRect(xOffset, yOffset, scaledWidth, scaledHeight);
             
             // Draw inner border
             tempCtx.strokeStyle = '#f3f4f6';
             tempCtx.lineWidth = 1;
             tempCtx.strokeRect(
-              x + 3,
-              y + 3,
-              photoWidth - 6,
-              photoHeight - 6
+              xOffset + 3,
+              yOffset + 3,
+              scaledWidth - 6,
+              scaledHeight - 6
             );
           } else {
             // Simple border for collage layout
@@ -163,7 +164,7 @@ export function PhotoStrip({
       }
 
       // Draw title
-      const titleY = gridHeight + (titleSpace / 2);
+      const titleY = gridHeight + 60; // Adjusted position
       
       // Draw title with shadow
       tempCtx.shadowColor = 'rgba(0, 0, 0, 0.1)';
