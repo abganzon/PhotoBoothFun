@@ -1,4 +1,5 @@
-import React, { useRef, useCallback } from "react";
+
+import React, { useRef, useCallback, useState } from "react";
 import Webcam from "react-webcam";
 import { Button } from "@/components/ui/button";
 import { Camera } from "lucide-react";
@@ -57,15 +58,15 @@ export function PhotoBoothCamera({ onCapture, isCountingDown }: CameraProps) {
             Flip Camera
           </Button>
         )}
-      <Button
-        onClick={capture}
-        disabled={isCountingDown}
-        className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
-        size="lg"
-      >
-        <Camera className="mr-2 h-4 w-4" />
-        Take Photo
-      </Button>
+        <Button
+          onClick={capture}
+          disabled={isCountingDown}
+          size="lg"
+        >
+          <Camera className="mr-2 h-4 w-4" />
+          Take Photo
+        </Button>
+      </div>
     </div>
   );
 }
