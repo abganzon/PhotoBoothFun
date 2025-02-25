@@ -96,73 +96,115 @@ export default function Home() {
           <div className="space-y-4 bg-gray-50 rounded-lg p-6">
             <h2 className="text-lg font-semibold">Customize Your Strip</h2>
 
-            <div className="flex flex-col gap-4 p-4">
-              <div className="flex items-center gap-2">
-                <label htmlFor="layout" className="text-gray-700">Layout:</label>
-                <select
-                  id="layout"
-                  value={layout}
-                  onChange={(e) => setLayout(e.target.value as "strip" | "collage")}
-                  className="border border-gray-300 rounded px-2 py-1"
+            <div className="space-y-2">
+              <Label htmlFor="strip-name">Strip Name</Label>
+              <Input
+                id="strip-name"
+                value={stripName}
+                onChange={(e) => setStripName(e.target.value)}
+                placeholder="Enter a name for your strip"
+                className="bg-white"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Layout Style</Label>
+              <div className="flex gap-4">
+                <div 
+                  className={`flex-1 p-4 border rounded-lg cursor-pointer transition-colors ${
+                    layout === "strip" 
+                      ? "border-primary bg-primary/10" 
+                      : "border-gray-200 hover:border-primary/50"
+                  }`}
+                  onClick={() => setLayout("strip")}
                 >
-                  <option value="strip">Strip</option>
-                  <option value="collage">Collage</option>
-                </select>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="showDate"
-                    checked={showDate}
-                    onChange={(e) => setShowDate(e.target.checked)}
-                    className="rounded border-gray-300"
-                  />
-                  <label htmlFor="showDate" className="text-gray-700">Show Date</label>
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-16 h-24 bg-gray-200 rounded"></div>
+                    <span className="text-sm font-medium">Strip</span>
+                    <span className="text-xs text-gray-500">1x4 Layout</span>
+                  </div>
                 </div>
+                <div 
+                  className={`flex-1 p-4 border rounded-lg cursor-pointer transition-colors ${
+                    layout === "collage" 
+                      ? "border-primary bg-primary/10" 
+                      : "border-gray-200 hover:border-primary/50"
+                  }`}
+                  onClick={() => setLayout("collage")}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-20 h-20 bg-gray-200 rounded"></div>
+                    <span className="text-sm font-medium">Collage</span>
+                    <span className="text-xs text-gray-500">2x2 Layout</span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="showName"
+            <div className="space-y-3">
+              <Label>Display Options</Label>
+              <div className="flex flex-col gap-3 bg-white rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="font-medium text-sm">Show Strip Name</span>
+                    <span className="text-xs text-gray-500">Display the name above your photos</span>
+                  </div>
+                  <Switch
+                    id="show-name"
                     checked={showName}
-                    onChange={(e) => setShowName(e.target.checked)}
-                    className="rounded border-gray-300"
+                    onCheckedChange={setShowName}
                   />
-                  <label htmlFor="showName" className="text-gray-700">Show Name</label>
                 </div>
-              </div>
 
-              <div className="flex items-center gap-2">
-                <label htmlFor="stripName" className="text-gray-700">Strip Name:</label>
-                <input
-                  type="text"
-                  id="stripName"
-                  value={stripName}
-                  onChange={(e) => setStripName(e.target.value)}
-                  placeholder="Enter strip name"
-                  className="border border-gray-300 rounded px-2 py-1 flex-1"
-                />
+                <div className="h-px bg-gray-200"></div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="font-medium text-sm">Show Date</span>
+                    <span className="text-xs text-gray-500">Include today's date</span>
+                  </div>
+                  <Switch
+                    id="show-date"
+                    checked={showDate}
+                    onCheckedChange={setShowDate}
+                  />
+                </div>
               </div>
             </div>
 
             <div className="space-y-4">
-              <ColorPicker
-                color={backgroundColor}
-                onChange={setBackgroundColor}
-                label="Strip Color"
-              />
-              <ColorPicker
-                color={nameColor}
-                onChange={setNameColor}
-                label="Name Color"
-              />
-              <ColorPicker
-                color={dateColor}
-                onChange={setDateColor}
-                label="Date Color"
-              />
+              <Label>Colors</Label>
+              <div className="space-y-3 bg-white rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Background</span>
+                  <input
+                    type="color"
+                    value={backgroundColor}
+                    onChange={(e) => setBackgroundColor(e.target.value)}
+                    className="w-10 h-10 rounded cursor-pointer"
+                  />
+                </div>
+                <div className="h-px bg-gray-200"></div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Name Color</span>
+                  <input
+                    type="color"
+                    value={nameColor}
+                    onChange={(e) => setNameColor(e.target.value)}
+                    className="w-10 h-10 rounded cursor-pointer"
+                  />
+                </div>
+                <div className="h-px bg-gray-200"></div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Date Color</span>
+                  <input
+                    type="color"
+                    value={dateColor}
+                    onChange={(e) => setDateColor(e.target.value)}
+                    className="w-10 h-10 rounded cursor-pointer"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
