@@ -109,7 +109,7 @@ export function PhotoStrip({
     };
 
     drawAllPhotos();
-  }, [photos, backgroundColor, name, showDate]);
+  }, [photos, backgroundColor, name, showDate, nameColor, dateColor]);
 
   const handleDownload = () => {
     const canvas = canvasRef.current;
