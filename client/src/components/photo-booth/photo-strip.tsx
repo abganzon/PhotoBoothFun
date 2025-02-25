@@ -45,21 +45,22 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     // Calculate bottom padding based on what's shown
     const bottomPadding = (showName || showDate) ? 
       (showName && showDate ? 100 : 60) : // Both: 100px, One: 60px
-      padding; // Neither: just regular padding
+      padding; // Neither: just regular padding (25px to match sides)
     
     // Define placeholder dimensions for strip layout
     const placeholderWidth = 250; // Fixed width for placeholder images
     const placeholderHeight = Math.floor(placeholderWidth * 0.75);
 
     if (layout === "strip") {
-      canvas.width = placeholderWidth + (padding * 2); // Set width to fit placeholder
-      canvas.height = (placeholderHeight * 4) + (padding * 5) + bottomPadding; // Include space for title if needed
+      canvas.width = placeholderWidth + (padding * 2); // Set width to fit placeholder with padding
+      const gridHeight = (placeholderHeight * 4) + (padding * 3); // Height of just the photos and spacing between them
+      canvas.height = gridHeight + padding + bottomPadding; // Add top and bottom padding
     } else {
       // For collage layout, make it square with space for title
       canvas.width = 800;
       const gridSize = canvas.width - (padding * 3); // Total space for grid
       const cellSize = gridSize / 2; // Size for each image cell
-      canvas.height = gridSize + (padding * 2) + bottomPadding; // Square grid plus bottom padding if needed
+      canvas.height = gridSize + (padding * 2) + bottomPadding; // Square grid plus padding
     }
     
     tempCanvas.width = canvas.width;
@@ -195,7 +196,11 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       }
 
       // Draw title section at the bottom with consistent styling
-      const titleY = padding + gridHeight + titlePadding;
+      const gridHeight = layout === "strip" 
+        ? (placeholderHeight * 4) + (padding * 3) // Height of just the photos and spacing between them
+        : (canvas.width - (padding * 3)); // For collage, grid is square
+      
+      const titleY = padding + gridHeight + (showName || showDate ? titlePadding : 0);
       
       // Draw title with consistent styling
       if (showName) {
