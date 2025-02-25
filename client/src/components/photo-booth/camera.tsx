@@ -60,7 +60,7 @@ export function PhotoBoothCamera({ onCapture, isCountingDown }: CameraProps) {
           size="icon"
           onClick={capture}
           disabled={isCountingDown}
-          className="h-16 w-16 rounded-full bg-white shadow-lg hover:bg-white/90 border-4 border-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-12 w-12 rounded-full bg-white shadow-lg hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <CameraIcon className="h-8 w-8 text-primary" />
         </Button>

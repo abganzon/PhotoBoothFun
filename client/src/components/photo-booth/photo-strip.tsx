@@ -55,7 +55,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
     if (layout === "strip") {
       canvas.width = placeholderWidth + (padding * 2); // Set width to fit placeholder with padding
-      const gridHeight = (placeholderHeight * 4) + (padding * 3); // Height of just the photos and spacing between them
+      gridHeight = (placeholderHeight * 4) + (padding * 3); // Height of just the photos and spacing between them
       // When no text, bottom padding matches side padding
       canvas.height = (hasText ? textSpace + padding : padding) + gridHeight + padding;
     } else {
@@ -63,7 +63,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       canvas.width = 600;
       const gridSize = canvas.width - (padding * 2); // Total space for grid
       const cellSize = (gridSize - padding) / 2; // Size for each image cell, accounting for middle padding
-      const gridHeight = (cellSize * 2) + padding; // Height of the 2x2 grid including middle padding
+      gridHeight = (cellSize * 2) + padding; // Height of the 2x2 grid including middle padding
       photoWidth = cellSize;
       photoHeight = cellSize;
 
@@ -170,9 +170,24 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
             if (layout === "strip") {
               x = padding;
               y = gridStartY + (i * (placeholderHeight + padding));
-              photoWidth = placeholderWidth;
-              photoHeight = placeholderHeight;
-              tempCtx.drawImage(img, x, y, photoWidth, photoHeight);
+              // Calculate aspect ratio preservation
+              const aspectRatio = img.width / img.height;
+              let drawWidth = photoWidth;
+              let drawHeight = photoHeight;
+              let offsetX = x;
+              let offsetY = y;
+
+              if (aspectRatio > (photoWidth / photoHeight)) {
+                // Image is wider than placeholder
+                drawHeight = photoWidth / aspectRatio;
+                offsetY = y + (photoHeight - drawHeight) / 2;
+              } else {
+                // Image is taller than placeholder
+                drawWidth = photoHeight * aspectRatio;
+                offsetX = x + (photoWidth - drawWidth) / 2;
+              }
+
+              tempCtx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
             } else {
               // For collage layout (2x2 grid)
               const col = i % 2;
@@ -227,10 +242,10 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     <div className="flex flex-col items-center gap-4 w-full px-4 sm:px-0">
       <canvas
         ref={canvasRef}
-        className="w-full max-w-md border rounded-lg shadow-lg"
+        className="w-full max-w-md border-0 rounded-lg shadow-lg"  {/*Removed border here*/}
         style={{ maxWidth: '100%', height: 'auto' }}
       />
-      <Button onClick={handleDownload} size="lg">
+      <Button onClick={handleDownload} size="lg" className="w-full max-w-md"> {/*Added class for sizing*/}
         <Download className="mr-2 h-4 w-4" />
         Download Photo
       </Button>
