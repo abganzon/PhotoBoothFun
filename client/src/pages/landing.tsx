@@ -50,17 +50,23 @@ export default function Landing() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-center">I appreciate your support!</DialogTitle>
+              <DialogTitle className="text-3xl font-bold text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Support RoBooth</DialogTitle>
             </DialogHeader>
             <div className="space-y-6 py-6">
               <p className="text-center text-gray-600 text-lg leading-relaxed">
-                This site is a labor of love, and your support helps keep it thriving. Every contribution is truly a cherished gift.
+                Thank you for considering supporting RoBooth! Your contribution helps keep this service running and enables continuous improvements.
               </p>
-              <div className="flex flex-col items-center gap-6 bg-gradient-to-b from-blue-50 to-white p-6 rounded-xl">
-                <img src="gcash-qr.png" alt="GCash QR Code" className="w-64 h-64 object-contain shadow-lg rounded-xl" />
-                <div className="text-center">
-                  <p className="text-base font-semibold text-blue-600">GCash Number</p>
-                  <p className="text-lg font-bold">09391935233</p>
+              <div className="flex flex-col items-center gap-6">
+                <div className="bg-gradient-to-b from-blue-50 via-white to-purple-50 p-8 rounded-2xl shadow-lg border border-gray-100">
+                  <img 
+                    src="gcash-qr.png" 
+                    alt="GCash QR Code" 
+                    className="w-64 h-64 object-contain rounded-xl shadow-inner bg-white p-2" 
+                  />
+                </div>
+                <div className="text-center bg-blue-50 px-6 py-4 rounded-xl shadow-sm">
+                  <p className="text-base font-medium text-blue-600 mb-1">GCash Number</p>
+                  <p className="text-xl font-bold text-blue-800">09391935233</p>
                 </div>
               </div>
             </div>
