@@ -1,13 +1,35 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --radius: 0.5rem;
+    --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  }
+
   * {
     @apply border-border;
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased bg-background text-foreground min-h-screen;
+  }
+
+  .container {
+    @apply px-4 mx-auto max-w-7xl;
+  }
+
+  .page-header {
+    @apply flex items-center justify-between py-6 border-b;
+  }
+
+  .card {
+    @apply rounded-lg border bg-card p-6 shadow-sm;
+  }
+
+  .button-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2;
   }
 }
