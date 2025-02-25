@@ -49,8 +49,12 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStr
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.crossOrigin = "anonymous";
+        // Set crossOrigin before src to avoid CORS issues
+        if (src.startsWith('data:')) {
+          img.crossOrigin = '';
+        }
         img.onload = () => resolve(img);
-        img.onerror = reject;
+        img.onerror = (e) => reject(e);
         img.src = src;
       });
     };
