@@ -59,14 +59,17 @@ export default function Landing() {
               <div className="flex flex-col items-center gap-6">
                 <div className="bg-gradient-to-b from-blue-50 via-white to-purple-50 p-8 rounded-2xl shadow-lg border border-gray-100">
                   <img 
-                    src="gcash-qr.png" 
-                    alt="GCash QR Code" 
+                    src="/qr-code-instapay.png" 
+                    alt="InstaPay QR Code" 
                     className="w-64 h-64 object-contain rounded-xl shadow-inner bg-white p-2" 
                   />
                 </div>
-                <div className="text-center bg-blue-50 px-6 py-4 rounded-xl shadow-sm">
-                  <p className="text-base font-medium text-blue-600 mb-1">GCash Number</p>
-                  <p className="text-xl font-bold text-blue-800">09391935233</p>
+                <div className="text-center">
+                  <img 
+                    src="/instapay-logo.png" 
+                    alt="InstaPay Logo" 
+                    className="h-12 object-contain mx-auto" 
+                  />
                 </div>
               </div>
             </div>
