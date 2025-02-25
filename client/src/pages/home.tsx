@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function Home() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [isCountingDown, setIsCountingDown] = useState(false);
-  const [backgroundColor, setBackgroundColor] = useState("#ffffff");
+  const [backgroundColor, setBackgroundColor] = useState("#E1D9D1");
   const [stripName, setStripName] = useState("");
   const [showDate, setShowDate] = useState(true);
   const [showName, setShowName] = useState(true);
