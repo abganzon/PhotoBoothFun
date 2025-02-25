@@ -39,7 +39,7 @@ export function PhotoStrip({
     // Set canvas dimensions based on layout
     if (layout === "strip") {
       canvas.width = 600;
-      canvas.height = 1000; // Increased height for better proportions
+      canvas.height = 1000;
     } else {
       canvas.width = 800;
       canvas.height = 1000;
@@ -52,14 +52,14 @@ export function PhotoStrip({
     tempCtx.fillStyle = backgroundColor;
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const padding = layout === "strip" ? 30 : 30; // Consistent padding for both layouts
+    const padding = layout === "strip" ? 40 : 30; // Increased padding for strip layout
     let photoWidth: number;
     let photoHeight: number;
     let gridHeight: number;
 
     if (layout === "strip") {
       // Strip layout (1x4)
-      photoWidth = canvas.width - (padding * 2) - 20; // Account for border
+      photoWidth = canvas.width - (padding * 2);
       photoHeight = Math.floor(photoWidth * 0.75); // 4:3 aspect ratio for strip layout
       gridHeight = photos.length > 0 
         ? (photoHeight * 4) + (padding * 5)
@@ -75,35 +75,11 @@ export function PhotoStrip({
     }
 
     // Adjust canvas height for both layouts
-    const titleSpace = 140; // Increased space for title and decorative elements
+    const titleSpace = 100; // Reduced space since we removed decorative lines
     canvas.height = gridHeight + titleSpace;
     tempCanvas.height = canvas.height;
     tempCtx.fillStyle = backgroundColor;
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Draw border for strip layout
-    if (layout === "strip") {
-      // Draw outer border
-      tempCtx.strokeStyle = '#e5e5e5';
-      tempCtx.lineWidth = 3;
-      const borderPadding = 15;
-      tempCtx.strokeRect(
-        padding - borderPadding, 
-        padding - borderPadding, 
-        photoWidth + (borderPadding * 2), 
-        (photoHeight * 4) + (padding * 3) + (borderPadding * 2)
-      );
-
-      // Draw inner border
-      tempCtx.strokeStyle = '#f3f4f6';
-      tempCtx.lineWidth = 1;
-      tempCtx.strokeRect(
-        padding - borderPadding + 5, 
-        padding - borderPadding + 5, 
-        photoWidth + (borderPadding * 2) - 10, 
-        (photoHeight * 4) + (padding * 3) + (borderPadding * 2) - 10
-      );
-    }
 
     // Load and draw photos
     const loadImage = (src: string): Promise<HTMLImageElement> => {
@@ -159,8 +135,24 @@ export function PhotoStrip({
             scaledHeight
           );
           
-          // Draw a subtle border around each photo
-          if (layout === "collage") {
+          // Draw border around each photo
+          if (layout === "strip") {
+            // Draw outer border
+            tempCtx.strokeStyle = '#e5e5e5';
+            tempCtx.lineWidth = 3;
+            tempCtx.strokeRect(x, y, photoWidth, photoHeight);
+            
+            // Draw inner border
+            tempCtx.strokeStyle = '#f3f4f6';
+            tempCtx.lineWidth = 1;
+            tempCtx.strokeRect(
+              x + 3,
+              y + 3,
+              photoWidth - 6,
+              photoHeight - 6
+            );
+          } else {
+            // Simple border for collage layout
             tempCtx.strokeStyle = '#e5e5e5';
             tempCtx.lineWidth = 2;
             tempCtx.strokeRect(x, y, photoWidth, photoHeight);
@@ -170,23 +162,9 @@ export function PhotoStrip({
         }
       }
 
-      // Draw title section with improved styling
+      // Draw title
       const titleY = gridHeight + (titleSpace / 2);
       
-      // Draw decorative lines with gradient
-      const gradient = tempCtx.createLinearGradient(padding, 0, canvas.width - padding, 0);
-      gradient.addColorStop(0, '#e5e5e5');
-      gradient.addColorStop(0.5, '#d1d5db');
-      gradient.addColorStop(1, '#e5e5e5');
-
-      // Top line
-      tempCtx.strokeStyle = gradient;
-      tempCtx.lineWidth = 2;
-      tempCtx.beginPath();
-      tempCtx.moveTo(padding * 2, titleY - 35);
-      tempCtx.lineTo(canvas.width - (padding * 2), titleY - 35);
-      tempCtx.stroke();
-
       // Draw title with shadow
       tempCtx.shadowColor = 'rgba(0, 0, 0, 0.1)';
       tempCtx.shadowBlur = 3;
@@ -208,14 +186,6 @@ export function PhotoStrip({
         const dateText = format(new Date(), "MMMM dd, yyyy");
         tempCtx.fillText(dateText, canvas.width / 2, titleY + 40);
       }
-
-      // Bottom line
-      tempCtx.strokeStyle = gradient;
-      tempCtx.lineWidth = 2;
-      tempCtx.beginPath();
-      tempCtx.moveTo(padding * 2, titleY + 60);
-      tempCtx.lineTo(canvas.width - (padding * 2), titleY + 60);
-      tempCtx.stroke();
 
       // Copy the final result to the main canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
