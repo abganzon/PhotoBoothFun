@@ -36,6 +36,17 @@ export default function Privacy() {
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Policy Updates</h2>
             <p className="text-gray-600">This privacy policy may be updated periodically, with any changes posted on this page.</p>
           </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Available Features</h2>
+            <ul className="list-disc pl-6 space-y-2 text-gray-600">
+              <li>Digital photo booth with real-time camera access</li>
+              <li>Local image processing and effects</li>
+              <li>Download captured images directly to your device</li>
+              <li>Browser-based operation - no installation required</li>
+              <li>Privacy-focused design with no data collection</li>
+            </ul>
+          </div>
         </div>
       </div>
     </Layout>
