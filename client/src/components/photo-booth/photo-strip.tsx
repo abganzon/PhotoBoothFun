@@ -42,7 +42,7 @@ export function PhotoStrip({
 
     const padding = 20;
     const photoWidth = canvas.width - (padding * 2); // Single column
-    const photoHeight = photoWidth * 0.75; // Maintain 4:3 aspect ratio
+    const photoHeight = Math.floor(photoWidth * 0.75); // Maintain 4:3 aspect ratio
     const gridHeight = photos.length > 0 
       ? (photoHeight * 4) + (padding * 5) // 4 photos vertically
       : 480; // Default camera height when no photos
@@ -75,13 +75,32 @@ export function PhotoStrip({
           const img = await loadImage(photos[i]);
           const x = padding;
           const y = padding + (i * (photoHeight + padding));
+          
+          // Calculate dimensions to maintain aspect ratio
+          const scale = Math.min(
+            photoWidth / img.width,
+            photoHeight / img.height
+          );
+          const scaledWidth = img.width * scale;
+          const scaledHeight = img.height * scale;
+          
+          // Center the image in its allocated space
+          const xOffset = x + (photoWidth - scaledWidth) / 2;
+          const yOffset = y + (photoHeight - scaledHeight) / 2;
+          
+          // Draw image with proper aspect ratio
           tempCtx.drawImage(
             img,
-            x,
-            y,
-            photoWidth,
-            photoHeight
+            xOffset,
+            yOffset,
+            scaledWidth,
+            scaledHeight
           );
+          
+          // Draw a subtle border around the photo
+          tempCtx.strokeStyle = '#e5e5e5';
+          tempCtx.lineWidth = 2;
+          tempCtx.strokeRect(x, y, photoWidth, photoHeight);
         } catch (error) {
           console.error("Error loading photo:", error);
         }
@@ -133,8 +152,8 @@ export function PhotoStrip({
     <div className="flex flex-col items-center gap-4 w-full px-4 sm:px-0">
       <canvas
         ref={canvasRef}
-        width={400}
-        height={600}
+        width={600}
+        height={900}
         className="w-full max-w-md border rounded-lg shadow-lg"
         style={{ maxWidth: '100%', height: 'auto' }}
       />
