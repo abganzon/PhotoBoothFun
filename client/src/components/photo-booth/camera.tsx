@@ -1,4 +1,3 @@
-
 import React, { useRef, useCallback, useState } from "react";
 import Webcam from "react-webcam";
 import { Button } from "@/components/ui/button";
@@ -36,14 +35,14 @@ export function PhotoBoothCamera({ onCapture, isCountingDown }: CameraProps) {
 
   return (
     <div className="relative w-full max-w-[800px] mx-auto px-4 sm:px-6">
-      <div className="aspect-[4/3] w-full">
+      <div className="aspect-square w-full">
         <Webcam
           audio={false}
           ref={webcamRef}
           screenshotFormat="image/jpeg"
           videoConstraints={{
-            width: 1280,
-            height: 960,
+            width: 1080,
+            height: 1080,
             facingMode: facingMode,
           }}
           className="w-full h-full rounded-lg shadow-lg"

@@ -41,10 +41,11 @@ export function PhotoStrip({
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     const padding = 20;
-    const photoWidth = canvas.width - (padding * 2); // Single column
-    const photoHeight = Math.floor(photoWidth * 0.75); // Maintain 4:3 aspect ratio
+    const availableWidth = canvas.width - (padding * 3); // Space for 2 columns with padding
+    const photoWidth = availableWidth / 2; // Two photos per row
+    const photoHeight = photoWidth; // Square photos
     const gridHeight = photos.length > 0 
-      ? (photoHeight * 4) + (padding * 5) // 4 photos vertically
+      ? (photoHeight * 2) + (padding * 3) // 2x2 grid
       : 480; // Default camera height when no photos
 
     // Adjust canvas height based on content
@@ -59,7 +60,6 @@ export function PhotoStrip({
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.crossOrigin = "anonymous";
-        // Set crossOrigin before src to avoid CORS issues
         if (src.startsWith('data:')) {
           img.crossOrigin = '';
         }
@@ -73,8 +73,10 @@ export function PhotoStrip({
       for (let i = 0; i < photos.length; i++) {
         try {
           const img = await loadImage(photos[i]);
-          const x = padding;
-          const y = padding + (i * (photoHeight + padding));
+          const row = Math.floor(i / 2);
+          const col = i % 2;
+          const x = padding + (col * (photoWidth + padding));
+          const y = padding + (row * (photoHeight + padding));
           
           // Calculate dimensions to maintain aspect ratio
           const scale = Math.min(
@@ -121,7 +123,6 @@ export function PhotoStrip({
         tempCtx.fillText(dateText, canvas.width / 2, titleY + 40);
       }
 
-
       // Copy the final result to the main canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(tempCanvas, 0, 0);
@@ -152,8 +153,8 @@ export function PhotoStrip({
     <div className="flex flex-col items-center gap-4 w-full px-4 sm:px-0">
       <canvas
         ref={canvasRef}
-        width={600}
-        height={900}
+        width={800}
+        height={800}
         className="w-full max-w-md border rounded-lg shadow-lg"
         style={{ maxWidth: '100%', height: 'auto' }}
       />
