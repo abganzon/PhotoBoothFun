@@ -12,7 +12,14 @@ interface PhotoStripProps {
   dateColor: string;
 }
 
-export function PhotoStrip({ photos, backgroundColor, name, showDate, nameColor, dateColor }: PhotoStripProps) {
+export function PhotoStrip({ 
+  photos, 
+  backgroundColor = "#ffffff",
+  name = "",
+  showDate = true,
+  nameColor = "#000000",
+  dateColor = "#666666" 
+}: PhotoStripProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
