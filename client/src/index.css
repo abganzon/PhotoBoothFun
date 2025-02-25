@@ -21,15 +21,19 @@
     @apply px-4 mx-auto max-w-7xl;
   }
 
-  .page-header {
-    @apply flex items-center justify-between py-6 border-b;
-  }
-
   .card {
     @apply rounded-lg border bg-card p-6 shadow-sm;
   }
 
   .button-primary {
     @apply bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2;
+  }
+
+  .drop-zone {
+    @apply border-2 border-dashed rounded-lg p-8 transition-colors;
+  }
+
+  .drop-zone-active {
+    @apply border-primary bg-primary/10;
   }
 }
