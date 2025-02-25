@@ -52,7 +52,8 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     if (layout === "strip") {
       canvas.width = placeholderWidth + (padding * 2); // Set width to fit placeholder with padding
       const gridHeight = (placeholderHeight * 4) + (padding * 3); // Height of just the photos and spacing between them
-      canvas.height = (hasText ? textSpace + padding : 0) + gridHeight + padding; // Text at top + grid + bottom padding
+      // When no text, bottom padding matches side padding
+      canvas.height = (hasText ? textSpace + padding : padding) + gridHeight + padding;
     } else {
       // For collage layout
       canvas.width = 800;
@@ -60,8 +61,8 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       const cellSize = (gridSize - padding) / 2; // Size for each image cell, accounting for middle padding
       const gridHeight = (cellSize * 2) + padding; // Height of the 2x2 grid including middle padding
       
-      // Set canvas height with text at top
-      canvas.height = (hasText ? textSpace + padding : 0) + gridHeight + padding;
+      // Set canvas height with text at top, when no text bottom padding matches sides
+      canvas.height = (hasText ? textSpace + padding : padding) + gridHeight + padding;
     }
     
     tempCanvas.width = canvas.width;
