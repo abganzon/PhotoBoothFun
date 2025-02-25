@@ -31,34 +31,7 @@ export default function Landing() {
       <p className="text-xl text-gray-600 mb-12 text-center">
         your digital photobooth by influenzah
       </p>
-
-      <div className="space-y-8 max-w-2xl mx-auto">
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-center">Features</h2>
-          <ul className="list-disc pl-6 space-y-2">
-            <li>Instant photo capture with customizable countdown timer</li>
-            <li>Multiple layout options - photo strip (1x4) or collage (2x2)</li>
-            <li>Customizable colors for background and text</li>
-            <li>Optional date and name display on photos</li>
-            <li>Client-side processing for privacy</li>
-            <li>No account required - start capturing immediately</li>
-          </ul>
-        </div>
-
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-center">Privacy Policy</h2>
-          <div className="prose prose-gray">
-            <p>I prioritize your privacy. This privacy policy outlines how I handle your images and personal information.</p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li><strong>Image Processing:</strong> All image processing operations are performed directly within your browser on your local device. This means that your images are not uploaded to any external servers.</li>
-              <li><strong>Data Collection:</strong> I do not collect or store any of the images you process using our application. Your images remain solely on your device.</li>
-              <li><strong>No Server Transmission:</strong> Your images are not transmitted to any servers. The entire processing happens client-side, ensuring your privacy.</li>
-              <li><strong>Third-Party Services:</strong> I do not use any third-party services that would require uploading or sharing your images.</li>
-              <li><strong>Changes to This Policy:</strong> I may update this privacy policy from time to time. Any changes will be posted on this page.</li>
-            </ul>
-          </div>
-        </div>
-
+      
         <div className="flex gap-4 justify-center">
           <Button
             size="lg"
