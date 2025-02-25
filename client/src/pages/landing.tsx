@@ -23,7 +23,7 @@ export default function Landing() {
       </div>
       
       <p className="text-xl text-gray-600 mb-12">
-        Welcome to your digital photobooth by influenzah
+        Welcome to your digital photobooth by Influenzah
       </p>
 
       <Button
