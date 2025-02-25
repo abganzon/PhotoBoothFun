@@ -60,7 +60,25 @@ export default function Home() {
 
 
   return (
-    <div className={`container mx-auto py-8 ${isDarkMode ? 'dark bg-gray-900' : 'bg-white'}`}>
+    <div className={`container mx-auto py-8 transition-colors duration-200 ${
+      isDarkMode 
+        ? 'dark bg-gray-900 text-white' 
+        : 'bg-white text-gray-900'
+    }`}>
+      <div className="absolute top-4 right-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsDarkMode(!isDarkMode)}
+          className={`rounded-full p-2 ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
+        >
+          {isDarkMode ? (
+            <Sun className="h-6 w-6 text-yellow-400" />
+          ) : (
+            <Moon className="h-6 w-6 text-gray-600" />
+          )}
+        </Button>
+      </div>
       <div className="flex items-center gap-4 mb-8 justify-center">
         <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
           <Camera className="h-8 w-8 text-white" />
