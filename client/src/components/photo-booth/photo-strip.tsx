@@ -53,28 +53,16 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     if (layout === "strip") {
       canvas.width = placeholderWidth + (padding * 2); // Set width to fit placeholder with padding
       const gridHeight = (placeholderHeight * 4) + (padding * 3); // Height of just the photos and spacing between them
-      
-      // If we have text, add equal padding top and bottom
-      if (hasText) {
-        const totalPadding = textSpace + (padding * 2); // Total padding needed
-        canvas.height = gridHeight + totalPadding; // Grid height plus equal padding top/bottom
-      } else {
-        canvas.height = gridHeight + (padding * 2); // Just regular padding
-      }
+      canvas.height = gridHeight + padding + (hasText ? textSpace + padding : padding);
     } else {
-      // For collage layout, make it square with space for title
+      // For collage layout
       canvas.width = 800;
-      const gridSize = canvas.width - (padding * 3); // Total space for grid
-      const cellSize = gridSize / 2; // Size for each image cell
+      const gridSize = canvas.width - (padding * 2); // Total space for grid
+      const cellSize = (gridSize - padding) / 2; // Size for each image cell, accounting for middle padding
       const gridHeight = (cellSize * 2) + padding; // Height of the 2x2 grid including middle padding
       
-      // If we have text, add equal padding top and bottom
-      if (hasText) {
-        const totalPadding = textSpace + (padding * 2); // Total padding needed
-        canvas.height = gridHeight + totalPadding; // Grid height plus equal padding top/bottom
-      } else {
-        canvas.height = gridHeight + (padding * 2); // Just regular padding
-      }
+      // Set canvas height to maintain aspect ratio plus text space at bottom
+      canvas.height = gridSize + (padding * 2) + (hasText ? textSpace : 0);
     }
     
     tempCanvas.width = canvas.width;
@@ -89,24 +77,21 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     let gridHeight: number;
 
     if (layout === "strip") {
-      // Strip layout (1x4)
       photoWidth = placeholderWidth;
       photoHeight = placeholderHeight;
       gridHeight = (photoHeight * 4) + (padding * 3);
     } else {
-      // Collage layout (2x2)
-      const availableWidth = canvas.width - (padding * 3);
-      photoWidth = availableWidth / 2;
-      photoHeight = photoWidth;
+      // For collage, calculate cell size from total width minus outer and middle padding
+      const availableWidth = canvas.width - (padding * 2); // Space between outer borders
+      photoWidth = (availableWidth - padding) / 2; // Width of each cell
+      photoHeight = photoWidth; // Keep cells square
       gridHeight = (photoHeight * 2) + padding;
     }
 
-    // Calculate the starting Y position to center the content
-    const textHeight = hasText ? textSpace : 0;
-    const totalContentHeight = gridHeight + textHeight;
-    
-    // Calculate the starting Y position to center everything
-    const startY = (canvas.height - totalContentHeight) / 2;
+    // Calculate grid starting position - for strip it's centered, for collage it starts at padding
+    const gridStartY = layout === "strip" 
+      ? (canvas.height - textSpace - gridHeight) / 2 
+      : padding;
 
     const loadImage = (src: string): Promise<HTMLImageElement> => {
       return new Promise((resolve, reject) => {
@@ -128,9 +113,8 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
           // Strip layout placeholders
           for (let i = 0; i < 4; i++) {
             const x = padding;
-            const y = startY + (i * (placeholderHeight + padding));
+            const y = gridStartY + (i * (placeholderHeight + padding));
             
-            // Draw single border for strip layout
             tempCtx.strokeStyle = '#e5e5e5';
             tempCtx.lineWidth = 2;
             tempCtx.strokeRect(x, y, placeholderWidth, placeholderHeight);
@@ -140,7 +124,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
           for (let row = 0; row < 2; row++) {
             for (let col = 0; col < 2; col++) {
               const x = padding + (col * (photoWidth + padding));
-              const y = startY + (row * (photoHeight + padding));
+              const y = gridStartY + (row * (photoHeight + padding));
               
               tempCtx.strokeStyle = '#e5e5e5';
               tempCtx.lineWidth = 2;
@@ -160,7 +144,6 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
             let y: number;
 
             if (layout === "strip") {
-              // Strip layout (1x4)
               const scale = Math.min(
                 photoWidth / img.width,
                 photoHeight / img.height
@@ -169,22 +152,18 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
               const scaledHeight = img.height * scale;
               
               x = padding + ((canvas.width - (padding * 2) - scaledWidth) / 2);
-              y = startY + (i * (photoHeight + padding));
+              y = gridStartY + (i * (photoHeight + padding));
               
               tempCtx.drawImage(img, x, y, scaledWidth, scaledHeight);
-              
-              // Single border for strip layout images
               tempCtx.strokeStyle = '#e5e5e5';
               tempCtx.lineWidth = 2;
               tempCtx.strokeRect(x, y, scaledWidth, scaledHeight);
             } else {
-              // Collage layout (2x2)
               const row = Math.floor(i / 2);
               const col = i % 2;
               x = padding + (col * (photoWidth + padding));
-              y = startY + (row * (photoHeight + padding));
+              y = gridStartY + (row * (photoHeight + padding));
 
-              // Calculate dimensions to maintain aspect ratio
               const scale = Math.min(
                 photoWidth / img.width,
                 photoHeight / img.height
@@ -192,11 +171,9 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
               const scaledWidth = img.width * scale;
               const scaledHeight = img.height * scale;
               
-              // Center the image within its cell
               const xOffset = (photoWidth - scaledWidth) / 2;
               const yOffset = (photoHeight - scaledHeight) / 2;
               
-              // Draw image
               tempCtx.drawImage(
                 img,
                 x + xOffset,
@@ -205,7 +182,6 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
                 scaledHeight
               );
               
-              // Draw border
               tempCtx.strokeStyle = '#e5e5e5';
               tempCtx.lineWidth = 2;
               tempCtx.strokeRect(x, y, photoWidth, photoHeight);
@@ -216,8 +192,11 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         }
       }
 
-      // Calculate text position
-      const textStartY = startY + gridHeight + titlePadding;
+      // Calculate text position - align to bottom
+      const textStartY = layout === "strip"
+        ? gridStartY + gridHeight + titlePadding
+        : canvas.height - (showName && showDate ? textSpace : textSpace / 2);
+      
       const lineHeight = layout === "strip" ? 30 : 35;
       
       // Draw title with consistent styling
