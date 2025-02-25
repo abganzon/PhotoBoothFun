@@ -7,14 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Camera, Trash2, Moon, Sun, TimerIcon } from "lucide-react";
+import { Camera, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [stripName, setStripName] = useState("");
   const [showDate, setShowDate] = useState(true);
   const [showName, setShowName] = useState(true);
@@ -60,42 +59,12 @@ export default function Home() {
 
 
   return (
-    <div className={`container mx-auto py-8 transition-colors duration-200 ${
-      isDarkMode 
-        ? 'dark bg-gray-900 text-white' 
-        : 'bg-white text-gray-900'
-    }`}>
-      <div className="absolute top-4 right-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsDarkMode(!isDarkMode)}
-          className={`rounded-full p-2 ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
-        >
-          {isDarkMode ? (
-            <Sun className="h-6 w-6 text-yellow-400" />
-          ) : (
-            <Moon className="h-6 w-6 text-gray-600" />
-          )}
-        </Button>
-      </div>
+    <div className="container mx-auto py-8">
       <div className="flex items-center gap-4 mb-8 justify-center">
         <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
           <Camera className="h-8 w-8 text-white" />
         </div>
-        <h1 className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>RoBooth</h1>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsDarkMode(!isDarkMode)}
-          className="ml-4"
-        >
-          {isDarkMode ? (
-            <Sun className="h-6 w-6" />
-          ) : (
-            <Moon className="h-6 w-6" />
-          )}
-        </Button>
+        <h1 className="text-4xl font-bold text-gray-900">RoBooth</h1>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
@@ -117,10 +86,8 @@ export default function Home() {
             <Button 
               onClick={handleStartPhotoSequence} 
               disabled={isCountingDown}
-              className="flex items-center gap-2"
             >
-              <TimerIcon className="h-5 w-5" />
-              {photos.length === 0 ? "Auto Capture" : `Photos: ${photos.length}/4`}
+              {photos.length === 0 ? "Start Photo Sequence" : `Photos: ${photos.length}/4`}
             </Button>
             <Button
               variant="destructive"
