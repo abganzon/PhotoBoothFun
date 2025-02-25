@@ -49,17 +49,20 @@ export default function Landing() {
               Support
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>I appreciate your support!</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-center">I appreciate your support! 🙏</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <p className="text-center text-gray-600">
+            <div className="space-y-6 py-6">
+              <p className="text-center text-gray-600 text-lg leading-relaxed">
                 This site is a labor of love, and your support helps keep it thriving. Every contribution is truly a cherished gift.
               </p>
-              <div className="flex flex-col items-center gap-4">
-                <img src="/gcash-qr.png" alt="GCash QR Code" className="w-48 h-48 object-contain" />
-                <p className="text-sm font-medium">GCash: 09391935233</p>
+              <div className="flex flex-col items-center gap-6 bg-gradient-to-b from-blue-50 to-white p-6 rounded-xl">
+                <img src="/gcash-qr.png" alt="GCash QR Code" className="w-64 h-64 object-contain shadow-lg rounded-xl" />
+                <div className="text-center">
+                  <p className="text-base font-semibold text-blue-600">GCash Number</p>
+                  <p className="text-lg font-bold">09391935233</p>
+                </div>
               </div>
             </div>
           </DialogContent>
