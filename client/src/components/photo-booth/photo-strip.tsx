@@ -1,29 +1,16 @@
 import React, { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
-import { stickers } from "@/lib/stickers";
 import { format } from "date-fns";
-import { type Frame } from "@/lib/frames";
 
 interface PhotoStripProps {
   photos: string[];
   backgroundColor: string;
-  stripName: string;
+  name: string;
   showDate: boolean;
-  selectedFrame: Frame;
-  stickerPositions: Array<{ id: string; x: number; y: number; color?: string }>;
-  onDownload?: () => void;
 }
 
-export function PhotoStrip({
-  photos,
-  backgroundColor,
-  stripName,
-  showDate,
-  selectedFrame,
-  stickerPositions,
-  onDownload,
-}: PhotoStripProps) {
+export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStripProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -41,32 +28,12 @@ export function PhotoStrip({
     if (!tempCtx) return;
 
     // Clear canvas and apply background
-    tempCtx.fillStyle = selectedFrame.backgroundColor;
+    tempCtx.fillStyle = backgroundColor;
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw border
-    const borderWidth = 10;
-    tempCtx.strokeStyle = selectedFrame.borderColor;
-    tempCtx.lineWidth = borderWidth;
-    tempCtx.strokeRect(borderWidth/2, borderWidth/2, canvas.width - borderWidth, canvas.height - borderWidth);
 
     const padding = 30;
-    const photoHeight = (canvas.height - 300 - (padding * 5)) / 4; // Reserve space for title, date, and decorations
-
-    // Draw decorations
-    const decorationSize = 30;
-    const drawDecorations = (decorations: string[] | undefined, x: number, y: number) => {
-      if (!decorations) return;
-      tempCtx.font = `${decorationSize}px Arial`;
-      decorations.forEach((decoration, i) => {
-        tempCtx.fillText(decoration, x + (i * decorationSize * 1.5), y);
-      });
-    };
-
-    // Top decorations
-    if (selectedFrame.decorations.top) {
-      drawDecorations(selectedFrame.decorations.top, padding * 2, padding);
-    }
+    const photoHeight = (canvas.height - 150 - (padding * (photos.length +1))) / photos.length; // Reserve space for title, date
 
     // Load and draw photos
     const loadImage = (src: string): Promise<HTMLImageElement> => {
@@ -83,12 +50,12 @@ export function PhotoStrip({
       for (let i = 0; i < photos.length; i++) {
         try {
           const img = await loadImage(photos[i]);
-          const y = padding * 2 + i * (photoHeight + padding);
+          const y = padding + i * (photoHeight + padding);
           tempCtx.drawImage(
             img,
-            padding * 2,
+            padding,
             y,
-            canvas.width - (padding * 4),
+            canvas.width - (padding * 2),
             photoHeight
           );
         } catch (error) {
@@ -100,8 +67,8 @@ export function PhotoStrip({
       tempCtx.font = "bold 48px Arial";
       tempCtx.fillStyle = "#000000";
       tempCtx.textAlign = "center";
-      const titleY = canvas.height - 120;
-      tempCtx.fillText(stripName || "Photo Strip", canvas.width / 2, titleY);
+      const titleY = canvas.height - 80;
+      tempCtx.fillText(name || "Photo Strip", canvas.width / 2, titleY);
 
       // Draw date if enabled
       if (showDate) {
@@ -111,34 +78,6 @@ export function PhotoStrip({
         tempCtx.fillText(dateText, canvas.width / 2, titleY + 40);
       }
 
-      // Bottom decorations
-      if (selectedFrame.decorations.bottom) {
-        drawDecorations(
-          selectedFrame.decorations.bottom,
-          padding * 2,
-          canvas.height - padding
-        );
-      }
-
-      // Draw stickers
-      for (const pos of stickerPositions) {
-        const sticker = stickers.find((s) => s.id === pos.id);
-        if (sticker) {
-          try {
-            const img = await loadImage(sticker.url);
-            tempCtx.save();
-            if (pos.color) {
-              tempCtx.fillStyle = pos.color;
-              tempCtx.globalCompositeOperation = "source-in";
-              tempCtx.fillRect(pos.x, pos.y, 50, 50);
-            }
-            tempCtx.drawImage(img, pos.x, pos.y, 50, 50);
-            tempCtx.restore();
-          } catch (error) {
-            console.error("Error loading sticker:", error);
-          }
-        }
-      }
 
       // Copy the final result to the main canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -146,7 +85,7 @@ export function PhotoStrip({
     };
 
     drawAllPhotos();
-  }, [photos, backgroundColor, stripName, showDate, selectedFrame, stickerPositions]);
+  }, [photos, backgroundColor, name, showDate]);
 
   const handleDownload = () => {
     const canvas = canvasRef.current;
@@ -154,7 +93,7 @@ export function PhotoStrip({
 
     // Create a temporary link and trigger download
     const link = document.createElement("a");
-    link.download = `${stripName || 'photo-strip'}.png`;
+    link.download = `${name || 'photo-strip'}.png`;
     // Convert the canvas to a blob
     canvas.toBlob((blob) => {
       if (blob) {
@@ -164,8 +103,6 @@ export function PhotoStrip({
         URL.revokeObjectURL(url);
       }
     }, 'image/png');
-
-    onDownload?.();
   };
 
   return (
@@ -173,7 +110,7 @@ export function PhotoStrip({
       <canvas
         ref={canvasRef}
         width={400}
-        height={1800}
+        height={600}
         className="w-full max-w-md border rounded-lg shadow-lg"
       />
       <Button onClick={handleDownload} size="lg">
