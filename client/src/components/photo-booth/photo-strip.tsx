@@ -60,7 +60,8 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       canvas.width = 800;
       const gridSize = canvas.width - (padding * 3); // Total space for grid
       const cellSize = gridSize / 2; // Size for each image cell
-      canvas.height = gridSize + (padding * 2) + bottomPadding; // Square grid plus padding
+      const gridHeight = (cellSize * 2) + padding; // Height of the 2x2 grid including middle padding
+      canvas.height = gridHeight + (padding * 2) + bottomPadding; // Grid + top/bottom padding + space for text
     }
     
     tempCanvas.width = canvas.width;
@@ -198,9 +199,11 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       // Draw title section at the bottom with consistent styling
       const gridHeight = layout === "strip" 
         ? (placeholderHeight * 4) + (padding * 3) // Height of just the photos and spacing between them
-        : (canvas.width - (padding * 3)); // For collage, grid is square
-      
-      const titleY = padding + gridHeight + (showName || showDate ? titlePadding : 0);
+        : ((canvas.width - (padding * 3)) / 2) * 2 + padding; // For collage, 2x2 grid height with middle padding
+
+      // Calculate text position
+      const textStartY = padding + gridHeight + (showName || showDate ? titlePadding : 0);
+      const lineHeight = layout === "strip" ? 30 : 35;
       
       // Draw title with consistent styling
       if (showName) {
@@ -208,7 +211,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         tempCtx.font = `bold ${titleSize}px Arial`;
         tempCtx.fillStyle = nameColor;
         tempCtx.textAlign = "center";
-        tempCtx.fillText(name || "Photo Strip", canvas.width / 2, titleY);
+        tempCtx.fillText(name || "Photo Strip", canvas.width / 2, textStartY);
       }
 
       // Draw date if enabled
@@ -217,7 +220,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         tempCtx.font = `${dateSize}px Arial`;
         tempCtx.fillStyle = dateColor;
         const dateText = format(new Date(), "MMMM dd, yyyy");
-        const dateY = showName ? titleY + (layout === "strip" ? 30 : 35) : titleY;
+        const dateY = showName ? textStartY + lineHeight : textStartY;
         tempCtx.fillText(dateText, canvas.width / 2, dateY);
       }
 
