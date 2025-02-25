@@ -38,7 +38,7 @@ export function PhotoStrip({
 
     // Set initial canvas dimensions
     if (layout === "strip") {
-      canvas.width = 500; // Initial width, will be adjusted based on content
+      canvas.width = 350; // Smaller initial width for strip layout
       canvas.height = 800;
     } else {
       canvas.width = 800;
@@ -107,9 +107,6 @@ export function PhotoStrip({
 
         // Adjust canvas width based on maximum image width
         canvas.width = maxImageWidth + (padding * 2);
-      } else if (layout === "strip") {
-        // Set fixed width for empty strip layout
-        canvas.width = 400; // Default width when no images
       }
       
       tempCanvas.width = canvas.width;
@@ -119,15 +116,21 @@ export function PhotoStrip({
       // Draw placeholder borders for empty layout
       if (photos.length === 0) {
         if (layout === "strip") {
+          const placeholderWidth = 250; // Fixed width for placeholder images
+          const placeholderHeight = Math.floor(placeholderWidth * 0.75);
+          
+          // Center the placeholders horizontally
+          const xOffset = (canvas.width - placeholderWidth) / 2;
+          
           // Draw placeholder borders for strip layout
           for (let i = 0; i < 4; i++) {
-            const x = padding;
-            const y = padding + (i * (photoHeight + padding));
+            const x = xOffset;
+            const y = padding + (i * (placeholderHeight + padding));
             
             // Draw outer border
             tempCtx.strokeStyle = '#e5e5e5';
             tempCtx.lineWidth = 3;
-            tempCtx.strokeRect(x, y, photoWidth, photoHeight);
+            tempCtx.strokeRect(x, y, placeholderWidth, placeholderHeight);
             
             // Draw inner border
             tempCtx.strokeStyle = '#f3f4f6';
@@ -135,10 +138,13 @@ export function PhotoStrip({
             tempCtx.strokeRect(
               x + 3,
               y + 3,
-              photoWidth - 6,
-              photoHeight - 6
+              placeholderWidth - 6,
+              placeholderHeight - 6
             );
           }
+          
+          // Update grid height for empty strip layout
+          gridHeight = (placeholderHeight * 4) + (padding * 3);
         } else {
           // Draw placeholder borders for collage layout
           for (let i = 0; i < 4; i++) {
@@ -235,15 +241,16 @@ export function PhotoStrip({
         }
       }
 
-      // Draw title section
+      // Draw title section with proper spacing
       const titlePadding = padding;
       const titleY = gridHeight + titlePadding + 40;
       
-      // Draw title (no shadow)
+      // Draw title
       tempCtx.font = "bold 36px Arial";
       tempCtx.fillStyle = nameColor;
       tempCtx.textAlign = "center";
-      tempCtx.fillText(name || "Photo Strip", canvas.width / 2, titleY);
+      const titleText = name || "Photo Strip";
+      tempCtx.fillText(titleText, canvas.width / 2, titleY);
 
       // Draw date if enabled
       if (showDate) {
@@ -253,12 +260,29 @@ export function PhotoStrip({
         tempCtx.fillText(dateText, canvas.width / 2, titleY + 30);
       }
 
-      // Calculate final height and update canvas
+      // Calculate final height and update canvas dimensions
       const finalHeight = titleY + (showDate ? 80 : 50);
-      canvas.height = finalHeight;
-      ctx.canvas.height = finalHeight;
-      ctx.clearRect(0, 0, canvas.width, finalHeight);
-      ctx.drawImage(tempCanvas, 0, 0);
+      
+      // Create new canvas with final dimensions
+      const finalCanvas = document.createElement('canvas');
+      finalCanvas.width = canvas.width;
+      finalCanvas.height = finalHeight;
+      const finalCtx = finalCanvas.getContext('2d');
+      
+      if (finalCtx) {
+        // Fill background
+        finalCtx.fillStyle = backgroundColor;
+        finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+        
+        // Copy content from temp canvas
+        finalCtx.drawImage(tempCanvas, 0, 0);
+        
+        // Update main canvas
+        canvas.height = finalHeight;
+        ctx.canvas.height = finalHeight;
+        ctx.clearRect(0, 0, canvas.width, finalHeight);
+        ctx.drawImage(finalCanvas, 0, 0);
+      }
     };
 
     drawAllPhotos();
