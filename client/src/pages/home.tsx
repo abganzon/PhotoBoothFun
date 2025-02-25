@@ -16,7 +16,6 @@ export default function Home() {
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [stripName, setStripName] = useState("");
   const [showDate, setShowDate] = useState(true);
-  const [layout, setLayout] = useState<'strip-vertical' | 'strip-horizontal' | 'collage-vertical' | 'collage-horizontal'>('collage-horizontal');
   const { toast } = useToast();
 
   const handleCapture = (photo: string) => {
@@ -112,35 +111,6 @@ export default function Home() {
               <Label htmlFor="show-date">Show Date</Label>
             </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="layout-style"
-                  checked={layout.startsWith('collage')}
-                  onCheckedChange={(checked) => 
-                    setLayout(checked 
-                      ? layout.includes('vertical') ? 'collage-vertical' : 'collage-horizontal'
-                      : layout.includes('vertical') ? 'strip-vertical' : 'strip-horizontal'
-                    )
-                  }
-                />
-                <Label htmlFor="layout-style">Collage Style</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="layout-direction"
-                  checked={layout.includes('vertical')}
-                  onCheckedChange={(checked) => 
-                    setLayout(checked 
-                      ? layout.startsWith('collage') ? 'collage-vertical' : 'strip-vertical'
-                      : layout.startsWith('collage') ? 'collage-horizontal' : 'strip-horizontal'
-                    )
-                  }
-                />
-                <Label htmlFor="layout-direction">Vertical Alignment</Label>
-              </div>
-            </div>
-
             <ColorPicker
               color={backgroundColor}
               onChange={setBackgroundColor}
@@ -154,7 +124,6 @@ export default function Home() {
             backgroundColor={backgroundColor}
             stripName={stripName}
             showDate={showDate}
-            layout={layout}
           />
         </div>
       </div>
