@@ -37,8 +37,15 @@ export function PhotoStrip({
     if (!tempCtx) return;
 
     // Set initial canvas dimensions
+    const padding = 30;
+    const titleSpace = 100; // Space for title and date at top
+    
+    // Define placeholder dimensions for strip layout
+    const placeholderWidth = 250; // Fixed width for placeholder images
+    const placeholderHeight = Math.floor(placeholderWidth * 0.75);
+
     if (layout === "strip") {
-      canvas.width = 350; // Smaller initial width for strip layout
+      canvas.width = placeholderWidth + (padding * 2); // Set width to fit placeholder
       canvas.height = 800;
     } else {
       canvas.width = 800;
@@ -52,7 +59,6 @@ export function PhotoStrip({
     tempCtx.fillStyle = backgroundColor;
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const padding = layout === "strip" ? 30 : 30;
     let photoWidth: number;
     let photoHeight: number;
     let gridHeight: number;
@@ -60,11 +66,11 @@ export function PhotoStrip({
 
     if (layout === "strip") {
       // Strip layout (1x4)
-      photoWidth = canvas.width - (padding * 2);
-      photoHeight = Math.floor(photoWidth * 0.75); // 4:3 aspect ratio for strip layout
+      photoWidth = placeholderWidth; // Use placeholder width for consistency
+      photoHeight = placeholderHeight;
       gridHeight = photos.length > 0 
         ? (photoHeight * 4) + (padding * 3)
-        : photoHeight * 4 + (padding * 3); // Keep same height even without photos
+        : (placeholderHeight * 4) + (padding * 3);
     } else {
       // Collage layout (2x2)
       const availableWidth = canvas.width - (padding * 3);
@@ -72,7 +78,7 @@ export function PhotoStrip({
       photoHeight = photoWidth;
       gridHeight = photos.length > 0 
         ? (photoHeight * 2) + (padding * 3)
-        : photoHeight * 2 + (padding * 3); // Keep same height for empty layout
+        : photoHeight * 2 + (padding * 3);
     }
 
     const loadImage = (src: string): Promise<HTMLImageElement> => {
@@ -113,19 +119,28 @@ export function PhotoStrip({
       tempCtx.fillStyle = backgroundColor;
       tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
+      // Draw title section first (at the top)
+      tempCtx.font = "bold 36px Arial";
+      tempCtx.fillStyle = nameColor;
+      tempCtx.textAlign = "center";
+      const titleText = name || "Photo Strip";
+      tempCtx.fillText(titleText, canvas.width / 2, padding + 30);
+
+      // Draw date if enabled
+      if (showDate) {
+        tempCtx.font = "20px Arial";
+        tempCtx.fillStyle = dateColor;
+        const dateText = format(new Date(), "MMMM dd, yyyy");
+        tempCtx.fillText(dateText, canvas.width / 2, padding + 60);
+      }
+
       // Draw placeholder borders for empty layout
       if (photos.length === 0) {
         if (layout === "strip") {
-          const placeholderWidth = 250; // Fixed width for placeholder images
-          const placeholderHeight = Math.floor(placeholderWidth * 0.75);
-          
-          // Center the placeholders horizontally
-          const xOffset = (canvas.width - placeholderWidth) / 2;
-          
           // Draw placeholder borders for strip layout
           for (let i = 0; i < 4; i++) {
-            const x = xOffset;
-            const y = padding + (i * (placeholderHeight + padding));
+            const x = padding;
+            const y = titleSpace + padding + (i * (placeholderHeight + padding));
             
             // Draw outer border
             tempCtx.strokeStyle = '#e5e5e5';
@@ -142,16 +157,13 @@ export function PhotoStrip({
               placeholderHeight - 6
             );
           }
-          
-          // Update grid height for empty strip layout
-          gridHeight = (placeholderHeight * 4) + (padding * 3);
         } else {
           // Draw placeholder borders for collage layout
           for (let i = 0; i < 4; i++) {
             const row = Math.floor(i / 2);
             const col = i % 2;
             const x = padding + (col * (photoWidth + padding));
-            const y = padding + (row * (photoHeight + padding));
+            const y = titleSpace + padding + (row * (photoHeight + padding));
             
             tempCtx.strokeStyle = '#e5e5e5';
             tempCtx.lineWidth = 2;
@@ -179,7 +191,7 @@ export function PhotoStrip({
               
               // Center horizontally
               x = padding + (maxImageWidth - scaledWidth) / 2;
-              y = padding + (i * (photoHeight + padding));
+              y = titleSpace + padding + (i * (photoHeight + padding));
               
               // Draw image
               tempCtx.drawImage(
@@ -208,7 +220,7 @@ export function PhotoStrip({
               const row = Math.floor(i / 2);
               const col = i % 2;
               x = padding + (col * (photoWidth + padding));
-              y = padding + (row * (photoHeight + padding));
+              y = titleSpace + padding + (row * (photoHeight + padding));
               
               // Calculate dimensions to maintain aspect ratio
               const scale = Math.min(
@@ -241,27 +253,8 @@ export function PhotoStrip({
         }
       }
 
-      // Draw title section with proper spacing
-      const titlePadding = padding;
-      const titleY = gridHeight + titlePadding + 40;
-      
-      // Draw title
-      tempCtx.font = "bold 36px Arial";
-      tempCtx.fillStyle = nameColor;
-      tempCtx.textAlign = "center";
-      const titleText = name || "Photo Strip";
-      tempCtx.fillText(titleText, canvas.width / 2, titleY);
-
-      // Draw date if enabled
-      if (showDate) {
-        tempCtx.font = "20px Arial";
-        tempCtx.fillStyle = dateColor;
-        const dateText = format(new Date(), "MMMM dd, yyyy");
-        tempCtx.fillText(dateText, canvas.width / 2, titleY + 30);
-      }
-
       // Calculate final height and update canvas dimensions
-      const finalHeight = titleY + (showDate ? 80 : 50);
+      const finalHeight = titleSpace + padding + gridHeight + padding;
       
       // Create new canvas with final dimensions
       const finalCanvas = document.createElement('canvas');
