@@ -18,6 +18,7 @@ export default function Home() {
   const [showDate, setShowDate] = useState(true);
   const [nameColor, setNameColor] = useState("#000000");
   const [dateColor, setDateColor] = useState("#666666");
+  const [layout, setLayout] = useState<"strip" | "collage">("strip");
   const { toast } = useToast();
 
   const handleCapture = (photo: string) => {
@@ -105,6 +106,40 @@ export default function Home() {
               />
             </div>
 
+            <div className="space-y-2">
+              <Label>Layout Style</Label>
+              <div className="flex gap-4">
+                <div 
+                  className={`flex-1 p-4 border rounded-lg cursor-pointer transition-colors ${
+                    layout === "strip" 
+                      ? "border-primary bg-primary/10" 
+                      : "border-gray-200 hover:border-primary/50"
+                  }`}
+                  onClick={() => setLayout("strip")}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-16 h-24 bg-gray-200 rounded"></div>
+                    <span className="text-sm font-medium">Strip</span>
+                    <span className="text-xs text-gray-500">1x4 Layout</span>
+                  </div>
+                </div>
+                <div 
+                  className={`flex-1 p-4 border rounded-lg cursor-pointer transition-colors ${
+                    layout === "collage" 
+                      ? "border-primary bg-primary/10" 
+                      : "border-gray-200 hover:border-primary/50"
+                  }`}
+                  onClick={() => setLayout("collage")}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-20 h-20 bg-gray-200 rounded"></div>
+                    <span className="text-sm font-medium">Collage</span>
+                    <span className="text-xs text-gray-500">2x2 Layout</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="flex items-center space-x-2 bg-white rounded-md p-3">
               <Switch
                 id="show-date"
@@ -142,7 +177,7 @@ export default function Home() {
             showDate={showDate}
             nameColor={nameColor}
             dateColor={dateColor}
-            layout="strip-vertical"
+            layout={layout}
           />
         </div>
       </div>

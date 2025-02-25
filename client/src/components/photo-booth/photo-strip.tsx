@@ -10,6 +10,7 @@ interface PhotoStripProps {
   showDate: boolean;
   nameColor: string;
   dateColor: string;
+  layout: "strip" | "collage";
 }
 
 export function PhotoStrip({ 
@@ -18,7 +19,8 @@ export function PhotoStrip({
   name = "",
   showDate = true,
   nameColor = "#000000",
-  dateColor = "#666666" 
+  dateColor = "#666666",
+  layout = "strip"
 }: PhotoStripProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -31,29 +33,55 @@ export function PhotoStrip({
 
     // Create a new canvas for photo composition
     const tempCanvas = document.createElement("canvas");
-    tempCanvas.width = canvas.width;
-    tempCanvas.height = canvas.height;
     const tempCtx = tempCanvas.getContext("2d");
     if (!tempCtx) return;
+
+    // Set canvas dimensions based on layout
+    if (layout === "strip") {
+      canvas.width = 600;
+      canvas.height = 900;
+    } else {
+      canvas.width = 800;
+      canvas.height = 800;
+    }
+    
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
 
     // Clear canvas and apply background
     tempCtx.fillStyle = backgroundColor;
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     const padding = 20;
-    const availableWidth = canvas.width - (padding * 3); // Space for 2 columns with padding
-    const photoWidth = availableWidth / 2; // Two photos per row
-    const photoHeight = photoWidth; // Square photos
-    const gridHeight = photos.length > 0 
-      ? (photoHeight * 2) + (padding * 3) // 2x2 grid
-      : 480; // Default camera height when no photos
+    let photoWidth: number;
+    let photoHeight: number;
+    let gridHeight: number;
 
-    // Adjust canvas height based on content
-    const titleSpace = 100;
-    canvas.height = gridHeight + titleSpace;
-    tempCanvas.height = canvas.height;
-    tempCtx.fillStyle = backgroundColor;
-    tempCtx.fillRect(0, 0, canvas.width, canvas.height);
+    if (layout === "strip") {
+      // Strip layout (1x4)
+      photoWidth = canvas.width - (padding * 2);
+      photoHeight = photoWidth * 0.75; // 4:3 aspect ratio for strip layout
+      gridHeight = photos.length > 0 
+        ? (photoHeight * 4) + (padding * 5)
+        : 480;
+    } else {
+      // Collage layout (2x2)
+      const availableWidth = canvas.width - (padding * 3);
+      photoWidth = availableWidth / 2;
+      photoHeight = photoWidth;
+      gridHeight = photos.length > 0 
+        ? (photoHeight * 2) + (padding * 3)
+        : 480;
+    }
+
+    // Adjust canvas height for strip layout
+    if (layout === "strip") {
+      const titleSpace = 100;
+      canvas.height = gridHeight + titleSpace;
+      tempCanvas.height = canvas.height;
+      tempCtx.fillStyle = backgroundColor;
+      tempCtx.fillRect(0, 0, canvas.width, canvas.height);
+    }
 
     // Load and draw photos
     const loadImage = (src: string): Promise<HTMLImageElement> => {
@@ -73,10 +101,20 @@ export function PhotoStrip({
       for (let i = 0; i < photos.length; i++) {
         try {
           const img = await loadImage(photos[i]);
-          const row = Math.floor(i / 2);
-          const col = i % 2;
-          const x = padding + (col * (photoWidth + padding));
-          const y = padding + (row * (photoHeight + padding));
+          let x: number;
+          let y: number;
+
+          if (layout === "strip") {
+            // Strip layout (1x4)
+            x = padding;
+            y = padding + (i * (photoHeight + padding));
+          } else {
+            // Collage layout (2x2)
+            const row = Math.floor(i / 2);
+            const col = i % 2;
+            x = padding + (col * (photoWidth + padding));
+            y = padding + (row * (photoHeight + padding));
+          }
           
           // Calculate dimensions to maintain aspect ratio
           const scale = Math.min(
@@ -112,7 +150,7 @@ export function PhotoStrip({
       tempCtx.font = "bold 48px Arial";
       tempCtx.fillStyle = nameColor;
       tempCtx.textAlign = "center";
-      const titleY = gridHeight + padding + 20;
+      const titleY = layout === "strip" ? gridHeight + padding + 20 : canvas.height - 60;
       tempCtx.fillText(name || "Photo Strip", canvas.width / 2, titleY);
 
       // Draw date if enabled
@@ -129,16 +167,14 @@ export function PhotoStrip({
     };
 
     drawAllPhotos();
-  }, [photos, backgroundColor, name, showDate, nameColor, dateColor]);
+  }, [photos, backgroundColor, name, showDate, nameColor, dateColor, layout]);
 
   const handleDownload = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Create a temporary link and trigger download
     const link = document.createElement("a");
     link.download = `${name || 'photo-strip'}.png`;
-    // Convert the canvas to a blob
     canvas.toBlob((blob) => {
       if (blob) {
         const url = URL.createObjectURL(blob);
@@ -153,8 +189,6 @@ export function PhotoStrip({
     <div className="flex flex-col items-center gap-4 w-full px-4 sm:px-0">
       <canvas
         ref={canvasRef}
-        width={800}
-        height={800}
         className="w-full max-w-md border rounded-lg shadow-lg"
         style={{ maxWidth: '100%', height: 'auto' }}
       />
