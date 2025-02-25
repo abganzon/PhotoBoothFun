@@ -16,6 +16,7 @@ export default function Home() {
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [stripName, setStripName] = useState("");
   const [showDate, setShowDate] = useState(true);
+  const [layout, setLayout] = useState<'vertical' | 'horizontal'>('horizontal');
   const { toast } = useToast();
 
   const handleCapture = (photo: string) => {
@@ -111,6 +112,15 @@ export default function Home() {
               <Label htmlFor="show-date">Show Date</Label>
             </div>
 
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="layout-toggle"
+                checked={layout === 'vertical'}
+                onCheckedChange={(checked) => setLayout(checked ? 'vertical' : 'horizontal')}
+              />
+              <Label htmlFor="layout-toggle">Vertical Layout</Label>
+            </div>
+
             <ColorPicker
               color={backgroundColor}
               onChange={setBackgroundColor}
@@ -124,6 +134,7 @@ export default function Home() {
             backgroundColor={backgroundColor}
             stripName={stripName}
             showDate={showDate}
+            layout={layout}
           />
         </div>
       </div>

@@ -8,6 +8,7 @@ interface PhotoStripProps {
   backgroundColor: string;
   name: string;
   showDate: boolean;
+  layout: 'vertical' | 'horizontal';
 }
 
 export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStripProps) {
@@ -32,9 +33,19 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStr
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     const padding = 20;
-    const photoSize = (canvas.width - (padding * 3)) / 2; // Calculate size for 2x2 grid
-    const gridHeight = photoSize * 2 + padding * 3; // Height for photos
-    const totalHeight = gridHeight + 100; // Add space for title and date
+    let photoWidth, photoHeight, gridHeight;
+    
+    if (layout === 'vertical') {
+      photoWidth = canvas.width - (padding * 2);
+      photoHeight = (canvas.width - (padding * 2)) * 0.75; // 4:3 aspect ratio
+      gridHeight = (photoHeight * 4) + (padding * 5);
+    } else {
+      photoWidth = (canvas.width - (padding * 3)) / 2;
+      photoHeight = photoWidth;
+      gridHeight = (photoHeight * 2) + (padding * 3);
+    }
+    
+    const totalHeight = gridHeight + 150; // More space for title and date
 
     canvas.height = totalHeight; // Adjust canvas height
     tempCanvas.height = totalHeight;
@@ -56,16 +67,22 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStr
       for (let i = 0; i < photos.length; i++) {
         try {
           const img = await loadImage(photos[i]);
-          const row = Math.floor(i / 2);
-          const col = i % 2;
-          const x = padding + col * (photoSize + padding);
-          const y = padding + row * (photoSize + padding);
+          let x, y;
+          if (layout === 'vertical') {
+            x = padding;
+            y = padding + i * (photoHeight + padding);
+          } else {
+            const row = Math.floor(i / 2);
+            const col = i % 2;
+            x = padding + col * (photoWidth + padding);
+            y = padding + row * (photoHeight + padding);
+          }
           tempCtx.drawImage(
             img,
             x,
             y,
-            photoSize,
-            photoSize
+            photoWidth,
+            photoHeight
           );
         } catch (error) {
           console.error("Error loading photo:", error);
