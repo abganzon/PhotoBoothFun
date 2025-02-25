@@ -5,6 +5,9 @@ import { StickerPicker } from "@/components/photo-booth/sticker-picker";
 import { ColorPicker } from "@/components/photo-booth/color-picker";
 import { PhotoStrip } from "@/components/photo-booth/photo-strip";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,8 +15,10 @@ export default function Home() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
+  const [stripName, setStripName] = useState("");
+  const [showDate, setShowDate] = useState(true);
   const [stickerPositions, setStickerPositions] = useState<
-    Array<{ id: string; x: number; y: number }>
+    Array<{ id: string; x: number; y: number; color?: string }>
   >([]);
   const { toast } = useToast();
 
@@ -53,10 +58,10 @@ export default function Home() {
     setStickerPositions([]);
   };
 
-  const handleAddSticker = (stickerId: string) => {
+  const handleAddSticker = (stickerId: string, color?: string) => {
     setStickerPositions((prev) => [
       ...prev,
-      { id: stickerId, x: 100, y: 100 },
+      { id: stickerId, x: 100, y: 100, color },
     ]);
   };
 
@@ -98,10 +103,31 @@ export default function Home() {
 
           <div className="space-y-4">
             <h2 className="text-lg font-semibold">Customize Your Strip</h2>
+
+            <div className="space-y-2">
+              <Label htmlFor="strip-name">Strip Name</Label>
+              <Input
+                id="strip-name"
+                value={stripName}
+                onChange={(e) => setStripName(e.target.value)}
+                placeholder="Enter a name for your strip"
+              />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="show-date"
+                checked={showDate}
+                onCheckedChange={setShowDate}
+              />
+              <Label htmlFor="show-date">Show Date</Label>
+            </div>
+
             <ColorPicker
               color={backgroundColor}
               onChange={setBackgroundColor}
             />
+
             <div>
               <h3 className="text-sm font-medium mb-2">Add Stickers</h3>
               <StickerPicker onSelectSticker={handleAddSticker} />
@@ -113,6 +139,8 @@ export default function Home() {
           <PhotoStrip
             photos={photos}
             backgroundColor={backgroundColor}
+            stripName={stripName}
+            showDate={showDate}
             stickerPositions={stickerPositions}
           />
         </div>
