@@ -8,6 +8,8 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { HexColorPicker } from "react-colorful";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 export function Home() {
   const [photos, setPhotos] = useState<string[]>([]);
@@ -37,110 +39,136 @@ export function Home() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-6">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold tracking-tight">Photo Booth</h1>
+          <Button variant="outline" onClick={() => handleClearPhotos()}>
+            Clear Photos
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <Card className="p-6 space-y-6">
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold">Camera</h2>
+              <p className="text-sm text-muted-foreground">
+                Take up to 4 photos for your strip
+              </p>
+            </div>
+            
             <PhotoBoothCamera
               onCapture={handleCapture}
               isCountingDown={isCountingDown}
             />
-            <div className="mt-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-48"
-                  placeholder="Enter name"
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label>Show Name</Label>
-                <Switch
-                  checked={showName}
-                  onCheckedChange={setShowName}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label>Show Date</Label>
-                <Switch
-                  checked={showDate}
-                  onCheckedChange={setShowDate}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label>Layout</Label>
-                <div className="flex gap-2">
-                  <Button
-                    variant={layout === "strip" ? "default" : "outline"}
-                    onClick={() => setLayout("strip")}
-                    size="sm"
-                  >
-                    Strip
-                  </Button>
-                  <Button
-                    variant={layout === "collage" ? "default" : "outline"}
-                    onClick={() => setLayout("collage")}
-                    size="sm"
-                  >
-                    Collage
-                  </Button>
+
+            <Separator />
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Enter name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Layout</Label>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant={layout === "strip" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setLayout("strip")}
+                    >
+                      Strip
+                    </Button>
+                    <Button
+                      variant={layout === "collage" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setLayout("collage")}
+                    >
+                      Collage
+                    </Button>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center justify-between">
-                <Label>Name Color</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-[4rem] h-[2rem]"
-                      style={{ backgroundColor: nameColor }}
-                    />
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <HexColorPicker color={nameColor} onChange={setNameColor} />
-                  </PopoverContent>
-                </Popover>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center justify-between">
+                  <Label>Show Name</Label>
+                  <Switch
+                    checked={showName}
+                    onCheckedChange={setShowName}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label>Show Date</Label>
+                  <Switch
+                    checked={showDate}
+                    onCheckedChange={setShowDate}
+                  />
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <Label>Date Color</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-[4rem] h-[2rem]"
-                      style={{ backgroundColor: dateColor }}
-                    />
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <HexColorPicker color={dateColor} onChange={setDateColor} />
-                  </PopoverContent>
-                </Popover>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Name Color</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        style={{ backgroundColor: nameColor }}
+                      >
+                        {nameColor}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-3">
+                      <HexColorPicker color={nameColor} onChange={setNameColor} />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="space-y-2">
+                  <Label>Date Color</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        style={{ backgroundColor: dateColor }}
+                      >
+                        {dateColor}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-3">
+                      <HexColorPicker color={dateColor} onChange={setDateColor} />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
-              {photos.length > 0 && (
-                <Button
-                  variant="destructive"
-                  onClick={handleClearPhotos}
-                  className="w-full"
-                >
-                  Clear Photos
-                </Button>
-              )}
             </div>
-          </div>
-          <div>
+          </Card>
+
+          <Card className="p-6 space-y-6">
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold">Preview</h2>
+              <p className="text-sm text-muted-foreground">
+                Your photo strip will appear here
+              </p>
+            </div>
+            
             <PhotoStrip
               photos={photos}
-              name={name}
-              showName={showName}
+              name={showName ? name : ""}
               showDate={showDate}
               layout={layout}
               nameColor={nameColor}
               dateColor={dateColor}
             />
-          </div>
+          </Card>
         </div>
       </div>
     </div>

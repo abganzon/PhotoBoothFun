@@ -28,31 +28,40 @@ export function Landing() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex flex-col items-center justify-center text-white p-4">
-      <div className="mb-8">
-        <img
-          src="/generated-icon.png"
-          alt="RoBooth Logo"
-          className="w-24 h-24 mx-auto mb-6"
-        />
-        <h1 className="text-4xl font-bold text-center mb-2">
-          Welcome to RoBooth
-        </h1>
-        <p className="text-gray-400 text-center mb-8">
-          A Digital Photobooth by Influenzah
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-secondary/20 flex flex-col items-center justify-center p-4">
+      <div className="space-y-8 text-center">
+        <div className="space-y-6">
+          <div className="relative w-24 h-24 mx-auto">
+            <div className="absolute inset-0 bg-primary/20 rounded-full animate-pulse" />
+            <img
+              src="/generated-icon.png"
+              alt="RoBooth Logo"
+              className="relative w-full h-full object-cover rounded-full border-2 border-primary/20"
+            />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold tracking-tight">
+              Welcome to RoBooth
+            </h1>
+            <p className="text-muted-foreground">
+              A Digital Photobooth by Influenzah
+            </p>
+          </div>
+        </div>
+        
         <Button
           size="lg"
           onClick={() => navigate("/booth")}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 rounded-full font-semibold text-lg flex items-center gap-2"
+          className="h-14 px-8 rounded-full"
         >
-          <Camera className="w-6 h-6" />
+          <Camera className="mr-2 h-5 w-5" />
           Start Capturing
         </Button>
       </div>
-      <div className="fixed bottom-4 flex flex-col items-center gap-2 text-sm text-gray-400">
-        <p>Version {version}</p>
-        <p>{visitorCount} visitors today</p>
+
+      <div className="fixed bottom-4 flex flex-col items-center gap-2">
+        <p className="text-sm text-muted-foreground">Version {version}</p>
+        <p className="text-sm font-medium">{visitorCount} visitors today</p>
       </div>
     </div>
   );
