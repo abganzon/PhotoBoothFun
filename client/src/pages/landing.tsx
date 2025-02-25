@@ -29,7 +29,7 @@ export default function Landing() {
       </div>
 
       <p className="text-xl text-gray-600 mb-12 text-center">
-        Welcome to your digital photobooth by Influenzah
+        your digital photobooth by influenzah
       </p>
 
       <div className="flex gap-4">
@@ -51,14 +51,14 @@ export default function Landing() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-center">I appreciate your support! 🙏</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-center">I appreciate your support!</DialogTitle>
             </DialogHeader>
             <div className="space-y-6 py-6">
               <p className="text-center text-gray-600 text-lg leading-relaxed">
                 This site is a labor of love, and your support helps keep it thriving. Every contribution is truly a cherished gift.
               </p>
               <div className="flex flex-col items-center gap-6 bg-gradient-to-b from-blue-50 to-white p-6 rounded-xl">
-                <img src="/gcash-qr.PNG" alt="GCash QR Code" className="w-64 h-64 object-contain shadow-lg rounded-xl" />
+                <img src="gcash-qr.PNG" alt="GCash QR Code" className="w-64 h-64 object-contain shadow-lg rounded-xl" />
                 <div className="text-center">
                   <p className="text-base font-semibold text-blue-600">GCash Number</p>
                   <p className="text-lg font-bold">09391935233</p>
