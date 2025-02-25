@@ -62,7 +62,7 @@ export default function Home() {
       </h1>
 
       <div className="grid md:grid-cols-2 gap-8">
-        <div className="space-y-6">
+        <div className="space-y-6 bg-white rounded-lg shadow-sm p-6">
           <div className="relative">
             <PhotoBoothCamera
               onCapture={handleCapture}
@@ -91,7 +91,7 @@ export default function Home() {
             </Button>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 bg-gray-50 rounded-lg p-6">
             <h2 className="text-lg font-semibold">Customize Your Strip</h2>
 
             <div className="space-y-2">
@@ -101,10 +101,11 @@ export default function Home() {
                 value={stripName}
                 onChange={(e) => setStripName(e.target.value)}
                 placeholder="Enter a name for your strip"
+                className="bg-white"
               />
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 bg-white rounded-md p-3">
               <Switch
                 id="show-date"
                 checked={showDate}
@@ -113,25 +114,27 @@ export default function Home() {
               <Label htmlFor="show-date">Show Date</Label>
             </div>
 
-            <ColorPicker
-              color={backgroundColor}
-              onChange={setBackgroundColor}
-              label="Strip Color"
-            />
-            <ColorPicker
-              color={nameColor}
-              onChange={setNameColor}
-              label="Name Color"
-            />
-            <ColorPicker
-              color={dateColor}
-              onChange={setDateColor}
-              label="Date Color"
-            />
+            <div className="space-y-4">
+              <ColorPicker
+                color={backgroundColor}
+                onChange={setBackgroundColor}
+                label="Strip Color"
+              />
+              <ColorPicker
+                color={nameColor}
+                onChange={setNameColor}
+                label="Name Color"
+              />
+              <ColorPicker
+                color={dateColor}
+                onChange={setDateColor}
+                label="Date Color"
+              />
+            </div>
           </div>
         </div>
 
-        <div>
+        <div className="bg-white rounded-lg shadow-sm p-6">
           <PhotoStrip
             photos={photos}
             backgroundColor={backgroundColor}
