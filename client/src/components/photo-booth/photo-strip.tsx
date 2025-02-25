@@ -89,7 +89,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
     // Calculate text position - now at the top
     const textStartY = padding * 2; // Start text from top with consistent padding
-    const lineHeight = 50; // Consistent line height
+    const lineHeight = 38; // Consistent line height
     
     // Draw title with consistent styling
     if (showName) {
@@ -241,15 +241,9 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     if (!canvas) return;
 
     const link = document.createElement("a");
-    link.download = `${name || 'photo-strip'}.png`;
-    canvas.toBlob((blob) => {
-      if (blob) {
-        const url = URL.createObjectURL(blob);
-        link.href = url;
-        link.click();
-        URL.revokeObjectURL(url);
-      }
-    }, 'image/png');
+    link.download = `${name || 'photo'}-${format(new Date(), 'yyyy-MM-dd')}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
   };
 
   return (
@@ -261,7 +255,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       />
       <Button onClick={handleDownload} size="lg">
         <Download className="mr-2 h-4 w-4" />
-        Download Strip
+        Download Photo
       </Button>
     </div>
   );
