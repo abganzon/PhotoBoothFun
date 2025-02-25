@@ -39,10 +39,10 @@ export function PhotoStrip({
     // Set initial canvas dimensions
     if (layout === "strip") {
       canvas.width = 500; // Initial width, will be adjusted based on content
-      canvas.height = 1000;
+      canvas.height = 800;
     } else {
       canvas.width = 800;
-      canvas.height = 1000;
+      canvas.height = 800;
     }
     
     tempCanvas.width = canvas.width;
@@ -64,7 +64,7 @@ export function PhotoStrip({
       photoHeight = Math.floor(photoWidth * 0.75); // 4:3 aspect ratio for strip layout
       gridHeight = photos.length > 0 
         ? (photoHeight * 4) + (padding * 3)
-        : 480;
+        : photoHeight * 4 + (padding * 3); // Keep same height even without photos
     } else {
       // Collage layout (2x2)
       const availableWidth = canvas.width - (padding * 3);
@@ -72,10 +72,9 @@ export function PhotoStrip({
       photoHeight = photoWidth;
       gridHeight = photos.length > 0 
         ? (photoHeight * 2) + (padding * 3)
-        : 480;
+        : photoHeight * 2 + (padding * 3); // Keep same height for empty layout
     }
 
-    // Load and draw photos
     const loadImage = (src: string): Promise<HTMLImageElement> => {
       return new Promise((resolve, reject) => {
         const img = new Image();
@@ -90,8 +89,8 @@ export function PhotoStrip({
     };
 
     const drawAllPhotos = async () => {
-      // First pass: calculate maximum image width
-      if (layout === "strip") {
+      // First pass: calculate maximum image width for strip layout
+      if (layout === "strip" && photos.length > 0) {
         for (let i = 0; i < photos.length; i++) {
           try {
             const img = await loadImage(photos[i]);
@@ -108,118 +107,154 @@ export function PhotoStrip({
 
         // Adjust canvas width based on maximum image width
         canvas.width = maxImageWidth + (padding * 2);
-        tempCanvas.width = canvas.width;
-        tempCtx.fillStyle = backgroundColor;
-        tempCtx.fillRect(0, 0, canvas.width, canvas.height);
+      } else if (layout === "strip") {
+        // Set fixed width for empty strip layout
+        canvas.width = 400; // Default width when no images
       }
+      
+      tempCanvas.width = canvas.width;
+      tempCtx.fillStyle = backgroundColor;
+      tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Second pass: draw images
-      for (let i = 0; i < photos.length; i++) {
-        try {
-          const img = await loadImage(photos[i]);
-          let x: number;
-          let y: number;
-
-          if (layout === "strip") {
-            // Strip layout (1x4)
-            const scale = Math.min(
-              photoWidth / img.width,
-              photoHeight / img.height
-            );
-            const scaledWidth = img.width * scale;
-            const scaledHeight = img.height * scale;
+      // Draw placeholder borders for empty layout
+      if (photos.length === 0) {
+        if (layout === "strip") {
+          // Draw placeholder borders for strip layout
+          for (let i = 0; i < 4; i++) {
+            const x = padding;
+            const y = padding + (i * (photoHeight + padding));
             
-            // Center horizontally
-            x = padding + (maxImageWidth - scaledWidth) / 2;
-            y = padding + (i * (photoHeight + padding));
-            
-            // Draw image
-            tempCtx.drawImage(
-              img,
-              x,
-              y,
-              scaledWidth,
-              scaledHeight
-            );
-            
-            // Draw borders exactly around the image
+            // Draw outer border
             tempCtx.strokeStyle = '#e5e5e5';
             tempCtx.lineWidth = 3;
-            tempCtx.strokeRect(x, y, scaledWidth, scaledHeight);
+            tempCtx.strokeRect(x, y, photoWidth, photoHeight);
             
+            // Draw inner border
             tempCtx.strokeStyle = '#f3f4f6';
             tempCtx.lineWidth = 1;
             tempCtx.strokeRect(
               x + 3,
               y + 3,
-              scaledWidth - 6,
-              scaledHeight - 6
+              photoWidth - 6,
+              photoHeight - 6
             );
-          } else {
-            // Collage layout (2x2)
+          }
+        } else {
+          // Draw placeholder borders for collage layout
+          for (let i = 0; i < 4; i++) {
             const row = Math.floor(i / 2);
             const col = i % 2;
-            x = padding + (col * (photoWidth + padding));
-            y = padding + (row * (photoHeight + padding));
+            const x = padding + (col * (photoWidth + padding));
+            const y = padding + (row * (photoHeight + padding));
             
-            // Calculate dimensions to maintain aspect ratio
-            const scale = Math.min(
-              photoWidth / img.width,
-              photoHeight / img.height
-            );
-            const scaledWidth = img.width * scale;
-            const scaledHeight = img.height * scale;
-            
-            // Center the image
-            const xOffset = x + (photoWidth - scaledWidth) / 2;
-            const yOffset = y + (photoHeight - scaledHeight) / 2;
-            
-            tempCtx.drawImage(
-              img,
-              xOffset,
-              yOffset,
-              scaledWidth,
-              scaledHeight
-            );
-            
-            // Simple border for collage layout
             tempCtx.strokeStyle = '#e5e5e5';
             tempCtx.lineWidth = 2;
             tempCtx.strokeRect(x, y, photoWidth, photoHeight);
           }
-        } catch (error) {
-          console.error("Error loading photo:", error);
+        }
+      }
+
+      // Second pass: draw images if they exist
+      if (photos.length > 0) {
+        for (let i = 0; i < photos.length; i++) {
+          try {
+            const img = await loadImage(photos[i]);
+            let x: number;
+            let y: number;
+
+            if (layout === "strip") {
+              // Strip layout (1x4)
+              const scale = Math.min(
+                photoWidth / img.width,
+                photoHeight / img.height
+              );
+              const scaledWidth = img.width * scale;
+              const scaledHeight = img.height * scale;
+              
+              // Center horizontally
+              x = padding + (maxImageWidth - scaledWidth) / 2;
+              y = padding + (i * (photoHeight + padding));
+              
+              // Draw image
+              tempCtx.drawImage(
+                img,
+                x,
+                y,
+                scaledWidth,
+                scaledHeight
+              );
+              
+              // Draw borders exactly around the image
+              tempCtx.strokeStyle = '#e5e5e5';
+              tempCtx.lineWidth = 3;
+              tempCtx.strokeRect(x, y, scaledWidth, scaledHeight);
+              
+              tempCtx.strokeStyle = '#f3f4f6';
+              tempCtx.lineWidth = 1;
+              tempCtx.strokeRect(
+                x + 3,
+                y + 3,
+                scaledWidth - 6,
+                scaledHeight - 6
+              );
+            } else {
+              // Collage layout (2x2)
+              const row = Math.floor(i / 2);
+              const col = i % 2;
+              x = padding + (col * (photoWidth + padding));
+              y = padding + (row * (photoHeight + padding));
+              
+              // Calculate dimensions to maintain aspect ratio
+              const scale = Math.min(
+                photoWidth / img.width,
+                photoHeight / img.height
+              );
+              const scaledWidth = img.width * scale;
+              const scaledHeight = img.height * scale;
+              
+              // Center the image
+              const xOffset = x + (photoWidth - scaledWidth) / 2;
+              const yOffset = y + (photoHeight - scaledHeight) / 2;
+              
+              tempCtx.drawImage(
+                img,
+                xOffset,
+                yOffset,
+                scaledWidth,
+                scaledHeight
+              );
+              
+              // Simple border for collage layout
+              tempCtx.strokeStyle = '#e5e5e5';
+              tempCtx.lineWidth = 2;
+              tempCtx.strokeRect(x, y, photoWidth, photoHeight);
+            }
+          } catch (error) {
+            console.error("Error loading photo:", error);
+          }
         }
       }
 
       // Draw title section
       const titlePadding = padding;
-      const titleY = gridHeight + titlePadding + 40; // Add space above title
+      const titleY = gridHeight + titlePadding + 40;
       
-      // Draw title with shadow
-      tempCtx.shadowColor = 'rgba(0, 0, 0, 0.1)';
-      tempCtx.shadowBlur = 3;
-      tempCtx.shadowOffsetY = 2;
-      tempCtx.font = "bold 36px Arial"; // Slightly smaller font
+      // Draw title (no shadow)
+      tempCtx.font = "bold 36px Arial";
       tempCtx.fillStyle = nameColor;
       tempCtx.textAlign = "center";
       tempCtx.fillText(name || "Photo Strip", canvas.width / 2, titleY);
-      
-      // Reset shadow
-      tempCtx.shadowColor = 'transparent';
-      tempCtx.shadowBlur = 0;
-      tempCtx.shadowOffsetY = 0;
 
       // Draw date if enabled
       if (showDate) {
-        tempCtx.font = "20px Arial"; // Slightly smaller font
+        tempCtx.font = "20px Arial";
         tempCtx.fillStyle = dateColor;
         const dateText = format(new Date(), "MMMM dd, yyyy");
         tempCtx.fillText(dateText, canvas.width / 2, titleY + 30);
       }
 
-      // Copy the final result to the main canvas
-      const finalHeight = titleY + (showDate ? 80 : 50); // Add padding below
+      // Calculate final height and update canvas
+      const finalHeight = titleY + (showDate ? 80 : 50);
       canvas.height = finalHeight;
       ctx.canvas.height = finalHeight;
       ctx.clearRect(0, 0, canvas.width, finalHeight);
