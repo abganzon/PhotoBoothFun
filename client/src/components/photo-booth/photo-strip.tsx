@@ -40,11 +40,10 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
     // Set initial canvas dimensions
     const padding = 25; // Consistent padding for both layouts
-    const titlePadding = 35; // Space between grid and title
     
-    // Calculate text space needed
+    // Calculate text space needed for name and date
     const hasText = showName || showDate;
-    const textSpace = hasText ? (showName && showDate ? 100 : 60) : 0;
+    const textSpace = hasText ? (showName && showDate ? 70 : 40) : 0;
     
     // Define placeholder dimensions for strip layout
     const placeholderWidth = 250; // Fixed width for placeholder images
@@ -53,7 +52,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     if (layout === "strip") {
       canvas.width = placeholderWidth + (padding * 2); // Set width to fit placeholder with padding
       const gridHeight = (placeholderHeight * 4) + (padding * 3); // Height of just the photos and spacing between them
-      canvas.height = gridHeight + padding + (hasText ? textSpace + padding : padding);
+      canvas.height = gridHeight + (hasText ? textSpace : padding);
     } else {
       // For collage layout
       canvas.width = 800;
@@ -61,8 +60,8 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       const cellSize = (gridSize - padding) / 2; // Size for each image cell, accounting for middle padding
       const gridHeight = (cellSize * 2) + padding; // Height of the 2x2 grid including middle padding
       
-      // Set canvas height to maintain aspect ratio plus text space at bottom
-      canvas.height = gridSize + (padding * 2) + (hasText ? textSpace : 0);
+      // Set canvas height to maintain aspect ratio plus text space
+      canvas.height = gridHeight + padding + (hasText ? textSpace : 0);
     }
     
     tempCanvas.width = canvas.width;
@@ -192,17 +191,17 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         }
       }
 
-      // Calculate text position - align to bottom
+      // Calculate text position - align to bottom with minimal spacing
       const textStartY = layout === "strip"
-        ? gridStartY + gridHeight + titlePadding
-        : canvas.height - (showName && showDate ? textSpace : textSpace / 2);
+        ? canvas.height - (showName && showDate ? textSpace - 10 : textSpace / 2)
+        : canvas.height - (showName && showDate ? textSpace - 10 : textSpace / 2);
       
       const lineHeight = layout === "strip" ? 30 : 35;
       
       // Draw title with consistent styling
       if (showName) {
         const titleSize = layout === "strip" ? 28 : 36;
-        tempCtx.font = `bold ${titleSize}px Arial`;
+        tempCtx.font = `${titleSize}px Arial`;
         tempCtx.fillStyle = nameColor;
         tempCtx.textAlign = "center";
         tempCtx.fillText(name || "Photo Strip", canvas.width / 2, textStartY);
@@ -213,6 +212,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         const dateSize = layout === "strip" ? 18 : 22;
         tempCtx.font = `${dateSize}px Arial`;
         tempCtx.fillStyle = dateColor;
+        tempCtx.textAlign = "center";
         const dateText = format(new Date(), "MMMM dd, yyyy");
         const dateY = showName ? textStartY + lineHeight : textStartY;
         tempCtx.fillText(dateText, canvas.width / 2, dateY);
