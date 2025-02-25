@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Trash2 } from "lucide-react";
+import { Camera, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
@@ -60,9 +60,12 @@ export default function Home() {
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-pink-500 to-violet-500 text-transparent bg-clip-text">
-        Fun Photo Booth
-      </h1>
+      <div className="flex items-center gap-4 mb-8 justify-center">
+        <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+          <Camera className="h-8 w-8 text-white" />
+        </div>
+        <h1 className="text-4xl font-bold text-gray-900">RoBooth</h1>
+      </div>
 
       <div className="grid md:grid-cols-2 gap-8">
         <div className="space-y-6 bg-white rounded-lg shadow-sm p-6">
