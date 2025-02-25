@@ -35,10 +35,10 @@ export default function Landing() {
         <Button
           size="lg"
           onClick={() => setLocation("/booth")}
-          className="gap-2 text-lg px-8"
+          className="gap-2 px-8"
         >
           <Camera className="h-6 w-6" />
-          Start Capturing
+          Start
         </Button>
 
         <Dialog>
