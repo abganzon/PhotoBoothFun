@@ -21,7 +21,12 @@ export default function Home() {
     setPhotos((prev) => [...prev, photo]);
     setIsCountingDown(false);
 
-    if (photos.length === 3) {
+    // Start next photo capture if not reached maximum
+    if (photos.length < 3) { // Check for 3 since the new photo hasn't been added to state yet
+      setTimeout(() => {
+        setIsCountingDown(true);
+      }, 1000); // Wait 1 second before starting next countdown
+    } else {
       toast({
         title: "Photo strip complete!",
         description: "You can now add stickers and download your photos.",
@@ -29,7 +34,7 @@ export default function Home() {
     }
   };
 
-  const handleTakePhoto = () => {
+  const handleStartPhotoSequence = () => {
     if (photos.length >= 4) {
       toast({
         title: "Maximum photos reached",
@@ -38,7 +43,9 @@ export default function Home() {
       });
       return;
     }
-    setIsCountingDown(true);
+    setPhotos([]); // Clear existing photos
+    setStickerPositions([]); // Clear stickers
+    setIsCountingDown(true); // Start the countdown for first photo
   };
 
   const handleClear = () => {
@@ -68,13 +75,16 @@ export default function Home() {
             />
             <Countdown
               isActive={isCountingDown}
-              onComplete={() => handleCapture}
+              onComplete={handleCapture}
             />
           </div>
 
           <div className="flex justify-between items-center">
-            <Button onClick={handleTakePhoto} disabled={photos.length >= 4}>
-              Take Photo ({photos.length}/4)
+            <Button 
+              onClick={handleStartPhotoSequence} 
+              disabled={isCountingDown}
+            >
+              {photos.length === 0 ? "Start Photo Sequence" : `Photos: ${photos.length}/4`}
             </Button>
             <Button
               variant="destructive"

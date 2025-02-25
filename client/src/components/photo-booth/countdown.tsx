@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 interface CountdownProps {
   isActive: boolean;
-  onComplete: () => void;
+  onComplete: (image: string) => void;
 }
 
 export function Countdown({ isActive, onComplete }: CountdownProps) {
@@ -14,17 +14,33 @@ export function Countdown({ isActive, onComplete }: CountdownProps) {
       return;
     }
 
-    if (count === 0) {
-      onComplete();
-      return;
-    }
-
     const timer = setInterval(() => {
-      setCount((prev) => prev - 1);
+      setCount((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          // Trigger the webcam capture
+          setTimeout(() => {
+            const webcamElement = document.querySelector('video');
+            if (webcamElement) {
+              const canvas = document.createElement('canvas');
+              canvas.width = webcamElement.videoWidth;
+              canvas.height = webcamElement.videoHeight;
+              const ctx = canvas.getContext('2d');
+              if (ctx) {
+                ctx.drawImage(webcamElement, 0, 0);
+                const imageData = canvas.toDataURL('image/jpeg');
+                onComplete(imageData);
+              }
+            }
+          }, 0);
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [count, isActive, onComplete]);
+  }, [isActive, onComplete]);
 
   if (!isActive) return null;
 
