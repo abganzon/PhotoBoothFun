@@ -31,9 +31,15 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStr
     tempCtx.fillStyle = backgroundColor;
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
+    const padding = 20;
+    const photoSize = (canvas.width - (padding * 3)) / 2; // Calculate size for 2x2 grid
+    const gridHeight = photoSize * 2 + padding * 3; // Height for photos
+    const totalHeight = gridHeight + 100; // Add space for title and date
 
-    const padding = 30;
-    const photoHeight = (canvas.height - 150 - (padding * (photos.length +1))) / photos.length; // Reserve space for title, date
+    canvas.height = totalHeight; // Adjust canvas height
+    tempCanvas.height = totalHeight;
+    tempCtx.fillStyle = backgroundColor;
+    tempCtx.fillRect(0, 0, canvas.width, totalHeight);
 
     // Load and draw photos
     const loadImage = (src: string): Promise<HTMLImageElement> => {
@@ -50,13 +56,16 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStr
       for (let i = 0; i < photos.length; i++) {
         try {
           const img = await loadImage(photos[i]);
-          const y = padding + i * (photoHeight + padding);
+          const row = Math.floor(i / 2);
+          const col = i % 2;
+          const x = padding + col * (photoSize + padding);
+          const y = padding + row * (photoSize + padding);
           tempCtx.drawImage(
             img,
-            padding,
+            x,
             y,
-            canvas.width - (padding * 2),
-            photoHeight
+            photoSize,
+            photoSize
           );
         } catch (error) {
           console.error("Error loading photo:", error);
