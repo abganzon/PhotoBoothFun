@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Camera, Heart } from "lucide-react";
@@ -32,51 +31,50 @@ export default function Landing() {
         your digital photobooth by influenzah
       </p>
       
-        <div className="flex gap-4 justify-center">
-          <Button
-            size="lg"
-            onClick={() => setLocation("/booth")}
-            className="gap-2 text-lg px-8"
-          >
-            <Camera className="h-6 w-6" />
-            Start Capturing
-          </Button>
+      <div className="flex gap-4 justify-center">
+        <Button
+          size="lg"
+          onClick={() => setLocation("/booth")}
+          className="gap-2 text-lg px-8"
+        >
+          <Camera className="h-6 w-6" />
+          Start Capturing
+        </Button>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="lg" className="gap-2">
-                <Heart className="h-6 w-6" />
-                Support
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-bold text-center">I appreciate your support! 🙏</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-6 py-6">
-                <p className="text-center text-gray-600 text-lg leading-relaxed">
-                  This site is a labor of love, and your support helps keep it thriving. Every contribution is truly a cherished gift.
-                </p>
-                <div className="flex flex-col items-center gap-6 bg-gradient-to-b from-blue-50 to-white p-6 rounded-xl">
-                  <img src="/gcash-qr.png" alt="GCash QR Code" className="w-64 h-64 object-contain shadow-lg rounded-xl" />
-                  <div className="text-center">
-                    <p className="text-base font-semibold text-blue-600">GCash Number</p>
-                    <p className="text-lg font-bold">09391935233</p>
-                  </div>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="lg" className="gap-2">
+              <Heart className="h-6 w-6" />
+              Support
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-center">I appreciate your support! 🙏</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6 py-6">
+              <p className="text-center text-gray-600 text-lg leading-relaxed">
+                This site is a labor of love, and your support helps keep it thriving. Every contribution is truly a cherished gift.
+              </p>
+              <div className="flex flex-col items-center gap-6 bg-gradient-to-b from-blue-50 to-white p-6 rounded-xl">
+                <img src="/gcash-qr.png" alt="GCash QR Code" className="w-64 h-64 object-contain shadow-lg rounded-xl" />
+                <div className="text-center">
+                  <p className="text-base font-semibold text-blue-600">GCash Number</p>
+                  <p className="text-lg font-bold">09391935233</p>
                 </div>
               </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
+    </div>
 
-      <div className="fixed bottom-4 flex gap-4 text-sm text-gray-500">
-        <span>v1.0.0</span>
-        <span>•</span>
-        <span>{visitors} visitors</span>
-        <span>•</span>
-        <a href="/privacy" className="text-blue-600 hover:underline">Privacy Policy</a>
-      </div>
+    <div className="fixed bottom-4 flex gap-4 text-sm text-gray-500">
+      <span>v1.0.0</span>
+      <span>•</span>
+      <span>{visitors} visitors</span>
+      <span>•</span>
+      <a href="/privacy" className="text-blue-600 hover:underline">Privacy Policy</a>
     </div>
   );
 }
