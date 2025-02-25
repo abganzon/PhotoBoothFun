@@ -130,12 +130,13 @@ export function PhotoStrip({
   };
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-4 w-full px-4 sm:px-0">
       <canvas
         ref={canvasRef}
         width={400}
         height={600}
         className="w-full max-w-md border rounded-lg shadow-lg"
+        style={{ maxWidth: '100%', height: 'auto' }}
       />
       <Button onClick={handleDownload} size="lg">
         <Download className="mr-2 h-4 w-4" />
