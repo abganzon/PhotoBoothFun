@@ -32,10 +32,9 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStr
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     const padding = 20;
-    const maxPhotoWidth = canvas.width - (padding * 3);
-    let photoWidth = maxPhotoWidth / 2;
-    let photoHeight = photoWidth * 0.75; // Maintain 4:3 aspect ratio
-    const gridHeight = (photoHeight * 2) + (padding * 3);
+    const photoWidth = canvas.width - (padding * 2);
+    const photoHeight = photoWidth * 0.75; // Maintain 4:3 aspect ratio
+    const gridHeight = (photoHeight * 4) + (padding * 5); // Space for 4 photos vertically
 
     // Adjust canvas height based on content
     const titleSpace = 100;
@@ -63,10 +62,8 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStr
       for (let i = 0; i < photos.length; i++) {
         try {
           const img = await loadImage(photos[i]);
-          const row = Math.floor(i / 2);
-          const col = i % 2;
-          const x = padding + col * (photoSize + padding);
-          const y = padding + row * (photoSize + padding);
+          const x = padding;
+          const y = padding + i * (photoHeight + padding);
           tempCtx.drawImage(
             img,
             x,
