@@ -40,15 +40,15 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
     // Set initial canvas dimensions
     const padding = 25; // Consistent padding for both layouts
-    
+
     // Calculate text space needed for name and date with layout-specific spacing
     const hasText = showName || showDate;
     const textSpace = hasText ? (showName && showDate ? 100 : 50) : 0;
-    
+
     // Define placeholder dimensions for strip layout
     const placeholderWidth = 250; // Fixed width for placeholder images
     const placeholderHeight = Math.floor(placeholderWidth * 0.75);
-    
+
     let photoWidth: number;
     let photoHeight: number;
     let gridHeight: number;
@@ -66,11 +66,11 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       const gridHeight = (cellSize * 2) + padding; // Height of the 2x2 grid including middle padding
       photoWidth = cellSize;
       photoHeight = cellSize;
-      
+
       // Set canvas height with text at top, when no text bottom padding matches sides
       canvas.height = (hasText ? textSpace + padding : padding) + gridHeight + padding;
     }
-    
+
     tempCanvas.width = canvas.width;
     tempCanvas.height = canvas.height;
 
@@ -93,7 +93,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     // Calculate text position - now at the top
     const textStartY = padding * 2; // Start text from top with consistent padding
     const lineHeight = 38; // Consistent line height
-    
+
     // Draw title with consistent styling
     if (showName) {
       const titleSize = layout === "strip" ? 28 : 36;
@@ -138,7 +138,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
           for (let i = 0; i < 4; i++) {
             const x = padding;
             const y = gridStartY + (i * (placeholderHeight + padding));
-            
+
             tempCtx.strokeStyle = '#e5e5e5';
             tempCtx.lineWidth = 2;
             tempCtx.strokeRect(x, y, placeholderWidth, placeholderHeight);
@@ -149,7 +149,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
             for (let col = 0; col < 2; col++) {
               const x = padding + (col * (photoWidth + padding));
               const y = gridStartY + (row * (photoHeight + padding));
-              
+
               tempCtx.strokeStyle = '#e5e5e5';
               tempCtx.lineWidth = 2;
               tempCtx.strokeRect(x, y, photoWidth, photoHeight);
@@ -168,61 +168,34 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
             let y: number;
 
             if (layout === "strip") {
-              // Use exact same dimensions as placeholder for consistency
               x = padding;
               y = gridStartY + (i * (placeholderHeight + padding));
-              
-              // Calculate dimensions to cover the area while maintaining aspect ratio
-              const scale = Math.max(
-                placeholderWidth / img.width,
-                placeholderHeight / img.height
-              );
-              const scaledWidth = img.width * scale;
-              const scaledHeight = img.height * scale;
-              
-              // Center the image and crop overflow
-              const sourceX = (scaledWidth - placeholderWidth) / 2 / scale;
-              const sourceY = (scaledHeight - placeholderHeight) / 2 / scale;
-              
-              tempCtx.drawImage(
-                img,
-                sourceX, sourceY,                           // Source position
-                placeholderWidth / scale, placeholderHeight / scale,  // Source dimensions
-                x, y,                                      // Destination position
-                placeholderWidth, placeholderHeight        // Destination dimensions
-              );
-              
-              // Draw border using placeholder dimensions
-              tempCtx.strokeStyle = '#e5e5e5';
-              tempCtx.lineWidth = 2;
-              tempCtx.strokeRect(x, y, placeholderWidth, placeholderHeight);
+              photoWidth = placeholderWidth;
+              photoHeight = placeholderHeight;
+              tempCtx.drawImage(img, x, y, photoWidth, photoHeight);
             } else {
-              const row = Math.floor(i / 2);
+              // For collage layout (2x2 grid)
               const col = i % 2;
+              const row = Math.floor(i / 2);
               x = padding + (col * (photoWidth + padding));
               y = gridStartY + (row * (photoHeight + padding));
 
-              const scale = Math.min(
-                photoWidth / img.width,
-                photoHeight / img.height
-              );
-              const scaledWidth = img.width * scale;
-              const scaledHeight = img.height * scale;
-              
-              const xOffset = (photoWidth - scaledWidth) / 2;
-              const yOffset = (photoHeight - scaledHeight) / 2;
-              
-              tempCtx.drawImage(
-                img,
-                x + xOffset,
-                y + yOffset,
-                scaledWidth,
-                scaledHeight
-              );
-              
-              tempCtx.strokeStyle = '#e5e5e5';
-              tempCtx.lineWidth = 2;
-              tempCtx.strokeRect(x, y, photoWidth, photoHeight);
+              // Create a temporary canvas for the covered image
+              const tempImgCanvas = document.createElement('canvas');
+              const tempImgCtx = tempImgCanvas.getContext('2d');
+              tempImgCanvas.width = photoWidth;
+              tempImgCanvas.height = photoHeight;
+
+              if (tempImgCtx) {
+                const scale = Math.max(photoWidth / img.width, photoHeight / img.height);
+                const scaledWidth = img.width * scale;
+                const scaledHeight = img.height * scale;
+                const offsetX = (photoWidth - scaledWidth) / 2;
+                const offsetY = (photoHeight - scaledHeight) / 2;
+
+                tempImgCtx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
+                tempCtx.drawImage(tempImgCanvas, x, y);
+              }
             }
           } catch (error) {
             console.error("Error loading photo:", error);
@@ -263,4 +236,4 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       </Button>
     </div>
   );
-}
+};
