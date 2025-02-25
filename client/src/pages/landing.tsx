@@ -19,7 +19,7 @@ export default function Landing() {
   }, []);
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 px-4">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-sky-100 via-sky-200 to-sky-100 px-4"> {/* Modified background gradient */}
       <div className="flex items-center gap-4 mb-8">
         <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
           <Camera className="h-8 w-8 text-white" />

@@ -59,7 +59,7 @@ export default function Home() {
 
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-8 bg-gradient-to-b from-blue-50 to-white text-gray-900"> {/* Modified background */}
       <div className="flex items-center gap-4 mb-8 justify-center">
         <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
           <Camera className="h-8 w-8 text-white" />
