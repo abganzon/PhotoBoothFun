@@ -8,7 +8,7 @@ interface PhotoStripProps {
   backgroundColor: string;
   name: string;
   showDate: boolean;
-  layout: 'vertical' | 'horizontal';
+  layout: 'strip-vertical' | 'strip-horizontal' | 'collage-vertical' | 'collage-horizontal';
 }
 
 export function PhotoStrip({ photos, backgroundColor, name, showDate, layout }: PhotoStripProps) {
@@ -35,14 +35,31 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate, layout }: 
     const padding = 20;
     let photoWidth, photoHeight, gridHeight;
     
-    if (layout === 'vertical') {
-      photoWidth = canvas.width - (padding * 2);
-      photoHeight = (canvas.width - (padding * 2)) * 0.75; // 4:3 aspect ratio
-      gridHeight = (photoHeight * 4) + (padding * 5);
-    } else {
-      photoWidth = (canvas.width - (padding * 3)) / 2;
-      photoHeight = photoWidth;
-      gridHeight = (photoHeight * 2) + (padding * 3);
+    switch (layout) {
+      case 'strip-vertical':
+        photoWidth = canvas.width - (padding * 2);
+        photoHeight = (canvas.width - (padding * 2)) * 0.75;
+        gridHeight = (photoHeight * 4) + (padding * 5);
+        break;
+      case 'strip-horizontal':
+        photoWidth = (canvas.width - (padding * 5)) / 4;
+        photoHeight = photoWidth;
+        gridHeight = photoHeight + (padding * 2);
+        break;
+      case 'collage-vertical':
+        photoWidth = (canvas.width - (padding * 3)) / 2;
+        photoHeight = photoWidth;
+        gridHeight = (photoHeight * 2) + (padding * 3);
+        break;
+      case 'collage-horizontal':
+        photoWidth = (canvas.width - (padding * 3)) / 2;
+        photoHeight = photoWidth;
+        gridHeight = (photoHeight * 2) + (padding * 3);
+        break;
+      default:
+        photoWidth = (canvas.width - (padding * 3)) / 2;
+        photoHeight = photoWidth;
+        gridHeight = (photoHeight * 2) + (padding * 3);
     }
     
     const totalHeight = gridHeight + 150; // More space for title and date
@@ -68,14 +85,22 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate, layout }: 
         try {
           const img = await loadImage(photos[i]);
           let x, y;
-          if (layout === 'vertical') {
-            x = padding;
-            y = padding + i * (photoHeight + padding);
-          } else {
-            const row = Math.floor(i / 2);
-            const col = i % 2;
-            x = padding + col * (photoWidth + padding);
-            y = padding + row * (photoHeight + padding);
+          switch (layout) {
+            case 'strip-vertical':
+              x = padding;
+              y = padding + i * (photoHeight + padding);
+              break;
+            case 'strip-horizontal':
+              x = padding + i * (photoWidth + padding);
+              y = padding;
+              break;
+            case 'collage-vertical':
+            case 'collage-horizontal':
+              const row = Math.floor(i / 2);
+              const col = i % 2;
+              x = padding + col * (photoWidth + padding);
+              y = padding + row * (photoHeight + padding);
+              break;
           }
           tempCtx.drawImage(
             img,
