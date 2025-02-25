@@ -32,11 +32,15 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStr
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     const padding = 20;
-    const photoSize = (canvas.width - (padding * 3)) / 2; // Size for 2x2 grid
-    const gridHeight = (photoSize * 2) + (padding * 3); // Height for 2x2 grid
+    const maxPhotoWidth = canvas.width - (padding * 3);
+    let photoWidth = maxPhotoWidth / 2;
+    let photoHeight = photoWidth * 0.75; // Maintain 4:3 aspect ratio
+    const gridHeight = (photoHeight * 2) + (padding * 3);
 
-    canvas.height = gridHeight + 100; // Add space for title
-    tempCanvas.height = gridHeight + 100;
+    // Adjust canvas height based on content
+    const titleSpace = 100;
+    canvas.height = gridHeight + titleSpace;
+    tempCanvas.height = canvas.height;
     tempCtx.fillStyle = backgroundColor;
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -63,8 +67,8 @@ export function PhotoStrip({ photos, backgroundColor, name, showDate }: PhotoStr
             img,
             x,
             y,
-            photoSize,
-            photoSize
+            photoWidth,
+            photoHeight
           );
         } catch (error) {
           console.error("Error loading photo:", error);
