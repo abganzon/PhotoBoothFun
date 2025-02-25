@@ -37,8 +37,8 @@ export function PhotoStrip({
     if (!tempCtx) return;
 
     // Set initial canvas dimensions
-    const padding = 30;
-    const bottomPadding = 80; // Space for title and date at bottom
+    const padding = layout === "strip" ? 20 : 30; // Smaller padding for strip layout
+    const bottomPadding = layout === "strip" ? 60 : 80; // Space for title and date at bottom
     
     // Define placeholder dimensions for strip layout
     const placeholderWidth = 250; // Fixed width for placeholder images
@@ -49,7 +49,7 @@ export function PhotoStrip({
       canvas.height = (placeholderHeight * 4) + (padding * 5) + bottomPadding; // Include space for title
     } else {
       canvas.width = 800;
-      canvas.height = 800;
+      canvas.height = (placeholderHeight * 2) + (padding * 3) + bottomPadding;
     }
     
     tempCanvas.width = canvas.width;
@@ -212,19 +212,19 @@ export function PhotoStrip({
               const scaledWidth = img.width * scale;
               const scaledHeight = img.height * scale;
               
-              // Center the image
-              const xOffset = x + (photoWidth - scaledWidth) / 2;
-              const yOffset = y + (photoHeight - scaledHeight) / 2;
+              // Center the image within its cell
+              const xOffset = (photoWidth - scaledWidth) / 2;
+              const yOffset = (photoHeight - scaledHeight) / 2;
               
               tempCtx.drawImage(
                 img,
-                xOffset,
-                yOffset,
+                x + xOffset,
+                y + yOffset,
                 scaledWidth,
                 scaledHeight
               );
               
-              // Simple border for collage layout
+              // Draw border
               tempCtx.strokeStyle = '#e5e5e5';
               tempCtx.lineWidth = 2;
               tempCtx.strokeRect(x, y, photoWidth, photoHeight);
@@ -236,20 +236,20 @@ export function PhotoStrip({
       }
 
       // Draw title section at the bottom
-      const titleY = padding + gridHeight + 40;
+      const titleY = padding + gridHeight + (layout === "strip" ? 25 : 40);
       
-      // Draw title
-      tempCtx.font = "bold 36px Arial";
+      // Draw title with different sizes based on layout
+      tempCtx.font = layout === "strip" ? "bold 24px Arial" : "bold 36px Arial";
       tempCtx.fillStyle = nameColor;
       tempCtx.textAlign = "center";
       tempCtx.fillText(name || "Photo Strip", canvas.width / 2, titleY);
 
       // Draw date if enabled
       if (showDate) {
-        tempCtx.font = "20px Arial";
+        tempCtx.font = layout === "strip" ? "16px Arial" : "20px Arial";
         tempCtx.fillStyle = dateColor;
         const dateText = format(new Date(), "MMMM dd, yyyy");
-        tempCtx.fillText(dateText, canvas.width / 2, titleY + 30);
+        tempCtx.fillText(dateText, canvas.width / 2, titleY + (layout === "strip" ? 25 : 30));
       }
 
       // Update main canvas with the final content
