@@ -87,7 +87,7 @@ export default function Home() {
               onClick={handleStartPhotoSequence} 
               disabled={isCountingDown}
             >
-              {photos.length === 0 ? "Start Photo Sequence" : `Photos: ${photos.length}/4`}
+              {photos.length === 0 ? "Auto Capture" : `Photos: ${photos.length}/4`}
             </Button>
             <Button
               variant="destructive"
