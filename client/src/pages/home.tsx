@@ -45,13 +45,11 @@ export default function Home() {
       return;
     }
     setPhotos([]); // Clear existing photos
-    setStickerPositions([]); // Clear stickers
     setIsCountingDown(true); // Start the countdown for first photo
   };
 
   const handleClear = () => {
     setPhotos([]);
-    setStickerPositions([]);
   };
 
 
