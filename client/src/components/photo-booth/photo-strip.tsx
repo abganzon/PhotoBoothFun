@@ -56,10 +56,12 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       canvas.height = (hasText ? textSpace + padding : padding) + gridHeight + padding;
     } else {
       // For collage layout
-      canvas.width = 800;
+      canvas.width = 600;
       const gridSize = canvas.width - (padding * 2); // Total space for grid
       const cellSize = (gridSize - padding) / 2; // Size for each image cell, accounting for middle padding
       const gridHeight = (cellSize * 2) + padding; // Height of the 2x2 grid including middle padding
+      photoWidth = cellSize;
+      photoHeight = cellSize;
       
       // Set canvas height with text at top, when no text bottom padding matches sides
       canvas.height = (hasText ? textSpace + padding : padding) + gridHeight + padding;
