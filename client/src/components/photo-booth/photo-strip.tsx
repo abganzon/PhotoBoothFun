@@ -78,10 +78,6 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     tempCtx.fillStyle = backgroundColor;
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-    let photoWidth: number;
-    let photoHeight: number;
-    let gridHeight: number;
-
     if (layout === "strip") {
       photoWidth = placeholderWidth;
       photoHeight = placeholderHeight;
