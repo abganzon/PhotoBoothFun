@@ -48,6 +48,10 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     // Define placeholder dimensions for strip layout
     const placeholderWidth = 250; // Fixed width for placeholder images
     const placeholderHeight = Math.floor(placeholderWidth * 0.75);
+    
+    let photoWidth: number;
+    let photoHeight: number;
+    let gridHeight: number;
 
     if (layout === "strip") {
       canvas.width = placeholderWidth + (padding * 2); // Set width to fit placeholder with padding
