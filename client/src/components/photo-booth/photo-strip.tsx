@@ -38,7 +38,7 @@ export function PhotoStrip({
 
     // Set initial canvas dimensions
     const padding = 30;
-    const titleSpace = 100; // Space for title and date at top
+    const titleSpace = 100; // Space for title and date at bottom
     
     // Define placeholder dimensions for strip layout
     const placeholderWidth = 250; // Fixed width for placeholder images
@@ -68,17 +68,13 @@ export function PhotoStrip({
       // Strip layout (1x4)
       photoWidth = placeholderWidth; // Use placeholder width for consistency
       photoHeight = placeholderHeight;
-      gridHeight = photos.length > 0 
-        ? (photoHeight * 4) + (padding * 3)
-        : (placeholderHeight * 4) + (padding * 3);
+      gridHeight = (photoHeight * 4) + (padding * 3); // Fixed height for 4 images
     } else {
       // Collage layout (2x2)
       const availableWidth = canvas.width - (padding * 3);
       photoWidth = availableWidth / 2;
       photoHeight = photoWidth;
-      gridHeight = photos.length > 0 
-        ? (photoHeight * 2) + (padding * 3)
-        : photoHeight * 2 + (padding * 3);
+      gridHeight = (photoHeight * 2) + (padding * 3);
     }
 
     const loadImage = (src: string): Promise<HTMLImageElement> => {
@@ -119,28 +115,13 @@ export function PhotoStrip({
       tempCtx.fillStyle = backgroundColor;
       tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw title section first (at the top)
-      tempCtx.font = "bold 36px Arial";
-      tempCtx.fillStyle = nameColor;
-      tempCtx.textAlign = "center";
-      const titleText = name || "Photo Strip";
-      tempCtx.fillText(titleText, canvas.width / 2, padding + 30);
-
-      // Draw date if enabled
-      if (showDate) {
-        tempCtx.font = "20px Arial";
-        tempCtx.fillStyle = dateColor;
-        const dateText = format(new Date(), "MMMM dd, yyyy");
-        tempCtx.fillText(dateText, canvas.width / 2, padding + 60);
-      }
-
       // Draw placeholder borders for empty layout
       if (photos.length === 0) {
         if (layout === "strip") {
           // Draw placeholder borders for strip layout
           for (let i = 0; i < 4; i++) {
             const x = padding;
-            const y = titleSpace + padding + (i * (placeholderHeight + padding));
+            const y = padding + (i * (placeholderHeight + padding));
             
             // Draw outer border
             tempCtx.strokeStyle = '#e5e5e5';
@@ -163,7 +144,7 @@ export function PhotoStrip({
             const row = Math.floor(i / 2);
             const col = i % 2;
             const x = padding + (col * (photoWidth + padding));
-            const y = titleSpace + padding + (row * (photoHeight + padding));
+            const y = padding + (row * (photoHeight + padding));
             
             tempCtx.strokeStyle = '#e5e5e5';
             tempCtx.lineWidth = 2;
@@ -174,7 +155,7 @@ export function PhotoStrip({
 
       // Second pass: draw images if they exist
       if (photos.length > 0) {
-        for (let i = 0; i < photos.length; i++) {
+        for (let i = 0; i < Math.min(photos.length, 4); i++) { // Limit to 4 images
           try {
             const img = await loadImage(photos[i]);
             let x: number;
@@ -190,8 +171,8 @@ export function PhotoStrip({
               const scaledHeight = img.height * scale;
               
               // Center horizontally
-              x = padding + (maxImageWidth - scaledWidth) / 2;
-              y = titleSpace + padding + (i * (photoHeight + padding));
+              x = padding + (canvas.width - (padding * 2) - scaledWidth) / 2;
+              y = padding + (i * (photoHeight + padding));
               
               // Draw image
               tempCtx.drawImage(
@@ -220,7 +201,7 @@ export function PhotoStrip({
               const row = Math.floor(i / 2);
               const col = i % 2;
               x = padding + (col * (photoWidth + padding));
-              y = titleSpace + padding + (row * (photoHeight + padding));
+              y = padding + (row * (photoHeight + padding));
               
               // Calculate dimensions to maintain aspect ratio
               const scale = Math.min(
@@ -253,8 +234,26 @@ export function PhotoStrip({
         }
       }
 
+      // Draw title section at the bottom
+      const titleY = padding + gridHeight + 40;
+      
+      // Draw title
+      tempCtx.font = "bold 36px Arial";
+      tempCtx.fillStyle = nameColor;
+      tempCtx.textAlign = "center";
+      const titleText = name || "Photo Strip";
+      tempCtx.fillText(titleText, canvas.width / 2, titleY);
+
+      // Draw date if enabled
+      if (showDate) {
+        tempCtx.font = "20px Arial";
+        tempCtx.fillStyle = dateColor;
+        const dateText = format(new Date(), "MMMM dd, yyyy");
+        tempCtx.fillText(dateText, canvas.width / 2, titleY + 30);
+      }
+
       // Calculate final height and update canvas dimensions
-      const finalHeight = titleSpace + padding + gridHeight + padding;
+      const finalHeight = titleY + (showDate ? 80 : 50);
       
       // Create new canvas with final dimensions
       const finalCanvas = document.createElement('canvas');
