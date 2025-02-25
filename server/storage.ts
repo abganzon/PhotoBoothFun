@@ -1,38 +1,24 @@
 import { users, type User, type InsertUser } from "@shared/schema";
-
-// modify the interface with any CRUD methods
-// you might need
+import { photoStrips, type PhotoStrip, type InsertPhotoStrip } from "@shared/schema";
 
 export interface IStorage {
-  getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  createPhotoStrip(photoStrip: InsertPhotoStrip): Promise<PhotoStrip>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<number, User>;
+  private photoStrips: Map<number, PhotoStrip>;
   currentId: number;
 
   constructor() {
-    this.users = new Map();
+    this.photoStrips = new Map();
     this.currentId = 1;
   }
 
-  async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async createPhotoStrip(insertPhotoStrip: InsertPhotoStrip): Promise<PhotoStrip> {
     const id = this.currentId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+    const photoStrip: PhotoStrip = { ...insertPhotoStrip, id };
+    this.photoStrips.set(id, photoStrip);
+    return photoStrip;
   }
 }
 
