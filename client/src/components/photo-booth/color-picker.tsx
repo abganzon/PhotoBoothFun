@@ -8,7 +8,7 @@ interface ColorPickerProps {
   label: string;
 }
 
-export function ColorPicker({ color, onChange }: ColorPickerProps) {
+export function ColorPicker({ color, onChange, label }: ColorPickerProps) {
   return (
     <div className="flex items-center gap-4">
       <Label htmlFor="strip-color">{label}</Label>
