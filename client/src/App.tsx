@@ -8,7 +8,8 @@ import Home from "@/pages/home";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={Landing} />
+      <Route path="/booth" component={Home} />
       <Route component={NotFound} />
     </Switch>
   );
