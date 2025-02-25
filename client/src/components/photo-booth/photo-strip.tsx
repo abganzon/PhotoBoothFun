@@ -242,10 +242,10 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     <div className="flex flex-col items-center gap-4 w-full px-4 sm:px-0">
       <canvas
         ref={canvasRef}
-        className="w-full max-w-md border-0 rounded-lg shadow-lg"  {/*Removed border here*/}
+        className="w-full max-w-md border-0 rounded-lg shadow-lg"
         style={{ maxWidth: '100%', height: 'auto' }}
       />
-      <Button onClick={handleDownload} size="lg" className="w-full max-w-md"> {/*Added class for sizing*/}
+      <Button onClick={handleDownload} size="lg" className="w-full max-w-md">
         <Download className="mr-2 h-4 w-4" />
         Download Photo
       </Button>
