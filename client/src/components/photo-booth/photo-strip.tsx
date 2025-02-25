@@ -3,12 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { stickers } from "@/lib/stickers";
 import { format } from "date-fns";
+import { type Frame } from "@/lib/frames";
 
 interface PhotoStripProps {
   photos: string[];
   backgroundColor: string;
   stripName: string;
   showDate: boolean;
+  selectedFrame: Frame;
   stickerPositions: Array<{ id: string; x: number; y: number; color?: string }>;
   onDownload?: () => void;
 }
@@ -18,6 +20,7 @@ export function PhotoStrip({
   backgroundColor,
   stripName,
   showDate,
+  selectedFrame,
   stickerPositions,
   onDownload,
 }: PhotoStripProps) {
@@ -30,72 +33,137 @@ export function PhotoStrip({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Clear canvas
-    ctx.fillStyle = backgroundColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Create a new canvas for photo composition
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+    const tempCtx = tempCanvas.getContext("2d");
+    if (!tempCtx) return;
 
-    const padding = 20; // Padding between photos
-    const photoHeight = (canvas.height - 200 - (padding * 5)) / 4; // Reserve space for title and date
+    // Clear canvas and apply background
+    tempCtx.fillStyle = selectedFrame.backgroundColor;
+    tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw photos
-    photos.forEach((photo, index) => {
-      const img = new Image();
-      img.src = photo;
-      img.onload = () => {
-        const y = padding + index * (photoHeight + padding);
-        ctx.drawImage(
-          img,
-          padding,
-          y,
-          canvas.width - (padding * 2),
-          photoHeight
-        );
-      };
-    });
+    // Draw border
+    const borderWidth = 10;
+    tempCtx.strokeStyle = selectedFrame.borderColor;
+    tempCtx.lineWidth = borderWidth;
+    tempCtx.strokeRect(borderWidth/2, borderWidth/2, canvas.width - borderWidth, canvas.height - borderWidth);
 
-    // Draw title
-    ctx.font = "bold 48px Arial";
-    ctx.fillStyle = "#000000";
-    ctx.textAlign = "center";
-    const titleY = canvas.height - 100;
-    ctx.fillText(stripName || "Photo Strip", canvas.width / 2, titleY);
+    const padding = 30;
+    const photoHeight = (canvas.height - 300 - (padding * 5)) / 4; // Reserve space for title, date, and decorations
 
-    // Draw date if enabled
-    if (showDate) {
-      ctx.font = "24px Arial";
-      ctx.fillStyle = "#666666";
-      const dateText = format(new Date(), "MMMM dd, yyyy");
-      ctx.fillText(dateText, canvas.width / 2, titleY + 40);
+    // Draw decorations
+    const decorationSize = 30;
+    const drawDecorations = (decorations: string[] | undefined, x: number, y: number) => {
+      if (!decorations) return;
+      tempCtx.font = `${decorationSize}px Arial`;
+      decorations.forEach((decoration, i) => {
+        tempCtx.fillText(decoration, x + (i * decorationSize * 1.5), y);
+      });
+    };
+
+    // Top decorations
+    if (selectedFrame.decorations.top) {
+      drawDecorations(selectedFrame.decorations.top, padding * 2, padding);
     }
 
-    // Draw stickers
-    stickerPositions.forEach((pos) => {
-      const sticker = stickers.find((s) => s.id === pos.id);
-      if (sticker) {
+    // Load and draw photos
+    const loadImage = (src: string): Promise<HTMLImageElement> => {
+      return new Promise((resolve, reject) => {
         const img = new Image();
-        img.src = sticker.url;
-        img.onload = () => {
-          ctx.save();
-          if (pos.color) {
-            ctx.fillStyle = pos.color;
-            ctx.globalCompositeOperation = "source-in";
-            ctx.fillRect(pos.x, pos.y, 50, 50);
-          }
-          ctx.drawImage(img, pos.x, pos.y, 50, 50);
-          ctx.restore();
-        };
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    };
+
+    const drawAllPhotos = async () => {
+      for (let i = 0; i < photos.length; i++) {
+        try {
+          const img = await loadImage(photos[i]);
+          const y = padding * 2 + i * (photoHeight + padding);
+          tempCtx.drawImage(
+            img,
+            padding * 2,
+            y,
+            canvas.width - (padding * 4),
+            photoHeight
+          );
+        } catch (error) {
+          console.error("Error loading photo:", error);
+        }
       }
-    });
-  }, [photos, backgroundColor, stripName, showDate, stickerPositions]);
+
+      // Draw title
+      tempCtx.font = "bold 48px Arial";
+      tempCtx.fillStyle = "#000000";
+      tempCtx.textAlign = "center";
+      const titleY = canvas.height - 120;
+      tempCtx.fillText(stripName || "Photo Strip", canvas.width / 2, titleY);
+
+      // Draw date if enabled
+      if (showDate) {
+        tempCtx.font = "24px Arial";
+        tempCtx.fillStyle = "#666666";
+        const dateText = format(new Date(), "MMMM dd, yyyy");
+        tempCtx.fillText(dateText, canvas.width / 2, titleY + 40);
+      }
+
+      // Bottom decorations
+      if (selectedFrame.decorations.bottom) {
+        drawDecorations(
+          selectedFrame.decorations.bottom,
+          padding * 2,
+          canvas.height - padding
+        );
+      }
+
+      // Draw stickers
+      for (const pos of stickerPositions) {
+        const sticker = stickers.find((s) => s.id === pos.id);
+        if (sticker) {
+          try {
+            const img = await loadImage(sticker.url);
+            tempCtx.save();
+            if (pos.color) {
+              tempCtx.fillStyle = pos.color;
+              tempCtx.globalCompositeOperation = "source-in";
+              tempCtx.fillRect(pos.x, pos.y, 50, 50);
+            }
+            tempCtx.drawImage(img, pos.x, pos.y, 50, 50);
+            tempCtx.restore();
+          } catch (error) {
+            console.error("Error loading sticker:", error);
+          }
+        }
+      }
+
+      // Copy the final result to the main canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(tempCanvas, 0, 0);
+    };
+
+    drawAllPhotos();
+  }, [photos, backgroundColor, stripName, showDate, selectedFrame, stickerPositions]);
 
   const handleDownload = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Create a temporary link and trigger download
     const link = document.createElement("a");
     link.download = `${stripName || 'photo-strip'}.png`;
-    link.href = canvas.toDataURL();
-    link.click();
+    // Convert the canvas to a blob
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+    }, 'image/png');
 
     onDownload?.();
   };

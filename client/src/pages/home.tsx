@@ -4,6 +4,8 @@ import { Countdown } from "@/components/photo-booth/countdown";
 import { StickerPicker } from "@/components/photo-booth/sticker-picker";
 import { ColorPicker } from "@/components/photo-booth/color-picker";
 import { PhotoStrip } from "@/components/photo-booth/photo-strip";
+import { FramePicker } from "@/components/photo-booth/frame-picker";
+import { frames, type Frame } from "@/lib/frames";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +19,7 @@ export default function Home() {
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [stripName, setStripName] = useState("");
   const [showDate, setShowDate] = useState(true);
+  const [selectedFrame, setSelectedFrame] = useState<Frame>(frames[0]);
   const [stickerPositions, setStickerPositions] = useState<
     Array<{ id: string; x: number; y: number; color?: string }>
   >([]);
@@ -34,7 +37,7 @@ export default function Home() {
     } else {
       toast({
         title: "Photo strip complete!",
-        description: "You can now add stickers and download your photos.",
+        description: "You can now customize your strip with frames and stickers.",
       });
     }
   };
@@ -128,6 +131,11 @@ export default function Home() {
               onChange={setBackgroundColor}
             />
 
+            <FramePicker
+              selectedFrame={selectedFrame}
+              onSelectFrame={setSelectedFrame}
+            />
+
             <div>
               <h3 className="text-sm font-medium mb-2">Add Stickers</h3>
               <StickerPicker onSelectSticker={handleAddSticker} />
@@ -141,6 +149,7 @@ export default function Home() {
             backgroundColor={backgroundColor}
             stripName={stripName}
             showDate={showDate}
+            selectedFrame={selectedFrame}
             stickerPositions={stickerPositions}
           />
         </div>
