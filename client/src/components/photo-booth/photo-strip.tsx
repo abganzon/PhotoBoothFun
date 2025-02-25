@@ -102,18 +102,10 @@ export function PhotoStrip({
             const x = padding;
             const y = padding + (i * (placeholderHeight + padding));
             
+            // Draw single border for strip layout
             tempCtx.strokeStyle = '#e5e5e5';
-            tempCtx.lineWidth = 3;
+            tempCtx.lineWidth = 2;
             tempCtx.strokeRect(x, y, placeholderWidth, placeholderHeight);
-            
-            tempCtx.strokeStyle = '#f3f4f6';
-            tempCtx.lineWidth = 1;
-            tempCtx.strokeRect(
-              x + 3,
-              y + 3,
-              placeholderWidth - 6,
-              placeholderHeight - 6
-            );
           }
         } else {
           // Collage layout placeholders (2x2)
@@ -153,13 +145,10 @@ export function PhotoStrip({
               
               tempCtx.drawImage(img, x, y, scaledWidth, scaledHeight);
               
+              // Single border for strip layout images
               tempCtx.strokeStyle = '#e5e5e5';
-              tempCtx.lineWidth = 3;
+              tempCtx.lineWidth = 2;
               tempCtx.strokeRect(x, y, scaledWidth, scaledHeight);
-              
-              tempCtx.strokeStyle = '#f3f4f6';
-              tempCtx.lineWidth = 1;
-              tempCtx.strokeRect(x + 3, y + 3, scaledWidth - 6, scaledHeight - 6);
             } else {
               // Collage layout (2x2)
               const row = Math.floor(i / 2);
@@ -202,18 +191,6 @@ export function PhotoStrip({
       // Draw title section at the bottom with consistent styling
       const titleY = padding + gridHeight + titlePadding;
       
-      // Draw decorative line above title
-      const lineY = titleY - 15;
-      const lineWidth = layout === "strip" ? canvas.width * 0.8 : canvas.width * 0.6;
-      const lineStart = (canvas.width - lineWidth) / 2;
-      
-      tempCtx.beginPath();
-      tempCtx.strokeStyle = '#e5e5e5';
-      tempCtx.lineWidth = 2;
-      tempCtx.moveTo(lineStart, lineY);
-      tempCtx.lineTo(lineStart + lineWidth, lineY);
-      tempCtx.stroke();
-      
       // Draw title with consistent styling
       const titleSize = layout === "strip" ? 28 : 36;
       tempCtx.font = `bold ${titleSize}px Arial`;
@@ -228,15 +205,6 @@ export function PhotoStrip({
         tempCtx.fillStyle = dateColor;
         const dateText = format(new Date(), "MMMM dd, yyyy");
         tempCtx.fillText(dateText, canvas.width / 2, titleY + (layout === "strip" ? 30 : 35));
-        
-        // Draw decorative line below date
-        const bottomLineY = titleY + (layout === "strip" ? 45 : 50);
-        tempCtx.beginPath();
-        tempCtx.strokeStyle = '#e5e5e5';
-        tempCtx.lineWidth = 2;
-        tempCtx.moveTo(lineStart, bottomLineY);
-        tempCtx.lineTo(lineStart + lineWidth, bottomLineY);
-        tempCtx.stroke();
       }
 
       // Update main canvas with the final content
