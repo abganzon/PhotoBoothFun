@@ -35,10 +35,11 @@ export default function Home() {
       }, 1000); // Wait 1 second before starting next countdown
     } else {
       toast({
-        title: "Photo Strip Complete!",
+        title: "Photo Strip Complete! 📸",
         description: "Your photo strip is ready to be customized. Make it uniquely yours!",
         variant: "success",
         duration: 3000, // Show for 3 seconds
+        className: "font-medium",
       });
     }
   };
