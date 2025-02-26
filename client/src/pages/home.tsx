@@ -38,6 +38,7 @@ export default function Home() {
         title: "Photo Strip Complete!",
         description: "Your photo strip is ready to be customized. Make it uniquely yours!",
         variant: "success",
+        duration: 3000, // Show for 3 seconds
       });
     }
   };
@@ -48,6 +49,7 @@ export default function Home() {
         title: "Maximum photos reached",
         description: "Please clear the strip to take more photos.",
         variant: "destructive",
+        duration: 3000, // Show for 3 seconds
       });
       return;
     }
