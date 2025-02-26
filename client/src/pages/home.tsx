@@ -100,7 +100,9 @@ export default function Home() {
               <Button 
                 onClick={handleStartPhotoSequence} 
                 disabled={isCountingDown}
+                className="flex items-center gap-2"
               >
+                <Camera className="h-4 w-4" />
                 {photos.length === 0 ? "Auto Capture" : `Photos: ${photos.length}/4`}
               </Button>
               <Button
