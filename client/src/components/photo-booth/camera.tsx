@@ -1,4 +1,3 @@
-
 import React, { useRef, useCallback, useState } from "react";
 import Webcam from "react-webcam";
 import { Button } from "@/components/ui/button";
@@ -8,9 +7,11 @@ interface CameraProps {
   onCapture: (photo: string) => void;
   isCountingDown: boolean;
   timerDuration: number;
+  photosLength: number;
+  onMaxPhotos: () => void;
 }
 
-export function PhotoBoothCamera({ onCapture, isCountingDown }: CameraProps) {
+export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMaxPhotos }: CameraProps) {
   const webcamRef = useRef<Webcam>(null);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
   const [mirrored, setMirrored] = useState(true);
@@ -59,7 +60,13 @@ export function PhotoBoothCamera({ onCapture, isCountingDown }: CameraProps) {
         
         <Button
           size="icon"
-          onClick={capture}
+          onClick={() => {
+            if (photosLength >= 4) {
+              onMaxPhotos();
+            } else {
+              capture();
+            }
+          }}
           disabled={isCountingDown}
           className="h-12 w-12 rounded-full bg-white shadow-lg hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed"
         >

@@ -34,8 +34,9 @@ export default function Home() {
       }, 1000); // Wait 1 second before starting next countdown
     } else {
       toast({
-        title: "Photo strip complete!",
-        description: "You can now customize your strip with frames and stickers.",
+        title: "Photo Strip Complete!",
+        description: "Your photo strip is ready to be customized. Make it uniquely yours!",
+        variant: "success",
       });
     }
   };
@@ -74,6 +75,14 @@ export default function Home() {
               onCapture={handleCapture}
               isCountingDown={isCountingDown}
               timerDuration={timerDuration}
+              photosLength={photos.length}
+              onMaxPhotos={() => {
+                toast({
+                  title: "Maximum photos reached",
+                  description: "Please clear the strip to take more photos.",
+                  variant: "destructive",
+                });
+              }}
             />
             <Countdown
               isActive={isCountingDown}
