@@ -109,10 +109,10 @@ export default function Home() {
                 variant="destructive"
                 onClick={handleClear}
                 disabled={photos.length === 0}
-                size="icon"
-                className="h-10 w-10"
+                className="flex items-center gap-2"
               >
                 <Trash2 className="h-4 w-4" />
+                Clear
               </Button>
             </div>
             <Dialog>
