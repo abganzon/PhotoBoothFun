@@ -93,116 +93,13 @@ export default function Home() {
           </div>
 
           <div className="flex justify-between items-center">
-            <Button 
-              onClick={handleStartPhotoSequence} 
-              disabled={isCountingDown}
-            >
-              {photos.length === 0 ? "Auto Capture" : `Photos: ${photos.length}/4`}
-            </Button>
             <div className="flex gap-2">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-10 w-10"
-                  >
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold text-center">Photo Booth Settings</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-6 py-4">
-                    {/* Timer Duration */}
-                    <div className="space-y-2">
-                      <Label htmlFor="timer-duration">Timer Duration (seconds)</Label>
-                      <div className="flex items-center gap-4">
-                        <Input
-                          id="timer-duration"
-                          type="number"
-                          min="1"
-                          max="10"
-                          value={timerDuration}
-                          onChange={(e) => setTimerDuration(parseInt(e.target.value) || 5)}
-                          className="w-24"
-                        />
-                        <span className="text-sm text-gray-500">Countdown time before each photo</span>
-                      </div>
-                    </div>
-
-                    {/* Display Options */}
-                    <div className="space-y-4">
-                      <Label>Display Options</Label>
-                      <div className="bg-gray-50 rounded-lg p-4 space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-0.5">
-                            <Label htmlFor="show-name">Show Strip Name</Label>
-                            <p className="text-sm text-gray-500">Display name above photos</p>
-                          </div>
-                          <Switch
-                            id="show-name"
-                            checked={showName}
-                            onCheckedChange={setShowName}
-                          />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-0.5">
-                            <Label htmlFor="show-date">Show Date</Label>
-                            <p className="text-sm text-gray-500">Include today's date</p>
-                          </div>
-                          <Switch
-                            id="show-date"
-                            checked={showDate}
-                            onCheckedChange={setShowDate}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Colors */}
-                    <div className="space-y-4">
-                      <Label>Colors</Label>
-                      <div className="bg-gray-50 rounded-lg p-4 space-y-4">
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <Label htmlFor="background-color">Background</Label>
-                            <input
-                              type="color"
-                              value={backgroundColor}
-                              onChange={(e) => setBackgroundColor(e.target.value)}
-                              className="h-8 w-16 rounded cursor-pointer"
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <Label htmlFor="name-color">Name Color</Label>
-                            <input
-                              type="color"
-                              value={nameColor}
-                              onChange={(e) => setNameColor(e.target.value)}
-                              className="h-8 w-16 rounded cursor-pointer"
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <Label htmlFor="date-color">Date Color</Label>
-                            <input
-                              type="color"
-                              value={dateColor}
-                              onChange={(e) => setDateColor(e.target.value)}
-                              className="h-8 w-16 rounded cursor-pointer"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <Button 
+                onClick={handleStartPhotoSequence} 
+                disabled={isCountingDown}
+              >
+                {photos.length === 0 ? "Auto Capture" : `Photos: ${photos.length}/4`}
+              </Button>
               <Button
                 variant="destructive"
                 onClick={handleClear}
@@ -213,6 +110,109 @@ export default function Home() {
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-10 w-10"
+                >
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold text-center">RoBooth Settings</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6 py-4">
+                  {/* Timer Duration */}
+                  <div className="space-y-2">
+                    <Label htmlFor="timer-duration">Timer Duration (seconds)</Label>
+                    <div className="flex items-center gap-4">
+                      <Input
+                        id="timer-duration"
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={timerDuration}
+                        onChange={(e) => setTimerDuration(parseInt(e.target.value) || 5)}
+                        className="w-24"
+                      />
+                      <span className="text-sm text-gray-500">Countdown time before each photo</span>
+                    </div>
+                  </div>
+
+                  {/* Display Options */}
+                  <div className="space-y-4">
+                    <Label>Display Options</Label>
+                    <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label htmlFor="show-name">Show Strip Name</Label>
+                          <p className="text-sm text-gray-500">Display name above photos</p>
+                        </div>
+                        <Switch
+                          id="show-name"
+                          checked={showName}
+                          onCheckedChange={setShowName}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label htmlFor="show-date">Show Date</Label>
+                          <p className="text-sm text-gray-500">Include today's date</p>
+                        </div>
+                        <Switch
+                          id="show-date"
+                          checked={showDate}
+                          onCheckedChange={setShowDate}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Colors */}
+                  <div className="space-y-4">
+                    <Label>Colors</Label>
+                    <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="background-color">Background</Label>
+                          <input
+                            type="color"
+                            value={backgroundColor}
+                            onChange={(e) => setBackgroundColor(e.target.value)}
+                            className="h-8 w-16 rounded cursor-pointer"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="name-color">Name Color</Label>
+                          <input
+                            type="color"
+                            value={nameColor}
+                            onChange={(e) => setNameColor(e.target.value)}
+                            className="h-8 w-16 rounded cursor-pointer"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="date-color">Date Color</Label>
+                          <input
+                            type="color"
+                            value={dateColor}
+                            onChange={(e) => setDateColor(e.target.value)}
+                            className="h-8 w-16 rounded cursor-pointer"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
 
           <div className="space-y-4 bg-gray-50 rounded-lg p-6">
