@@ -72,15 +72,6 @@ export default function Home() {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
-  const handleMaxPhotos = () => {
-    toast({
-      title: "Maximum photos reached",
-      description: "Please clear the strip to take more photos.",
-      variant: "destructive",
-    });
-    setPhotos([]);
-  };
-
   return (
     <div className="container mx-auto py-8 bg-gradient-to-b from-blue-50 to-white text-gray-900">
       <div className="flex items-center gap-4 mb-8 justify-center">
@@ -102,29 +93,46 @@ export default function Home() {
           // Camera Step
           <div className="space-y-6 bg-white rounded-lg shadow-sm p-6 max-w-3xl mx-auto">
             <div className="relative">
-              {isCountingDown ? (
-                <Countdown onComplete={handleStartPhotoSequence} duration={timerDuration} />
-              ) : (
-                <PhotoBoothCamera
-                  onCapture={handleCapture}
-                  isCountingDown={isCountingDown}
-                  photosLength={photos.length}
-                  onMaxPhotos={handleMaxPhotos}
-                  timerDuration={timerDuration}
-                  photos={photos}
-                  onStartPhotoSequence={() => {
-                    if (photos.length >= 4) {
-                      handleMaxPhotos();
-                    } else {
-                      setIsCountingDown(true);
-                    }
-                  }}
-                  onClear={handleClear}
-                />
-              )}
+              <PhotoBoothCamera
+                onCapture={handleCapture}
+                isCountingDown={isCountingDown}
+                timerDuration={timerDuration}
+                photosLength={photos.length}
+                onMaxPhotos={() => {
+                  toast({
+                    title: "Maximum photos reached",
+                    description: "Please clear the strip to take more photos.",
+                    variant: "destructive",
+                  });
+                }}
+              />
+              <Countdown
+                isActive={isCountingDown}
+                onComplete={handleCapture}
+                duration={timerDuration}
+              />
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-between items-center">
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleStartPhotoSequence} 
+                  disabled={isCountingDown}
+                  className="flex items-center gap-2"
+                >
+                  <Camera className="h-4 w-4" />
+                  {photos.length === 0 ? "Auto Capture" : `Photos: ${photos.length}/4`}
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={handleClear}
+                  disabled={photos.length === 0}
+                  className="flex items-center gap-2"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Clear
+                </Button>
+              </div>
               <Dialog>
                 <DialogTrigger asChild>
                   <Button
