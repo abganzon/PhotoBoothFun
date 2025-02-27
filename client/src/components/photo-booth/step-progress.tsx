@@ -20,7 +20,7 @@ export function StepProgress({ currentStep, onNext, onPrevious, disableNext }: S
       {/* Step Progress */}
       <div className="flex items-center justify-center mb-8">
         {steps.map((step, index) => (
-          <React.Fragment key={step.name}>
+          <div key={step.name} className="flex items-center">
             <div className={`flex flex-col items-center ${currentStep === index ? "text-primary" : "text-gray-400"}`}>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
                 currentStep === index ? "border-primary bg-primary/10" : "border-gray-200"
@@ -32,7 +32,7 @@ export function StepProgress({ currentStep, onNext, onPrevious, disableNext }: S
             {index < steps.length - 1 && (
               <div className={`w-24 h-0.5 mx-4 ${currentStep > index ? "bg-primary" : "bg-gray-200"}`} />
             )}
-          </React.Fragment>
+          </div>
         ))}
       </div>
 
