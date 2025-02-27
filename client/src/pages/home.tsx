@@ -306,6 +306,39 @@ export default function Home() {
                 nameColor={nameColor}
                 dateColor={dateColor}
               />
+
+              {/* Captured Photos Preview */}
+              <div className="w-[2in] flex flex-col gap-4">
+                <h3 className="text-lg font-semibold text-center">Captured Photos</h3>
+                <div className="space-y-4">
+                  {[0, 1, 2, 3].map((index) => (
+                    <div
+                      key={index}
+                      className={`w-[2in] h-[2in] border-2 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center transition-all duration-500 ease-in-out transform ${
+                        photos[index] ? 'scale-100 opacity-100' : 'scale-95 opacity-60'
+                      }`}
+                    >
+                      {photos[index] ? (
+                        <div className="w-full h-full relative group">
+                          <img
+                            src={photos[index]}
+                            alt={`Photo ${index + 1}`}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <span className="text-white font-medium">Photo {index + 1}</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center gap-2 text-gray-400">
+                          <Camera className="h-8 w-8" />
+                          <span>Photo {index + 1}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         )}
