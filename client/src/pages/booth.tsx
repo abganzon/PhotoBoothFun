@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useRef, useEffect } from 'react';
-import { Camera, Settings, Image, ArrowRight } from 'lucide-react';
+import { Camera, Settings, Image, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
@@ -8,11 +8,11 @@ import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 
-type ProcessStep = 'capture' | 'customize';
+type ProcessStep = 'camera' | 'customize';
 
 export default function Booth() {
   // Process state
-  const [currentStep, setCurrentStep] = useState<ProcessStep>('capture');
+  const [currentStep, setCurrentStep] = useState<ProcessStep>('camera');
   const [capturedPhotos, setCapturedPhotos] = useState<string[]>([]);
   
   // Camera state
@@ -57,6 +57,72 @@ export default function Booth() {
       }
     };
   }, [isCameraFlipped]);
+
+  // Step progress indicator
+  const renderStepProgress = () => (
+    <div className="w-full max-w-2xl mx-auto mb-8">
+      <div className="flex items-center justify-between">
+        <div className="flex-1">
+          <div className="flex items-center">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              currentStep === 'camera' ? 'bg-primary text-white' : 
+              capturedPhotos.length === 4 ? 'bg-green-500 text-white' : 'bg-gray-200'
+            }`}>
+              <Camera className="h-5 w-5" />
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium">Step 1</p>
+              <p className="text-xs text-gray-500">Camera</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex-1 h-px bg-gray-200 mx-4" />
+        
+        <div className="flex-1">
+          <div className="flex items-center">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              currentStep === 'customize' ? 'bg-primary text-white' : 'bg-gray-200'
+            }`}>
+              <Settings className="h-5 w-5" />
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium">Step 2</p>
+              <p className="text-xs text-gray-500">Customize</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Navigation buttons
+  const renderNavigation = () => (
+    <div className="w-full max-w-7xl mx-auto px-4 mt-8">
+      <div className="flex justify-between">
+        {currentStep === 'customize' && (
+          <Button
+            variant="outline"
+            onClick={() => setCurrentStep('camera')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Camera
+          </Button>
+        )}
+        
+        {currentStep === 'camera' && capturedPhotos.length === 4 && (
+          <Button
+            onClick={() => setCurrentStep('customize')}
+            className="flex items-center gap-2 ml-auto"
+          >
+            Next: Customize
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+    </div>
+  );
 
   // Capture photo function
   const capturePhoto = () => {
@@ -148,7 +214,14 @@ export default function Booth() {
               size="lg"
               className="w-full"
             >
-              {capturedPhotos.length >= 4 ? 'Next' : 'Auto Capture'}
+              {capturedPhotos.length >= 4 ? (
+                <span className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5" />
+                  Photos Complete
+                </span>
+              ) : (
+                'Auto Capture'
+              )}
             </Button>
           </div>
         </div>
@@ -177,15 +250,6 @@ export default function Booth() {
             </div>
           ))}
         </div>
-        
-        {capturedPhotos.length >= 4 && (
-          <Button
-            className="w-full mt-4"
-            onClick={() => setCurrentStep('customize')}
-          >
-            Next: Customize Strip <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        )}
       </div>
     </div>
   );
@@ -298,7 +362,7 @@ export default function Booth() {
         <div className="mt-4 flex justify-end gap-4">
           <Button
             variant="outline"
-            onClick={() => setCurrentStep('capture')}
+            onClick={() => setCurrentStep('camera')}
           >
             Back to Camera
           </Button>
@@ -322,13 +386,13 @@ export default function Booth() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="py-4 px-6 bg-white shadow-sm mb-4">
-        <h1 className="text-2xl font-bold">
-          {currentStep === 'capture' ? 'Take Your Photos' : 'Customize Your Strip'}
-        </h1>
+      <div className="py-8 px-6">
+        {renderStepProgress()}
+        
+        {currentStep === 'camera' ? renderCaptureProcess() : renderCustomizeProcess()}
+        
+        {renderNavigation()}
       </div>
-      
-      {currentStep === 'capture' ? renderCaptureProcess() : renderCustomizeProcess()}
     </div>
   );
 } 
