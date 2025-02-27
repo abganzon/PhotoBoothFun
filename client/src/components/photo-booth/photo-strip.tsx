@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, Image as ImageIcon } from "lucide-react";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 interface PhotoStripProps {
   photos: string[];
@@ -25,6 +26,8 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
   dateColor = "#666666",
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { toast } = useToast();
+  const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -231,26 +234,93 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     drawAllPhotos();
   }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout]);
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const link = document.createElement("a");
-    link.download = `${name || 'photo'}-${format(new Date(), 'yyyy-MM-dd')}.png`;
-    link.href = canvas.toDataURL();
-    link.click();
+    const fileName = `${name || 'photo'}-${format(new Date(), 'yyyy-MM-dd')}.png`;
+
+    if (isMobile) {
+      try {
+        // Convert canvas to blob
+        const blob = await new Promise<Blob>((resolve) => {
+          canvas.toBlob((blob) => {
+            resolve(blob!);
+          }, 'image/png');
+        });
+
+        // Create a File object
+        const file = new File([blob], fileName, { type: 'image/png' });
+
+        // Check if the Web Share API is available
+        if (navigator.share && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: 'Photo Strip',
+            text: 'Download or share your photo strip'
+          });
+          
+          toast({
+            title: "Success!",
+            description: "Your photo strip is ready to be saved or shared",
+            variant: "success",
+            duration: 3000,
+          });
+        } else {
+          // Fallback for browsers that don't support sharing files
+          const downloadUrl = canvas.toDataURL();
+          const link = document.createElement("a");
+          link.download = fileName;
+          link.href = downloadUrl;
+          link.click();
+          
+          toast({
+            title: "Photo Downloaded",
+            description: "Check your device's download folder",
+            variant: "success",
+            duration: 3000,
+          });
+        }
+      } catch (error) {
+        console.error('Error sharing/downloading:', error);
+        toast({
+          title: "Download Failed",
+          description: "There was an error downloading your photo",
+          variant: "destructive",
+          duration: 3000,
+        });
+      }
+    } else {
+      // Desktop download behavior
+      const link = document.createElement("a");
+      link.download = fileName;
+      link.href = canvas.toDataURL();
+      link.click();
+      
+      toast({
+        title: "Photo Downloaded",
+        description: "Check your downloads folder",
+        variant: "success",
+        duration: 3000,
+      });
+    }
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full px-4 sm:px-0">
+    <div className="flex flex-col items-center gap-2 w-full px-2 sm:px-0">
       <canvas
         ref={canvasRef}
-        className="w-full max-w-md border-0 rounded-lg shadow-lg"
+        className="w-full max-w-[300px] border-0 rounded-lg shadow-lg"
         style={{ maxWidth: '100%', height: 'auto' }}
       />
-      <Button onClick={handleDownload} size="lg" className="w-full max-w-md">
-        <Download className="mr-2 h-4 w-4" />
-        Download Photo
+      <Button
+        onClick={handleDownload}
+        variant="outline"
+        size="sm"
+        className="flex items-center gap-2"
+      >
+        {isMobile ? <ImageIcon className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+        {isMobile ? "Save to Gallery" : "Download"}
       </Button>
     </div>
   );
