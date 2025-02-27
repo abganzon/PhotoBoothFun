@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Camera, Heart } from "lucide-react";
+import { Camera, Heart, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -29,12 +29,16 @@ export default function Landing() {
         });
         
         if (!visitResponse.ok) {
+          const errorText = await visitResponse.text();
+          console.error('Visit tracking failed:', errorText);
           throw new Error('Failed to track visit');
         }
 
         // Fetch updated count immediately after tracking visit
         const countResponse = await fetch('/api/visitors/count');
         if (!countResponse.ok) {
+          const errorText = await countResponse.text();
+          console.error('Count fetch failed:', errorText);
           throw new Error('Failed to fetch visitor count');
         }
 
@@ -43,6 +47,7 @@ export default function Landing() {
           setVisitors(data.count);
         } else {
           console.error('Invalid count data received:', data);
+          throw new Error('Invalid count data received');
         }
       } catch (error) {
         console.error('Error tracking visit or fetching count:', error);
@@ -59,6 +64,8 @@ export default function Landing() {
       try {
         const response = await fetch('/api/visitors/count');
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Count fetch failed:', errorText);
           throw new Error('Failed to fetch visitor count');
         }
 
@@ -67,6 +74,7 @@ export default function Landing() {
           setVisitors(data.count);
         } else {
           console.error('Invalid count data received:', data);
+          throw new Error('Invalid count data received');
         }
       } catch (error) {
         console.error('Error fetching visitor count:', error);
@@ -90,6 +98,11 @@ export default function Landing() {
           <Camera className="h-8 w-8 text-white" />
         </div>
         <h1 className="text-4xl font-bold text-gray-900">RoBooth</h1>
+      </div>
+
+      <div className="flex items-center justify-center mb-4 text-sm text-gray-600">
+        <Users className="h-4 w-4 mr-2" />
+        <span>{visitors} visitors in the last 24 hours</span>
       </div>
 
       <p className="text-xl text-gray-600 mb-12 text-center">
