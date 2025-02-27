@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PhotoBoothCamera } from "@/components/photo-booth/camera";
 import { Countdown } from "@/components/photo-booth/countdown";
 import { ColorPicker } from "@/components/photo-booth/color-picker";
@@ -24,7 +24,26 @@ export default function Home() {
   const [dateColor, setDateColor] = useState("#666666");
   const [layout, setLayout] = useState<"strip" | "collage">("strip");
   const [timerDuration, setTimerDuration] = useState(5);
+  const [darkMode, setDarkMode] = useState(() => {
+    // Initialize from localStorage if available
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('darkMode');
+      return saved ? JSON.parse(saved) : false;
+    }
+    return false;
+  });
   const { toast } = useToast();
+
+  // Persist dark mode preference
+  useEffect(() => {
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    // Apply dark mode to document
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   const handleCapture = (photo: string) => {
     setPhotos((prev) => [...prev, photo]);
@@ -68,12 +87,12 @@ export default function Home() {
   };
 
   return (
-    <div className="container mx-auto py-8 bg-gradient-to-b from-blue-50 to-white text-gray-900">
+    <div className={`container mx-auto py-8 ${darkMode ? 'dark bg-gray-900 text-white' : 'bg-gradient-to-b from-blue-50 to-white text-gray-900'}`}>
       <div className="flex items-center gap-4 mb-8 justify-center">
-        <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+        <div className={`w-12 h-12 ${darkMode ? 'bg-blue-500' : 'bg-primary'} rounded-lg flex items-center justify-center`}>
           <Camera className="h-8 w-8 text-white" />
         </div>
-        <h1 className="text-4xl font-bold text-gray-900">RoBooth</h1>
+        <h1 className={`text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>RoBooth</h1>
       </div>
 
       <StepProgress
@@ -86,7 +105,7 @@ export default function Home() {
       <div className="mt-8">
         {currentStep === 0 ? (
           // Camera Step
-          <div className="space-y-6 bg-white rounded-lg shadow-sm p-6 max-w-5xl mx-auto">
+          <div className={`space-y-6 ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-sm p-6 max-w-5xl mx-auto`}>
             <div className="grid md:grid-cols-[1fr,300px] gap-6">
               {/* Camera Section */}
               <div className="space-y-4">
@@ -141,22 +160,36 @@ export default function Home() {
                       </DialogTrigger>
                       <DialogContent className="max-w-md">
                         <DialogHeader>
-                          <DialogTitle className="text-2xl font-bold text-center">RoBooth Settings</DialogTitle>
+                          <DialogTitle className="text-2xl font-bold text-left">RoBooth Settings</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-6 py-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="timer-duration">Timer Duration (seconds)</Label>
-                            <div className="flex items-center gap-4">
-                              <Input
-                                id="timer-duration"
-                                type="number"
-                                min="1"
-                                max="10"
-                                value={timerDuration}
-                                onChange={(e) => setTimerDuration(parseInt(e.target.value) || 5)}
-                                className="w-24"
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="timer-duration">Timer Duration (seconds)</Label>
+                              <div className="flex items-center gap-4">
+                                <Input
+                                  id="timer-duration"
+                                  type="number"
+                                  min="1"
+                                  max="10"
+                                  value={timerDuration}
+                                  onChange={(e) => setTimerDuration(parseInt(e.target.value) || 5)}
+                                  className="w-24"
+                                />
+                                <span className="text-sm text-gray-500">Countdown time before each photo</span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-2">
+                              <div className="space-y-0.5">
+                                <Label htmlFor="dark-mode">Dark Mode</Label>
+                                <p className="text-sm text-gray-500">Enable dark theme</p>
+                              </div>
+                              <Switch
+                                id="dark-mode"
+                                checked={darkMode}
+                                onCheckedChange={setDarkMode}
                               />
-                              <span className="text-sm text-gray-500">Countdown time before each photo</span>
                             </div>
                           </div>
                         </div>
@@ -198,8 +231,8 @@ export default function Home() {
         ) : (
           // Customization Step
           <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-6 bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-semibold">Customize Your Strip</h2>
+            <div className={`space-y-6 ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-sm p-6`}>
+              <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Customize Your Strip</h2>
 
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -322,7 +355,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold">Strip Preview</h2>
+              <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Strip Preview</h2>
               <PhotoStrip
                 photos={photos}
                 layout={layout}
