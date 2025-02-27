@@ -1,8 +1,8 @@
 /// <reference types="react" />
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
-import { Camera, Heart, Users } from 'lucide-react';
+import { Camera, Heart } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,145 +15,12 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 
-type ErrorResponse = {
-  error: string;
-}
-
-type CountResponse = {
-  count: number;
-}
-
-type VisitorCountProps = {
-  count: number;
-}
-
-function VisitorCount({ count }: VisitorCountProps) {
-  return (
-    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-      <Users className="h-4 w-4" />
-      <span>{count} visitors in the last 24 hours</span>
-    </div>
-  );
-}
-
 export default function Landing() {
   const [, setLocation] = useLocation();
-  const [visitors, setVisitors] = useState(0);
   const { toast } = useToast();
 
-  useEffect(() => {
-    // Track visit and update count immediately
-    const trackVisitAndUpdateCount = async () => {
-      try {
-        // Track new visit
-        const visitResponse = await fetch('/api/visitors', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          }
-        });
-        
-        // Check content type
-        const contentType = visitResponse.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          const errorText = await visitResponse.text();
-          console.error('Visit tracking failed - Invalid content type:', contentType, 'Response:', errorText);
-          throw new Error('Invalid response from server');
-        }
-
-        if (!visitResponse.ok) {
-          const errorData = await visitResponse.json();
-          console.error('Visit tracking failed:', errorData);
-          throw new Error(errorData.error || 'Failed to track visit');
-        }
-
-        // Fetch updated count immediately after tracking visit
-        const countResponse = await fetch('/api/visitors/count', {
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-
-        // Check content type
-        const countContentType = countResponse.headers.get("content-type");
-        if (!countContentType || !countContentType.includes("application/json")) {
-          const errorText = await countResponse.text();
-          console.error('Count fetch failed - Invalid content type:', countContentType, 'Response:', errorText);
-          throw new Error('Invalid response from server');
-        }
-
-        if (!countResponse.ok) {
-          const errorData = await countResponse.json();
-          console.error('Count fetch failed:', errorData);
-          throw new Error(errorData.error || 'Failed to fetch visitor count');
-        }
-
-        const data = await countResponse.json();
-        if (typeof data.count === 'number') {
-          setVisitors(data.count);
-        } else {
-          console.error('Invalid count data received:', data);
-          throw new Error('Invalid count data received');
-        }
-      } catch (error: unknown) {
-        console.error('Error tracking visit or fetching count:', error);
-        toast({
-          title: "Error",
-          description: error instanceof Error ? error.message : "Failed to update visitor count. Please try again later.",
-          variant: "destructive",
-        });
-      }
-    };
-
-    // Function to fetch visitor count
-    const fetchVisitorCount = async () => {
-      try {
-        const response = await fetch('/api/visitors/count', {
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-
-        // Check content type
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          const errorText = await response.text();
-          console.error('Count fetch failed - Invalid content type:', contentType, 'Response:', errorText);
-          throw new Error('Invalid response from server');
-        }
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error('Count fetch failed:', errorData);
-          throw new Error(errorData.error || 'Failed to fetch visitor count');
-        }
-
-        const data = await response.json();
-        if (typeof data.count === 'number') {
-          setVisitors(data.count);
-        } else {
-          console.error('Invalid count data received:', data);
-          throw new Error('Invalid count data received');
-        }
-      } catch (error: unknown) {
-        console.error('Error fetching visitor count:', error);
-        // Don't show toast for periodic updates to avoid spamming the user
-      }
-    };
-
-    // Track visit and get initial count
-    trackVisitAndUpdateCount();
-
-    // Update count every minute
-    const interval = setInterval(fetchVisitorCount, 60000);
-
-    // Cleanup interval on unmount
-    return () => clearInterval(interval);
-  }, []); // Empty dependency array means this runs once on mount
-
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-sky-100 via-sky-200 to-sky-100 px-4"> {/* Modified background gradient */}
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-sky-100 via-sky-200 to-sky-100 px-4">
       <div className="flex items-center gap-4 mb-8">
         <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
           <Camera className="h-8 w-8 text-white" />
@@ -210,11 +77,6 @@ export default function Landing() {
 
       <div className="fixed bottom-4 flex items-center gap-4 text-sm text-gray-500">
         <span>v1.0.0</span>
-        <span>•</span>
-        <div className="flex items-center">
-          <Users className="h-4 w-4 mr-2" />
-          <span>{visitors} visitors in the last 24 hours</span>
-        </div>
         <span>•</span>
         <Dialog>
           <DialogTrigger asChild>
