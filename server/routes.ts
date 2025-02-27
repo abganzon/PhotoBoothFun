@@ -12,8 +12,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const data = insertPhotoStripSchema.parse(req.body);
       const photoStrip = await storage.createPhotoStrip(data);
+      res.setHeader('Content-Type', 'application/json');
       res.json(photoStrip);
     } catch (error) {
+      res.setHeader('Content-Type', 'application/json');
       res.status(400).json({ error: "Invalid photo strip data" });
     }
   });
@@ -26,8 +28,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ipAddress: req.ip,
       });
       const visitor = await storage.db.insert(visitors).values(data).returning();
+      res.setHeader('Content-Type', 'application/json');
       res.json(visitor[0]);
     } catch (error) {
+      res.setHeader('Content-Type', 'application/json');
       res.status(400).json({ error: "Failed to track visitor" });
     }
   });
@@ -42,8 +46,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .where(gte(visitors.timestamp, last24Hours))
         .then(result => result[0].count);
       
+      res.setHeader('Content-Type', 'application/json');
       res.json({ count: visitorCount });
     } catch (error) {
+      res.setHeader('Content-Type', 'application/json');
       res.status(500).json({ error: "Failed to get visitor count" });
     }
   });

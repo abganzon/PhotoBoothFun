@@ -53,17 +53,9 @@ export default function Landing() {
             'Accept': 'application/json'
           }
         });
-        
-        // Check content type
-        const contentType = visitResponse.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          const errorText = await visitResponse.text();
-          console.error('Visit tracking failed - Invalid content type:', contentType, 'Response:', errorText);
-          throw new Error('Invalid response from server');
-        }
 
         if (!visitResponse.ok) {
-          const errorData = await visitResponse.json();
+          const errorData = await visitResponse.json().catch(() => ({ error: 'Failed to track visit' }));
           console.error('Visit tracking failed:', errorData);
           throw new Error(errorData.error || 'Failed to track visit');
         }
@@ -75,21 +67,13 @@ export default function Landing() {
           }
         });
 
-        // Check content type
-        const countContentType = countResponse.headers.get("content-type");
-        if (!countContentType || !countContentType.includes("application/json")) {
-          const errorText = await countResponse.text();
-          console.error('Count fetch failed - Invalid content type:', countContentType, 'Response:', errorText);
-          throw new Error('Invalid response from server');
-        }
-
         if (!countResponse.ok) {
-          const errorData = await countResponse.json();
+          const errorData = await countResponse.json().catch(() => ({ error: 'Failed to fetch visitor count' }));
           console.error('Count fetch failed:', errorData);
           throw new Error(errorData.error || 'Failed to fetch visitor count');
         }
 
-        const data = await countResponse.json();
+        const data = await countResponse.json().catch(() => ({ count: 0 }));
         if (typeof data.count === 'number') {
           setVisitors(data.count);
         } else {
@@ -115,21 +99,13 @@ export default function Landing() {
           }
         });
 
-        // Check content type
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          const errorText = await response.text();
-          console.error('Count fetch failed - Invalid content type:', contentType, 'Response:', errorText);
-          throw new Error('Invalid response from server');
-        }
-
         if (!response.ok) {
-          const errorData = await response.json();
+          const errorData = await response.json().catch(() => ({ error: 'Failed to fetch visitor count' }));
           console.error('Count fetch failed:', errorData);
           throw new Error(errorData.error || 'Failed to fetch visitor count');
         }
 
-        const data = await response.json();
+        const data = await response.json().catch(() => ({ count: 0 }));
         if (typeof data.count === 'number') {
           setVisitors(data.count);
         } else {
@@ -213,7 +189,7 @@ export default function Landing() {
         <span>•</span>
         <div className="flex items-center">
           <Users className="h-4 w-4 mr-2" />
-          <span>{visitors} visitors in the last 24 hours</span>
+          <span>{visitors} visitors in 24 hrs</span>
         </div>
         <span>•</span>
         <Dialog>
