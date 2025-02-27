@@ -375,19 +375,6 @@ export default function Home() {
             </div>
 
             <div className="space-y-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Strip Preview</h2>
-                <Button
-                  variant="outline"
-                  className="flex items-center gap-2"
-                  onClick={() => {
-                    // Download functionality will be implemented here
-                  }}
-                >
-                  <Download className="h-4 w-4" />
-                  Download
-                </Button>
-              </div>
               <div className={`w-full ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-xl p-4`}>
                 <div className={`mx-auto ${layout === 'strip' ? 'max-w-[300px]' : 'max-w-[600px]'}`}>
                   <PhotoStrip
