@@ -29,21 +29,6 @@ export default function Home() {
   const handleCapture = (photo: string) => {
     setPhotos((prev) => [...prev, photo]);
     setIsCountingDown(false);
-
-    if (photos.length < 3) {
-      setTimeout(() => {
-        setIsCountingDown(true);
-      }, 1000);
-    } else {
-      toast({
-        title: "Photo Strip Complete",
-        description: "Your photo strip is ready to be customized. Make it uniquely yours!",
-        variant: "success",
-        duration: 3000,
-        className: "font-medium",
-      });
-      setCurrentStep(1); // Automatically move to customization step
-    }
   };
 
   const handleStartPhotoSequence = () => {
@@ -98,6 +83,7 @@ export default function Home() {
                 isCountingDown={isCountingDown}
                 timerDuration={timerDuration}
                 photosLength={photos.length}
+                photos={photos}
                 onMaxPhotos={() => {
                   toast({
                     title: "Maximum photos reached",
