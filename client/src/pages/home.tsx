@@ -95,16 +95,8 @@ export default function Home() {
         <h1 className={`text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>RoBooth</h1>
       </div>
 
-      <StepProgress
-        currentStep={currentStep}
-        onNext={handleNext}
-        onPrevious={handlePrevious}
-        disableNext={currentStep === 0 && photos.length < 4}
-      />
-
       <div className="mt-8">
         {currentStep === 0 ? (
-          // Camera Step
           <div className={`space-y-6 ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-sm p-6 max-w-5xl mx-auto`}>
             <div className="grid md:grid-cols-[1fr,300px] gap-6">
               {/* Camera Section */}
@@ -132,23 +124,14 @@ export default function Home() {
 
                 <div className="flex justify-between items-center">
                   <div className="flex gap-2">
-                    {photos.length < 4 ? (
-                      <Button 
-                        onClick={handleStartPhotoSequence} 
-                        disabled={isCountingDown}
-                        className="flex items-center gap-2"
-                      >
-                        <Camera className="h-4 w-4" />
-                        Auto Capture
-                      </Button>
-                    ) : (
-                      <Button 
-                        onClick={handleNext}
-                        className="flex items-center gap-2"
-                      >
-                        Next
-                      </Button>
-                    )}
+                    <Button 
+                      onClick={handleStartPhotoSequence} 
+                      disabled={isCountingDown || photos.length >= 4}
+                      className="flex items-center gap-2"
+                    >
+                      <Camera className="h-4 w-4" />
+                      Auto Capture
+                    </Button>
                     <Button
                       variant="outline"
                       onClick={handleClear}
@@ -238,11 +221,8 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          // Customization Step
           <div className="grid md:grid-cols-2 gap-8">
             <div className={`space-y-6 ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-sm p-6`}>
-              <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Customize Your Strip</h2>
-
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="strip-name" className={darkMode ? 'text-white' : ''}>Strip Name</Label>
@@ -375,13 +355,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Strip Preview</h2>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Download className="h-4 w-4" />
-                  Download
-                </Button>
-              </div>
+              <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Strip Preview</h2>
               <div className={`w-full ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-xl p-4`}>
                 <div className={`mx-auto ${layout === 'strip' ? 'max-w-[300px]' : 'max-w-[600px]'}`}>
                   <PhotoStrip
@@ -395,6 +369,12 @@ export default function Home() {
                     dateColor={dateColor}
                   />
                 </div>
+              </div>
+              <div className="flex justify-center">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Download className="h-4 w-4" />
+                  Download
+                </Button>
               </div>
             </div>
           </div>
