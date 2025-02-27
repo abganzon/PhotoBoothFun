@@ -236,62 +236,70 @@ export default function Home() {
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="strip-name">Strip Name</Label>
+                  <Label htmlFor="strip-name" className={darkMode ? 'text-white' : ''}>Strip Name</Label>
                   <Input
                     id="strip-name"
                     value={stripName}
                     onChange={(e) => setStripName(e.target.value)}
                     placeholder="Enter a name for your strip"
-                    className="bg-white"
+                    className={`${darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder:text-gray-400' : 'bg-white'}`}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Layout Style</Label>
+                  <Label className={darkMode ? 'text-white' : ''}>Layout Style</Label>
                   <div className="flex gap-4">
                     <div 
                       className={`flex-1 p-4 border rounded-lg cursor-pointer transition-colors ${
                         layout === "strip" 
-                          ? "border-primary bg-primary/10" 
-                          : "border-gray-200 hover:border-primary/50"
+                          ? darkMode 
+                            ? "border-blue-500 bg-blue-500/10" 
+                            : "border-primary bg-primary/10"
+                          : darkMode
+                            ? "border-gray-600 hover:border-blue-500/50 bg-gray-700"
+                            : "border-gray-200 hover:border-primary/50"
                       }`}
                       onClick={() => setLayout("strip")}
                     >
                       <div className="flex flex-col items-center gap-1">
-                        <div className="w-16 h-24 bg-gray-200 rounded"></div>
-                        <span className="text-sm font-medium">Strip</span>
-                        <span className="text-xs text-gray-500">1x4 Layout</span>
+                        <div className={`w-16 h-24 ${darkMode ? 'bg-gray-600' : 'bg-gray-200'} rounded`}></div>
+                        <span className={`text-sm font-medium ${darkMode ? 'text-white' : ''}`}>Strip</span>
+                        <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>1x4 Layout</span>
                       </div>
                     </div>
                     <div 
                       className={`flex-1 p-4 border rounded-lg cursor-pointer transition-colors ${
                         layout === "collage" 
-                          ? "border-primary bg-primary/10" 
-                          : "border-gray-200 hover:border-primary/50"
+                          ? darkMode 
+                            ? "border-blue-500 bg-blue-500/10" 
+                            : "border-primary bg-primary/10"
+                          : darkMode
+                            ? "border-gray-600 hover:border-blue-500/50 bg-gray-700"
+                            : "border-gray-200 hover:border-primary/50"
                       }`}
                       onClick={() => setLayout("collage")}
                     >
                       <div className="flex flex-col items-center gap-1">
-                        <div className="w-20 h-20 bg-gray-200 rounded grid grid-cols-2 gap-1 p-1">
-                          <div className="bg-white rounded"></div>
-                          <div className="bg-white rounded"></div>
-                          <div className="bg-white rounded"></div>
-                          <div className="bg-white rounded"></div>
+                        <div className={`w-20 h-20 ${darkMode ? 'bg-gray-600' : 'bg-gray-200'} rounded grid grid-cols-2 gap-1 p-1`}>
+                          <div className={darkMode ? 'bg-gray-700' : 'bg-white rounded'}></div>
+                          <div className={darkMode ? 'bg-gray-700' : 'bg-white rounded'}></div>
+                          <div className={darkMode ? 'bg-gray-700' : 'bg-white rounded'}></div>
+                          <div className={darkMode ? 'bg-gray-700' : 'bg-white rounded'}></div>
                         </div>
-                        <span className="text-sm font-medium">Collage</span>
-                        <span className="text-xs text-gray-500">2x2 Grid</span>
+                        <span className={`text-sm font-medium ${darkMode ? 'text-white' : ''}`}>Collage</span>
+                        <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>2x2 Grid</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <Label>Display Options</Label>
-                  <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+                  <Label className={darkMode ? 'text-white' : ''}>Display Options</Label>
+                  <div className={`${darkMode ? 'bg-gray-700' : 'bg-gray-50'} rounded-lg p-4 space-y-4`}>
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label htmlFor="show-name">Show Strip Name</Label>
-                        <p className="text-sm text-gray-500">Display name above photos</p>
+                        <Label htmlFor="show-name" className={darkMode ? 'text-white' : ''}>Show Strip Name</Label>
+                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Display name above photos</p>
                       </div>
                       <Switch
                         id="show-name"
@@ -301,8 +309,8 @@ export default function Home() {
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label htmlFor="show-date">Show Date</Label>
-                        <p className="text-sm text-gray-500">Include today's date</p>
+                        <Label htmlFor="show-date" className={darkMode ? 'text-white' : ''}>Show Date</Label>
+                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Include today's date</p>
                       </div>
                       <Switch
                         id="show-date"
@@ -314,11 +322,11 @@ export default function Home() {
                 </div>
 
                 <div className="space-y-4">
-                  <Label>Colors</Label>
-                  <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+                  <Label className={darkMode ? 'text-white' : ''}>Colors</Label>
+                  <div className={`${darkMode ? 'bg-gray-700' : 'bg-gray-50'} rounded-lg p-4 space-y-4`}>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label htmlFor="background-color">Background</Label>
+                        <Label htmlFor="background-color" className={darkMode ? 'text-white' : ''}>Background</Label>
                         <input
                           type="color"
                           value={backgroundColor}
@@ -329,7 +337,7 @@ export default function Home() {
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label htmlFor="name-color">Name Color</Label>
+                        <Label htmlFor="name-color" className={darkMode ? 'text-white' : ''}>Name Color</Label>
                         <input
                           type="color"
                           value={nameColor}
@@ -340,7 +348,7 @@ export default function Home() {
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label htmlFor="date-color">Date Color</Label>
+                        <Label htmlFor="date-color" className={darkMode ? 'text-white' : ''}>Date Color</Label>
                         <input
                           type="color"
                           value={dateColor}
@@ -356,16 +364,18 @@ export default function Home() {
 
             <div className="space-y-6">
               <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Strip Preview</h2>
-              <PhotoStrip
-                photos={photos}
-                layout={layout}
-                name={stripName}
-                showDate={showDate}
-                showName={showName}
-                backgroundColor={backgroundColor}
-                nameColor={nameColor}
-                dateColor={dateColor}
-              />
+              <div className={`w-full ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-xl p-4`}>
+                <PhotoStrip
+                  photos={photos}
+                  layout={layout}
+                  name={stripName}
+                  showDate={showDate}
+                  showName={showName}
+                  backgroundColor={backgroundColor}
+                  nameColor={nameColor}
+                  dateColor={dateColor}
+                />
+              </div>
             </div>
           </div>
         )}
