@@ -48,25 +48,30 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     const hasText = showName || showDate;
     const textSpace = hasText ? (showName && showDate ? 80 : 40) : 0;
 
-    // Define dimensions for strip layout
-    const stripWidth = 200; // 2 inches at 100 DPI
-    const stripHeight = 600; // 6 inches at 100 DPI
+    // Define placeholder dimensions for strip layout
+    const placeholderWidth = 200; // Reduced width for placeholder images
+    const placeholderHeight = Math.floor(placeholderWidth * 0.75);
+
     let photoWidth: number;
     let photoHeight: number;
+    let gridHeight: number;
 
     if (layout === "strip") {
-      canvas.width = stripWidth;
-      canvas.height = stripHeight;
-      photoHeight = Math.floor((stripHeight - (padding * 5)) / 4); // Height for each photo in strip
-      photoWidth = stripWidth - (padding * 2); // Width for each photo in strip
+      canvas.width = placeholderWidth + (padding * 2); // Set width to fit placeholder with padding
+      gridHeight = (placeholderHeight * 4) + (padding * 3); // Height of just the photos and spacing between them
+      // When no text, bottom padding matches side padding
+      canvas.height = (hasText ? textSpace + padding : padding) + gridHeight + padding;
     } else {
       // For collage layout
       canvas.width = 450; // Reduced from 600 to 450 for collage layout
       const gridSize = canvas.width - (padding * 2); // Total space for grid
       const cellSize = (gridSize - padding) / 2; // Size for each image cell, accounting for middle padding
+      gridHeight = (cellSize * 2) + padding; // Height of the 2x2 grid including middle padding
       photoWidth = cellSize;
       photoHeight = cellSize;
-      canvas.height = (hasText ? textSpace + padding : padding) + (cellSize * 2) + padding + padding;
+
+      // Set canvas height with text at top, when no text bottom padding matches sides
+      canvas.height = (hasText ? textSpace + padding : padding) + gridHeight + padding;
     }
 
     tempCanvas.width = canvas.width;
@@ -76,13 +81,25 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     tempCtx.fillStyle = backgroundColor;
     tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
+    if (layout === "strip") {
+      photoWidth = placeholderWidth;
+      photoHeight = placeholderHeight;
+      gridHeight = (photoHeight * 4) + (padding * 3);
+    } else {
+      // For collage, calculate cell size from total width minus outer and middle padding
+      const availableWidth = canvas.width - (padding * 2); // Space between outer borders
+      photoWidth = (availableWidth - padding) / 2; // Width of each cell
+      photoHeight = photoWidth; // Keep cells square
+      gridHeight = (photoHeight * 2) + padding;
+    }
+
     // Calculate text position - now at the top
-    const textStartY = padding * 2;
-    const lineHeight = 38;
+    const textStartY = padding * 2; // Start text from top with consistent padding
+    const lineHeight = 38; // Consistent line height
 
     // Draw title with consistent styling
     if (showName) {
-      const titleSize = layout === "strip" ? 24 : 28;
+      const titleSize = layout === "strip" ? 24 : 28; // Reduced font sizes
       tempCtx.font = `${titleSize}px Arial`;
       tempCtx.fillStyle = nameColor;
       tempCtx.textAlign = "center";
@@ -91,7 +108,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
     // Draw date if enabled
     if (showDate) {
-      const dateSize = layout === "strip" ? 16 : 18;
+      const dateSize = layout === "strip" ? 16 : 18; // Reduced font sizes
       tempCtx.font = `${dateSize}px Arial`;
       tempCtx.fillStyle = dateColor;
       tempCtx.textAlign = "center";
@@ -123,11 +140,11 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
           // Strip layout placeholders
           for (let i = 0; i < 4; i++) {
             const x = padding;
-            const y = gridStartY + (i * (photoHeight + padding));
+            const y = gridStartY + (i * (placeholderHeight + padding));
 
             tempCtx.strokeStyle = '#e5e5e5';
             tempCtx.lineWidth = 2;
-            tempCtx.strokeRect(x, y, photoWidth, photoHeight);
+            tempCtx.strokeRect(x, y, placeholderWidth, placeholderHeight);
           }
         } else {
           // Collage layout placeholders (2x2)
@@ -155,24 +172,24 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
             if (layout === "strip") {
               x = padding;
-              y = gridStartY + (i * (photoHeight + padding));
+              y = gridStartY + (i * (placeholderHeight + padding));
               
               // Calculate dimensions to maintain aspect ratio and fill placeholder
               const aspectRatio = img.width / img.height;
-              const drawWidth = photoWidth;
-              const drawHeight = photoHeight;
+              let drawWidth = placeholderWidth;
+              let drawHeight = placeholderHeight;
               let sourceX = 0;
               let sourceY = 0;
               let sourceWidth = img.width;
               let sourceHeight = img.height;
 
-              if (aspectRatio > (photoWidth / photoHeight)) {
+              if (aspectRatio > (placeholderWidth / placeholderHeight)) {
                 // Image is wider - crop sides
-                sourceWidth = Math.floor((photoWidth / photoHeight) * img.height);
+                sourceWidth = Math.floor((placeholderWidth / placeholderHeight) * img.height);
                 sourceX = Math.floor((img.width - sourceWidth) / 2);
               } else {
                 // Image is taller - crop top/bottom
-                sourceHeight = Math.floor((photoHeight / photoWidth) * img.width);
+                sourceHeight = Math.floor((placeholderHeight / placeholderWidth) * img.width);
                 sourceY = Math.floor((img.height - sourceHeight) / 2);
               }
 
