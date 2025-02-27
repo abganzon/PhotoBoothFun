@@ -1,5 +1,4 @@
-import { users, type User, type InsertUser } from "@shared/schema";
-import { photoStrips, type PhotoStrip, type InsertPhotoStrip } from "@shared/schema";
+import { type PhotoStrip, type InsertPhotoStrip } from "@shared/schema";
 
 export interface IStorage {
   createPhotoStrip(photoStrip: InsertPhotoStrip): Promise<PhotoStrip>;
@@ -16,7 +15,16 @@ export class MemStorage implements IStorage {
 
   async createPhotoStrip(insertPhotoStrip: InsertPhotoStrip): Promise<PhotoStrip> {
     const id = this.currentId++;
-    const photoStrip: PhotoStrip = { ...insertPhotoStrip, id };
+    
+    const photoStrip: PhotoStrip = {
+      id,
+      name: insertPhotoStrip.name,
+      photos: insertPhotoStrip.photos,
+      backgroundColor: insertPhotoStrip.backgroundColor,
+      showDate: insertPhotoStrip.showDate ?? true,
+      stickers: insertPhotoStrip.stickers
+    };
+    
     this.photoStrips.set(id, photoStrip);
     return photoStrip;
   }
