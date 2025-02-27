@@ -134,23 +134,13 @@ export default function Home() {
                         Auto Capture
                       </Button>
                     ) : (
-                      <>
-                        <Button
-                          onClick={handlePrevious}
-                          variant="outline"
-                          className="flex items-center gap-2"
-                        >
-                          <ChevronLeft className="h-4 w-4" />
-                          Previous
-                        </Button>
-                        <Button 
-                          onClick={handleNext}
-                          className="flex items-center gap-2"
-                        >
-                          Next
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </>
+                      <Button 
+                        onClick={handleNext}
+                        className="flex items-center gap-2"
+                      >
+                        Next
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
                     )}
                     <Button
                       variant="outline"
@@ -385,9 +375,15 @@ export default function Home() {
             </div>
 
             <div className="space-y-6">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-4">
                 <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Strip Preview</h2>
-                <Button variant="outline" className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    // Download functionality will be implemented here
+                  }}
+                >
                   <Download className="h-4 w-4" />
                   Download
                 </Button>
