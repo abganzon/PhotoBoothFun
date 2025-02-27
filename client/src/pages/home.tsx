@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Camera, Trash2, Settings, Repeat, Download } from "lucide-react";
+import { Camera, Trash2, Settings, Repeat, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { StepProgress } from "@/components/photo-booth/step-progress";
@@ -124,14 +124,34 @@ export default function Home() {
 
                 <div className="flex justify-between items-center">
                   <div className="flex gap-2">
-                    <Button 
-                      onClick={handleStartPhotoSequence} 
-                      disabled={isCountingDown || photos.length >= 4}
-                      className="flex items-center gap-2"
-                    >
-                      <Camera className="h-4 w-4" />
-                      Auto Capture
-                    </Button>
+                    {photos.length < 4 ? (
+                      <Button 
+                        onClick={handleStartPhotoSequence} 
+                        disabled={isCountingDown}
+                        className="flex items-center gap-2"
+                      >
+                        <Camera className="h-4 w-4" />
+                        Auto Capture
+                      </Button>
+                    ) : (
+                      <>
+                        <Button
+                          onClick={handlePrevious}
+                          variant="outline"
+                          className="flex items-center gap-2"
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                          Previous
+                        </Button>
+                        <Button 
+                          onClick={handleNext}
+                          className="flex items-center gap-2"
+                        >
+                          Next
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
                     <Button
                       variant="outline"
                       onClick={handleClear}
@@ -369,12 +389,6 @@ export default function Home() {
                     dateColor={dateColor}
                   />
                 </div>
-              </div>
-              <div className="flex justify-center">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Download className="h-4 w-4" />
-                  Download
-                </Button>
               </div>
             </div>
           </div>
