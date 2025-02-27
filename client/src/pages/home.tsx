@@ -243,6 +243,16 @@ export default function Home() {
         ) : (
           <div className="grid md:grid-cols-2 gap-8">
             <div className={`space-y-6 ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-sm p-6`}>
+              <div className="flex items-center mb-4">
+                <Button
+                  onClick={handlePrevious}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+              </div>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="strip-name" className={darkMode ? 'text-white' : ''}>Strip Name</Label>
@@ -375,7 +385,13 @@ export default function Home() {
             </div>
 
             <div className="space-y-6">
-              <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Strip Preview</h2>
+              <div className="flex items-center justify-between">
+                <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Strip Preview</h2>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Download className="h-4 w-4" />
+                  Download
+                </Button>
+              </div>
               <div className={`w-full ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-xl p-4`}>
                 <div className={`mx-auto ${layout === 'strip' ? 'max-w-[300px]' : 'max-w-[600px]'}`}>
                   <PhotoStrip
