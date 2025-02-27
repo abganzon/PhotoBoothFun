@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, ChangeEvent } from 'react';
 import { Camera, Settings, Image, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -9,6 +9,10 @@ import { Select } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 
 type ProcessStep = 'camera' | 'customize';
+
+interface MediaTrack extends MediaStreamTrack {
+  stop: () => void;
+}
 
 export default function Booth() {
   // Process state
@@ -53,7 +57,7 @@ export default function Booth() {
     setupCamera();
     return () => {
       if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach((track: MediaTrack) => track.stop());
       }
     };
   }, [isCameraFlipped]);
@@ -141,7 +145,7 @@ export default function Booth() {
     
     ctx.drawImage(videoRef.current, 0, 0);
     const photoUrl = canvas.toDataURL('image/jpeg');
-    setCapturedPhotos(prev => [...prev, photoUrl]);
+    setCapturedPhotos((prev: string[]) => [...prev, photoUrl]);
   };
 
   // Start countdown function
@@ -150,7 +154,7 @@ export default function Booth() {
     setCountdown(duration);
     
     const timer = setInterval(() => {
-      setCountdown(prev => {
+      setCountdown((prev: number | null) => {
         if (prev === null || prev <= 0) {
           clearInterval(timer);
           capturePhoto();
@@ -199,7 +203,7 @@ export default function Booth() {
                 <Label className="min-w-fit">Timer Duration:</Label>
                 <Slider
                   value={[duration]}
-                  onValueChange={([value]) => setDuration(value)}
+                  onValueChange={([value]: number[]) => setDuration(value)}
                   min={1}
                   max={10}
                   step={1}
@@ -231,14 +235,14 @@ export default function Booth() {
       <div className="w-96 bg-white rounded-lg p-4 shadow-lg">
         <h3 className="font-semibold mb-4">Captured Photos ({capturedPhotos.length}/4)</h3>
         <div className="grid grid-cols-2 gap-4">
-          {Array.from({ length: 4 }).map((_, i) => (
+          {capturedPhotos.map((photo: string, i: number) => (
             <div
               key={i}
               className="aspect-square rounded-lg border-2 overflow-hidden"
             >
-              {capturedPhotos[i] ? (
+              {photo ? (
                 <img
-                  src={capturedPhotos[i]}
+                  src={photo}
                   alt={`Photo ${i + 1}`}
                   className="w-full h-full object-cover"
                 />
@@ -254,6 +258,27 @@ export default function Booth() {
     </div>
   );
 
+  // Customization state handlers
+  const handleStripNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStripName(e.target.value);
+  };
+
+  const handleBgColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBgColor(e.target.value);
+  };
+
+  const handleLayoutChange = (value: string) => {
+    setLayout(value as '2x2' | 'strip');
+  };
+
+  const handleShowNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setShowName(e.target.checked);
+  };
+
+  const handleShowDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setShowDate(e.target.checked);
+  };
+
   // Render customize process
   const renderCustomizeProcess = () => (
     <div className="flex gap-8 w-full max-w-7xl mx-auto p-4">
@@ -266,7 +291,7 @@ export default function Booth() {
             <Label className="text-sm font-medium mb-1.5">Strip Layout</Label>
             <Select
               value={layout}
-              onValueChange={value => setLayout(value as '2x2' | 'strip')}
+              onValueChange={handleLayoutChange}
             >
               <option value="2x2">2x2 Grid Layout</option>
               <option value="strip">Vertical Strip Layout</option>
@@ -277,7 +302,7 @@ export default function Booth() {
             <Label className="text-sm font-medium mb-1.5">Strip Name</Label>
             <Input
               value={stripName}
-              onChange={e => setStripName(e.target.value)}
+              onChange={handleStripNameChange}
               placeholder="Enter a name for your strip"
             />
           </div>
@@ -288,13 +313,13 @@ export default function Booth() {
               <Input
                 type="color"
                 value={bgColor}
-                onChange={e => setBgColor(e.target.value)}
+                onChange={handleBgColorChange}
                 className="w-20 h-10 p-1"
               />
               <Input
                 type="text"
                 value={bgColor}
-                onChange={e => setBgColor(e.target.value)}
+                onChange={handleBgColorChange}
                 placeholder="#FFFFFF"
                 className="flex-1"
               />
@@ -308,7 +333,7 @@ export default function Booth() {
                 <input
                   type="checkbox"
                   checked={showName}
-                  onChange={e => setShowName(e.target.checked)}
+                  onChange={handleShowNameChange}
                   className="rounded"
                 />
                 Show Strip Name
@@ -318,7 +343,7 @@ export default function Booth() {
                 <input
                   type="checkbox"
                   checked={showDate}
-                  onChange={e => setShowDate(e.target.checked)}
+                  onChange={handleShowDateChange}
                   className="rounded"
                 />
                 Show Date
@@ -335,7 +360,7 @@ export default function Booth() {
           style={{ backgroundColor: bgColor }}
         >
           <div className={`grid ${layout === '2x2' ? 'grid-cols-2' : 'grid-cols-1'} gap-4 p-4`}>
-            {capturedPhotos.map((photo, i) => (
+            {capturedPhotos.map((photo: string, i: number) => (
               <img
                 key={i}
                 src={photo}
