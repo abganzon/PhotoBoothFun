@@ -1,25 +1,25 @@
+import { users, type User, type InsertUser } from "@shared/schema";
 import { photoStrips, type PhotoStrip, type InsertPhotoStrip } from "@shared/schema";
-import { db } from "./db";
 
 export interface IStorage {
   createPhotoStrip(photoStrip: InsertPhotoStrip): Promise<PhotoStrip>;
-  db: typeof db;
 }
 
-export class Storage implements IStorage {
-  db: typeof db;
+export class MemStorage implements IStorage {
+  private photoStrips: Map<number, PhotoStrip>;
+  currentId: number;
 
   constructor() {
-    this.db = db;
+    this.photoStrips = new Map();
+    this.currentId = 1;
   }
 
   async createPhotoStrip(insertPhotoStrip: InsertPhotoStrip): Promise<PhotoStrip> {
-    const [photoStrip] = await this.db
-      .insert(photoStrips)
-      .values(insertPhotoStrip)
-      .returning();
+    const id = this.currentId++;
+    const photoStrip: PhotoStrip = { ...insertPhotoStrip, id };
+    this.photoStrips.set(id, photoStrip);
     return photoStrip;
   }
 }
 
-export const storage = new Storage();
+export const storage = new MemStorage();
