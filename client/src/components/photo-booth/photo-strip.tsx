@@ -314,7 +314,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         size="sm"
         className="flex items-center gap-2"
       >
-        {isMobile ? <ImageIcon className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+        {isMobile ? <ImageIcon className="h-7 w-7" /> : <Download className="h-7 w-7" />}
         {isMobile ? "Save to Gallery" : "Download"}
       </Button>
       <canvas
