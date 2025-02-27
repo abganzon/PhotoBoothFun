@@ -53,9 +53,9 @@ export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMa
           variant="outline"
           size="icon"
           onClick={() => setMirrored(!mirrored)}
-          className="h-12 w-12 rounded-full bg-white/90 hover:bg-white shadow-lg border-2"
+          className="h-12 w-12 rounded-full bg-white/90 hover:bg-white shadow-lg border-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-600"
         >
-          <FlipHorizontal className="h-6 w-6" />
+          <FlipHorizontal className="h-6 w-6 dark:text-white" />
         </Button>
         
         <Button
@@ -78,9 +78,9 @@ export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMa
             variant="outline"
             size="icon"
             onClick={toggleCamera}
-            className="h-12 w-12 rounded-full bg-white/90 hover:bg-white shadow-lg border-2"
+            className="h-12 w-12 rounded-full bg-white/90 hover:bg-white shadow-lg border-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-600"
           >
-            <Repeat className="h-6 w-6" />
+            <Repeat className="h-6 w-6 dark:text-white" />
           </Button>
         )}
       </div>
