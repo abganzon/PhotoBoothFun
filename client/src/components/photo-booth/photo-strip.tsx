@@ -51,12 +51,14 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     // Define dimensions for strip layout
     const stripWidth = 200; // 2 inches at 100 DPI
     const stripHeight = 600; // 6 inches at 100 DPI
-    const photoHeight = Math.floor((stripHeight - (padding * 5)) / 4); // Height for each photo in strip
-    const photoWidth = stripWidth - (padding * 2); // Width for each photo in strip
+    let photoWidth: number;
+    let photoHeight: number;
 
     if (layout === "strip") {
       canvas.width = stripWidth;
       canvas.height = stripHeight;
+      photoHeight = Math.floor((stripHeight - (padding * 5)) / 4); // Height for each photo in strip
+      photoWidth = stripWidth - (padding * 2); // Width for each photo in strip
     } else {
       // For collage layout
       canvas.width = 450; // Reduced from 600 to 450 for collage layout
@@ -157,8 +159,8 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
               
               // Calculate dimensions to maintain aspect ratio and fill placeholder
               const aspectRatio = img.width / img.height;
-              let drawWidth = photoWidth;
-              let drawHeight = photoHeight;
+              const drawWidth = photoWidth;
+              const drawHeight = photoHeight;
               let sourceX = 0;
               let sourceY = 0;
               let sourceWidth = img.width;
