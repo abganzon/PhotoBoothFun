@@ -37,12 +37,11 @@ export default function Home() {
     } else {
       toast({
         title: "Photo Strip Complete",
-        description: "Your photo strip is ready to be customized. Make it uniquely yours!",
+        description: "Your photo strip is ready to be customized. Click 'Next' to continue!",
         variant: "success",
         duration: 3000,
         className: "font-medium",
       });
-      setCurrentStep(1); // Automatically move to customization step
     }
   };
 
@@ -72,6 +71,14 @@ export default function Home() {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
+  const handleMaxPhotos = () => {
+    toast({
+      title: "Maximum photos reached",
+      description: "Please clear the strip to take more photos.",
+      variant: "destructive",
+    });
+  };
+
   return (
     <div className="container mx-auto py-8 bg-gradient-to-b from-blue-50 to-white text-gray-900">
       <div className="flex items-center gap-4 mb-8 justify-center">
@@ -93,24 +100,18 @@ export default function Home() {
           // Camera Step
           <div className="space-y-6 bg-white rounded-lg shadow-sm p-6 max-w-3xl mx-auto">
             <div className="relative">
-              <PhotoBoothCamera
-                onCapture={handleCapture}
-                isCountingDown={isCountingDown}
-                timerDuration={timerDuration}
-                photosLength={photos.length}
-                onMaxPhotos={() => {
-                  toast({
-                    title: "Maximum photos reached",
-                    description: "Please clear the strip to take more photos.",
-                    variant: "destructive",
-                  });
-                }}
-              />
-              <Countdown
-                isActive={isCountingDown}
-                onComplete={handleCapture}
-                duration={timerDuration}
-              />
+              {isCountingDown ? (
+                <Countdown onComplete={handleStartPhotoSequence} duration={timerDuration} />
+              ) : (
+                <PhotoBoothCamera
+                  onCapture={handleCapture}
+                  isCountingDown={isCountingDown}
+                  photosLength={photos.length}
+                  onMaxPhotos={handleMaxPhotos}
+                  timerDuration={timerDuration}
+                  photos={photos}
+                />
+              )}
             </div>
 
             <div className="flex justify-between items-center">
