@@ -43,8 +43,9 @@ export default function Landing() {
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    // Initialize WebSocket connection
-    const ws = new WebSocket(`ws://${window.location.host}`);
+    // Use secure WebSocket if page is loaded over HTTPS
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const ws = new WebSocket(`${protocol}//${window.location.host}`);
     wsRef.current = ws;
 
     ws.onmessage = (event) => {
@@ -63,7 +64,7 @@ export default function Landing() {
       // Attempt to reconnect after 5 seconds
       setTimeout(() => {
         if (wsRef.current === ws) { // Only reconnect if this is still the current ws
-          wsRef.current = new WebSocket(`ws://${window.location.host}`);
+          wsRef.current = new WebSocket(`${protocol}//${window.location.host}`);
         }
       }, 5000);
     };
