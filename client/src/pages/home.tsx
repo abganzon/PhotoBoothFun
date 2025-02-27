@@ -262,7 +262,11 @@ export default function Home() {
                       onClick={() => setLayout("strip")}
                     >
                       <div className="flex flex-col items-center gap-1">
-                        <div className={`w-16 h-24 ${darkMode ? 'bg-gray-600' : 'bg-gray-200'} rounded`}></div>
+                        <div className={`w-20 h-[120px] ${darkMode ? 'bg-gray-600' : 'bg-gray-200'} rounded flex flex-col gap-1 p-1`}>
+                          {[...Array(4)].map((_, i) => (
+                            <div key={i} className={`flex-1 ${darkMode ? 'bg-gray-700' : 'bg-white'} rounded`} />
+                          ))}
+                        </div>
                         <span className={`text-sm font-medium ${darkMode ? 'text-white' : ''}`}>Strip</span>
                         <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>1x4 Layout</span>
                       </div>
@@ -280,11 +284,10 @@ export default function Home() {
                       onClick={() => setLayout("collage")}
                     >
                       <div className="flex flex-col items-center gap-1">
-                        <div className={`w-20 h-20 ${darkMode ? 'bg-gray-600' : 'bg-gray-200'} rounded grid grid-cols-2 gap-1 p-1`}>
-                          <div className={darkMode ? 'bg-gray-700' : 'bg-white rounded'}></div>
-                          <div className={darkMode ? 'bg-gray-700' : 'bg-white rounded'}></div>
-                          <div className={darkMode ? 'bg-gray-700' : 'bg-white rounded'}></div>
-                          <div className={darkMode ? 'bg-gray-700' : 'bg-white rounded'}></div>
+                        <div className={`w-24 h-24 ${darkMode ? 'bg-gray-600' : 'bg-gray-200'} rounded grid grid-cols-2 gap-1 p-1`}>
+                          {[...Array(4)].map((_, i) => (
+                            <div key={i} className={`aspect-[4/3] ${darkMode ? 'bg-gray-700' : 'bg-white'} rounded`} />
+                          ))}
                         </div>
                         <span className={`text-sm font-medium ${darkMode ? 'text-white' : ''}`}>Collage</span>
                         <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>2x2 Grid</span>
@@ -365,16 +368,18 @@ export default function Home() {
             <div className="space-y-6">
               <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Strip Preview</h2>
               <div className={`w-full ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-xl p-4`}>
-                <PhotoStrip
-                  photos={photos}
-                  layout={layout}
-                  name={stripName}
-                  showDate={showDate}
-                  showName={showName}
-                  backgroundColor={backgroundColor}
-                  nameColor={nameColor}
-                  dateColor={dateColor}
-                />
+                <div className={`mx-auto ${layout === 'strip' ? 'max-w-[300px]' : 'max-w-[600px]'}`}>
+                  <PhotoStrip
+                    photos={photos}
+                    layout={layout}
+                    name={stripName}
+                    showDate={showDate}
+                    showName={showName}
+                    backgroundColor={backgroundColor}
+                    nameColor={nameColor}
+                    dateColor={dateColor}
+                  />
+                </div>
               </div>
             </div>
           </div>
