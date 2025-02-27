@@ -1,6 +1,6 @@
 /// <reference types="react" />
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Camera, Heart, Users } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
@@ -38,14 +38,43 @@ function VisitorCount({ count }: VisitorCountProps) {
 
 export default function Landing() {
   const [, setLocation] = useLocation();
-  const [visitors, setVisitors] = useState(0);
+  const [visitors, setVisitors] = useState(1); // Start with 1 visitor
   const { toast } = useToast();
+  const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    // Track visit and update count immediately
-    const trackVisitAndUpdateCount = async () => {
+    // Initialize WebSocket connection
+    const ws = new WebSocket(`ws://${window.location.host}`);
+    wsRef.current = ws;
+
+    ws.onmessage = (event) => {
       try {
-        // Track new visit
+        const data = JSON.parse(event.data);
+        if (data.type === 'visitorCount') {
+          setVisitors(data.count);
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    };
+
+    ws.onclose = () => {
+      console.log('WebSocket connection closed');
+      // Attempt to reconnect after 5 seconds
+      setTimeout(() => {
+        if (wsRef.current === ws) { // Only reconnect if this is still the current ws
+          wsRef.current = new WebSocket(`ws://${window.location.host}`);
+        }
+      }, 5000);
+    };
+
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+
+    // Track visit
+    const trackVisit = async () => {
+      try {
         const visitResponse = await fetch('/api/visitors', {
           method: 'POST',
           headers: {
@@ -59,73 +88,26 @@ export default function Landing() {
           console.error('Visit tracking failed:', errorData);
           throw new Error(errorData.error || 'Failed to track visit');
         }
-
-        // Fetch updated count immediately after tracking visit
-        const countResponse = await fetch('/api/visitors/count', {
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-
-        if (!countResponse.ok) {
-          const errorData = await countResponse.json().catch(() => ({ error: 'Failed to fetch visitor count' }));
-          console.error('Count fetch failed:', errorData);
-          throw new Error(errorData.error || 'Failed to fetch visitor count');
-        }
-
-        const data = await countResponse.json().catch(() => ({ count: 0 }));
-        if (typeof data.count === 'number') {
-          setVisitors(data.count);
-        } else {
-          console.error('Invalid count data received:', data);
-          throw new Error('Invalid count data received');
-        }
       } catch (error: unknown) {
-        console.error('Error tracking visit or fetching count:', error);
+        console.error('Error tracking visit:', error);
         toast({
           title: "Error",
-          description: error instanceof Error ? error.message : "Failed to update visitor count. Please try again later.",
+          description: error instanceof Error ? error.message : "Failed to track visit. Please try again later.",
           variant: "destructive",
         });
       }
     };
 
-    // Function to fetch visitor count
-    const fetchVisitorCount = async () => {
-      try {
-        const response = await fetch('/api/visitors/count', {
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
+    // Track visit when component mounts
+    trackVisit();
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: 'Failed to fetch visitor count' }));
-          console.error('Count fetch failed:', errorData);
-          throw new Error(errorData.error || 'Failed to fetch visitor count');
-        }
-
-        const data = await response.json().catch(() => ({ count: 0 }));
-        if (typeof data.count === 'number') {
-          setVisitors(data.count);
-        } else {
-          console.error('Invalid count data received:', data);
-          throw new Error('Invalid count data received');
-        }
-      } catch (error: unknown) {
-        console.error('Error fetching visitor count:', error);
-        // Don't show toast for periodic updates to avoid spamming the user
+    // Cleanup WebSocket connection on unmount
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
       }
     };
-
-    // Track visit and get initial count
-    trackVisitAndUpdateCount();
-
-    // Update count every minute
-    const interval = setInterval(fetchVisitorCount, 60000);
-
-    // Cleanup interval on unmount
-    return () => clearInterval(interval);
   }, []); // Empty dependency array means this runs once on mount
 
   return (
