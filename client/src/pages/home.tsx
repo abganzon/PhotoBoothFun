@@ -26,13 +26,30 @@ export default function Home() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Track visit
-    fetch('/api/visitors', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
+    // Track visit and update count immediately
+    const trackVisitAndUpdateCount = async () => {
+      try {
+        // Track new visit
+        await fetch('/api/visitors', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // Fetch updated count immediately after tracking visit
+        const response = await fetch('/api/visitors/count');
+        const data = await response.json();
+        setVisitorCount(data.count);
+      } catch (error) {
+        console.error('Error tracking visit or fetching count:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update visitor count. Please try again later.",
+          variant: "destructive",
+        });
       }
-    });
+    };
 
     // Function to fetch visitor count
     const fetchVisitorCount = async () => {
@@ -45,14 +62,15 @@ export default function Home() {
       }
     };
 
-    // Fetch initial count
-    fetchVisitorCount();
+    // Track visit and get initial count
+    trackVisitAndUpdateCount();
 
     // Update count every minute
     const interval = setInterval(fetchVisitorCount, 60000);
 
+    // Cleanup interval on unmount
     return () => clearInterval(interval);
-  }, []);
+  }, []); // Empty dependency array means this runs once on mount
 
   const handleCapture = (photo: string) => {
     setPhotos((prev) => [...prev, photo]);
