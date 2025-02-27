@@ -48,14 +48,14 @@ export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMa
         />
       </div>
       
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-3 sm:gap-4">
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center gap-4">
         <Button
           variant="outline"
           size="icon"
           onClick={() => setMirrored(!mirrored)}
-          className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-white/90 hover:bg-white shadow-lg border-2"
+          className="h-12 w-12 rounded-full bg-white/90 hover:bg-white shadow-lg border-2"
         >
-          <FlipHorizontal className="h-5 w-5 sm:h-6 sm:w-6" />
+          <FlipHorizontal className="h-6 w-6" />
         </Button>
         
         <Button
@@ -68,9 +68,9 @@ export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMa
             }
           }}
           disabled={isCountingDown}
-          className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-white shadow-lg hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-12 w-12 rounded-full bg-white shadow-lg hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <CameraIcon className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+          <CameraIcon className="h-8 w-8 text-primary" />
         </Button>
         
         {isMobile && (
@@ -78,9 +78,9 @@ export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMa
             variant="outline"
             size="icon"
             onClick={toggleCamera}
-            className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-white/90 hover:bg-white shadow-lg border-2"
+            className="h-12 w-12 rounded-full bg-white/90 hover:bg-white shadow-lg border-2"
           >
-            <Repeat className="h-5 w-5 sm:h-6 sm:w-6" />
+            <Repeat className="h-6 w-6" />
           </Button>
         )}
       </div>
