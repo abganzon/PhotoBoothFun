@@ -130,41 +130,40 @@ export default function Home() {
                       <Repeat className="h-4 w-4" />
                       Retake
                     </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="flex items-center justify-center w-10 h-10 p-0"
+                        >
+                          <Settings className="h-4 w-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle className="text-2xl font-bold text-center">RoBooth Settings</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-6 py-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="timer-duration">Timer Duration (seconds)</Label>
+                            <div className="flex items-center gap-4">
+                              <Input
+                                id="timer-duration"
+                                type="number"
+                                min="1"
+                                max="10"
+                                value={timerDuration}
+                                onChange={(e) => setTimerDuration(parseInt(e.target.value) || 5)}
+                                className="w-24"
+                              />
+                              <span className="text-sm text-gray-500">Countdown time before each photo</span>
+                            </div>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
-
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full flex items-center justify-center"
-                    >
-                      <Settings className="h-4 w-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-md">
-                    <DialogHeader>
-                      <DialogTitle className="text-2xl font-bold text-center">RoBooth Settings</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-6 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="timer-duration">Timer Duration (seconds)</Label>
-                        <div className="flex items-center gap-4">
-                          <Input
-                            id="timer-duration"
-                            type="number"
-                            min="1"
-                            max="10"
-                            value={timerDuration}
-                            onChange={(e) => setTimerDuration(parseInt(e.target.value) || 5)}
-                            className="w-24"
-                          />
-                          <span className="text-sm text-gray-500">Countdown time before each photo</span>
-                        </div>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
               </div>
 
               {/* Preview Grid */}
@@ -188,7 +187,6 @@ export default function Home() {
                       )}
                       {photos[index] && (
                         <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <span className="text-white font-medium">Photo {index + 1}</span>
                         </div>
                       )}
                     </div>
