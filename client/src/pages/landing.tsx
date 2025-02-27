@@ -21,17 +21,29 @@ export default function Landing() {
     const trackVisitAndUpdateCount = async () => {
       try {
         // Track new visit
-        await fetch('/api/visitors', {
+        const visitResponse = await fetch('/api/visitors', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           }
         });
+        
+        if (!visitResponse.ok) {
+          throw new Error('Failed to track visit');
+        }
 
         // Fetch updated count immediately after tracking visit
-        const response = await fetch('/api/visitors/count');
-        const data = await response.json();
-        setVisitors(data.count);
+        const countResponse = await fetch('/api/visitors/count');
+        if (!countResponse.ok) {
+          throw new Error('Failed to fetch visitor count');
+        }
+
+        const data = await countResponse.json();
+        if (typeof data.count === 'number') {
+          setVisitors(data.count);
+        } else {
+          console.error('Invalid count data received:', data);
+        }
       } catch (error) {
         console.error('Error tracking visit or fetching count:', error);
         toast({
@@ -46,8 +58,16 @@ export default function Landing() {
     const fetchVisitorCount = async () => {
       try {
         const response = await fetch('/api/visitors/count');
+        if (!response.ok) {
+          throw new Error('Failed to fetch visitor count');
+        }
+
         const data = await response.json();
-        setVisitors(data.count);
+        if (typeof data.count === 'number') {
+          setVisitors(data.count);
+        } else {
+          console.error('Invalid count data received:', data);
+        }
       } catch (error) {
         console.error('Error fetching visitor count:', error);
       }
