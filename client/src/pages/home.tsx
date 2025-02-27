@@ -137,10 +137,9 @@ export default function Home() {
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
-                      className="w-full flex items-center gap-2 mt-2"
+                      className="w-full flex items-center justify-center"
                     >
                       <Settings className="h-4 w-4" />
-                      Camera Settings
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-md">
@@ -170,7 +169,6 @@ export default function Home() {
 
               {/* Preview Grid */}
               <div className="flex flex-col gap-2">
-                <h3 className="font-medium text-gray-700">Photo Preview</h3>
                 <div className="w-full grid grid-cols-2 gap-2 p-4 bg-gray-100 rounded-xl">
                   {[...Array(4)].map((_, index) => (
                     <div
