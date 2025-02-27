@@ -308,11 +308,6 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
   return (
     <div className="flex flex-col items-center gap-2 w-full px-2 sm:px-0">
-      <canvas
-        ref={canvasRef}
-        className="w-full max-w-[250px] border-0 rounded-lg shadow-lg"
-        style={{ maxWidth: '100%', height: 'auto' }}
-      />
       <Button
         onClick={handleDownload}
         variant="outline"
@@ -322,6 +317,11 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         {isMobile ? <ImageIcon className="h-4 w-4" /> : <Download className="h-4 w-4" />}
         {isMobile ? "Save to Gallery" : "Download"}
       </Button>
+      <canvas
+        ref={canvasRef}
+        className="w-full max-w-[250px] border-0 rounded-lg shadow-lg"
+        style={{ maxWidth: '100%', height: 'auto' }}
+      />
     </div>
   );
 };
