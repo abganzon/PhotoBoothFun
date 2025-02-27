@@ -37,11 +37,12 @@ export default function Home() {
     } else {
       toast({
         title: "Photo Strip Complete",
-        description: "Click 'Next' when you're ready to customize your photos!",
+        description: "Your photo strip is ready to be customized. Make it uniquely yours!",
         variant: "success",
         duration: 3000,
         className: "font-medium",
       });
+      setCurrentStep(1); // Automatically move to customization step
     }
   };
 
@@ -55,20 +56,12 @@ export default function Home() {
       });
       return;
     }
+    setPhotos([]);
     setIsCountingDown(true);
   };
 
   const handleClear = () => {
     setPhotos([]);
-    setIsCountingDown(false);
-  };
-
-  const handleMaxPhotos = () => {
-    toast({
-      title: "Maximum photos reached",
-      description: "Click 'Next' to customize your photos or 'Clear' to start over.",
-      variant: "destructive",
-    });
   };
 
   const handleNext = () => {
@@ -100,19 +93,24 @@ export default function Home() {
           // Camera Step
           <div className="space-y-6 bg-white rounded-lg shadow-sm p-6 max-w-3xl mx-auto">
             <div className="relative">
-              {isCountingDown ? (
-                <Countdown onComplete={handleStartPhotoSequence} duration={timerDuration} />
-              ) : (
-                <PhotoBoothCamera
-                  onCapture={handleCapture}
-                  isCountingDown={isCountingDown}
-                  photosLength={photos.length}
-                  onMaxPhotos={handleMaxPhotos}
-                  timerDuration={timerDuration}
-                  photos={photos}
-                  onClear={handleClear}
-                />
-              )}
+              <PhotoBoothCamera
+                onCapture={handleCapture}
+                isCountingDown={isCountingDown}
+                timerDuration={timerDuration}
+                photosLength={photos.length}
+                onMaxPhotos={() => {
+                  toast({
+                    title: "Maximum photos reached",
+                    description: "Please clear the strip to take more photos.",
+                    variant: "destructive",
+                  });
+                }}
+              />
+              <Countdown
+                isActive={isCountingDown}
+                onComplete={handleCapture}
+                duration={timerDuration}
+              />
             </div>
 
             <div className="flex justify-between items-center">
