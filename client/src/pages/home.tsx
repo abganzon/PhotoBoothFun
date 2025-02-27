@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PhotoBoothCamera } from "@/components/photo-booth/camera";
 import { Countdown } from "@/components/photo-booth/countdown";
 import { ColorPicker } from "@/components/photo-booth/color-picker";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Camera, Trash2, Settings } from "lucide-react";
+import { Camera, Trash2, Settings, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
@@ -22,7 +22,37 @@ export default function Home() {
   const [dateColor, setDateColor] = useState("#666666");
   const [layout, setLayout] = useState<"strip" | "collage">("strip");
   const [timerDuration, setTimerDuration] = useState(5);
+  const [visitorCount, setVisitorCount] = useState(0);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Track visit
+    fetch('/api/visitors', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    // Function to fetch visitor count
+    const fetchVisitorCount = async () => {
+      try {
+        const response = await fetch('/api/visitors/count');
+        const data = await response.json();
+        setVisitorCount(data.count);
+      } catch (error) {
+        console.error('Error fetching visitor count:', error);
+      }
+    };
+
+    // Fetch initial count
+    fetchVisitorCount();
+
+    // Update count every minute
+    const interval = setInterval(fetchVisitorCount, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleCapture = (photo: string) => {
     setPhotos((prev) => [...prev, photo]);
@@ -70,6 +100,11 @@ export default function Home() {
           <Camera className="h-8 w-8 text-white" />
         </div>
         <h1 className="text-4xl font-bold text-gray-900">RoBooth</h1>
+      </div>
+
+      <div className="flex items-center justify-center mb-4 text-sm text-gray-600">
+        <Users className="h-4 w-4 mr-2" />
+        <span>{visitorCount} visitors in the last 24 hours</span>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
