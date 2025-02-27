@@ -68,9 +68,9 @@ export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMa
             }
           }}
           disabled={isCountingDown}
-          className="h-12 w-12 rounded-full bg-white shadow-lg hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-12 w-12 rounded-full bg-white shadow-lg hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:hover:bg-gray-700"
         >
-          <CameraIcon className="h-8 w-8 text-primary" />
+          <CameraIcon className="h-8 w-8 text-primary dark:text-white" />
         </Button>
         
         {isMobile && (
