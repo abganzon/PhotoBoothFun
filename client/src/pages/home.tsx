@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { PhotoBoothCamera } from "@/components/photo-booth/camera";
 import { Countdown } from "@/components/photo-booth/countdown";
 import { ColorPicker } from "@/components/photo-booth/color-picker";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Camera, Trash2, Settings, Users } from "lucide-react";
+import { Camera, Trash2, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
@@ -22,75 +22,7 @@ export default function Home() {
   const [dateColor, setDateColor] = useState("#666666");
   const [layout, setLayout] = useState<"strip" | "collage">("strip");
   const [timerDuration, setTimerDuration] = useState(5);
-  const [visitorCount, setVisitorCount] = useState(0);
   const { toast } = useToast();
-
-  useEffect(() => {
-    // Track visit and update count immediately
-    const trackVisitAndUpdateCount = async () => {
-      try {
-        // Track new visit
-        const visitResponse = await fetch('/api/visitors', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (!visitResponse.ok) {
-          throw new Error('Failed to track visit');
-        }
-
-        // Fetch updated count immediately after tracking visit
-        const countResponse = await fetch('/api/visitors/count');
-        if (!countResponse.ok) {
-          throw new Error('Failed to fetch visitor count');
-        }
-
-        const data = await countResponse.json();
-        if (typeof data.count === 'number') {
-          setVisitorCount(data.count);
-        } else {
-          console.error('Invalid count data received:', data);
-        }
-      } catch (error) {
-        console.error('Error tracking visit or fetching count:', error);
-        toast({
-          title: "Error",
-          description: "Failed to update visitor count. Please try again later.",
-          variant: "destructive",
-        });
-      }
-    };
-
-    // Function to fetch visitor count
-    const fetchVisitorCount = async () => {
-      try {
-        const response = await fetch('/api/visitors/count');
-        if (!response.ok) {
-          throw new Error('Failed to fetch visitor count');
-        }
-
-        const data = await response.json();
-        if (typeof data.count === 'number') {
-          setVisitorCount(data.count);
-        } else {
-          console.error('Invalid count data received:', data);
-        }
-      } catch (error) {
-        console.error('Error fetching visitor count:', error);
-      }
-    };
-
-    // Track visit and get initial count
-    trackVisitAndUpdateCount();
-
-    // Update count every minute
-    const interval = setInterval(fetchVisitorCount, 60000);
-
-    // Cleanup interval on unmount
-    return () => clearInterval(interval);
-  }, []); // Empty dependency array means this runs once on mount
 
   const handleCapture = (photo: string) => {
     setPhotos((prev) => [...prev, photo]);
@@ -130,19 +62,13 @@ export default function Home() {
     setPhotos([]);
   };
 
-
   return (
-    <div className="container mx-auto py-8 bg-gradient-to-b from-blue-50 to-white text-gray-900"> {/* Modified background */}
+    <div className="container mx-auto py-8 bg-gradient-to-b from-blue-50 to-white text-gray-900">
       <div className="flex items-center gap-4 mb-8 justify-center">
         <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
           <Camera className="h-8 w-8 text-white" />
         </div>
         <h1 className="text-4xl font-bold text-gray-900">RoBooth</h1>
-      </div>
-
-      <div className="flex items-center justify-center mb-4 text-sm text-gray-600">
-        <Users className="h-4 w-4 mr-2" />
-        <span>{visitorCount} visitors in the last 24 hours</span>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
