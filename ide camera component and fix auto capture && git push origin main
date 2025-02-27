@@ -1,0 +1,290 @@
+[1mdiff --git a/client/src/components/photo-booth/camera.tsx b/client/src/components/photo-booth/camera.tsx[m
+[1mindex a7df2f3..dc1b853 100644[m
+[1m--- a/client/src/components/photo-booth/camera.tsx[m
+[1m+++ b/client/src/components/photo-booth/camera.tsx[m
+[36m@@ -9,10 +9,9 @@[m [minterface CameraProps {[m
+   timerDuration: number;[m
+   photosLength: number;[m
+   onMaxPhotos: () => void;[m
+[31m-  photos: string[];[m
+ }[m
+ [m
+[31m-export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMaxPhotos, photos }: CameraProps) {[m
+[32m+[m[32mexport function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMaxPhotos }: CameraProps) {[m
+   const webcamRef = useRef<Webcam>(null);[m
+   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");[m
+   const [mirrored, setMirrored] = useState(true);[m
+[36m@@ -33,84 +32,57 @@[m [mexport function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMa[m
+   };[m
+ [m
+   return ([m
+[31m-    <div className="w-full max-w-[1200px] mx-auto">[m
+[31m-      <div className="flex flex-col lg:flex-row gap-4">[m
+[31m-        {/* Camera View */}[m
+[31m-        <div className="relative flex-1">[m
+[31m-          <div className="aspect-[4/3] bg-black rounded-xl overflow-hidden shadow-2xl border-4 border-white/10">[m
+[31m-            <Webcam[m
+[31m-              audio={false}[m
+[31m-              ref={webcamRef}[m
+[31m-              screenshotFormat="image/png"[m
+[31m-              videoConstraints={{[m
+[31m-                width: 1920,[m
+[31m-                height: 1080,[m
+[31m-                facingMode: facingMode,[m
+[31m-              }}[m
+[31m-              mirrored={mirrored}[m
+[31m-              className="w-full h-full object-cover"[m
+[31m-            />[m
+[31m-          </div>[m
+[31m-          [m
+[31m-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center gap-4">[m
+[31m-            <Button[m
+[31m-              variant="outline"[m
+[31m-              size="icon"[m
+[31m-              onClick={() => setMirrored(!mirrored)}[m
+[31m-              className="h-12 w-12 rounded-full bg-white/90 hover:bg-white shadow-lg border-2"[m
+[31m-            >[m
+[31m-              <FlipHorizontal className="h-6 w-6" />[m
+[31m-            </Button>[m
+[31m-            [m
+[31m-            <Button[m
+[31m-              size="icon"[m
+[31m-              onClick={() => {[m
+[31m-                if (photosLength >= 4) {[m
+[31m-                  onMaxPhotos();[m
+[31m-                } else {[m
+[31m-                  capture();[m
+[31m-                }[m
+[31m-              }}[m
+[31m-              disabled={isCountingDown}[m
+[31m-              className="h-12 w-12 rounded-full bg-white shadow-lg hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed"[m
+[31m-            >[m
+[31m-              <CameraIcon className="h-8 w-8 text-primary" />[m
+[31m-            </Button>[m
+[31m-            [m
+[31m-            {isMobile && ([m
+[31m-              <Button[m
+[31m-                variant="outline"[m
+[31m-                size="icon"[m
+[31m-                onClick={toggleCamera}[m
+[31m-                className="h-12 w-12 rounded-full bg-white/90 hover:bg-white shadow-lg border-2"[m
+[31m-              >[m
+[31m-                <Repeat className="h-6 w-6" />[m
+[31m-              </Button>[m
+[31m-            )}[m
+[31m-          </div>[m
+[31m-        </div>[m
+[31m-[m
+[31m-        {/* Preview Grid */}[m
+[31m-        <div className="w-full lg:w-[300px] grid grid-cols-2 gap-2 p-4 bg-gray-100 rounded-xl">[m
+[31m-          {[...Array(4)].map((_, index) => ([m
+[31m-            <div[m
+[31m-              key={index}[m
+[31m-              className="aspect-[4/3] bg-white rounded-lg overflow-hidden shadow-md"[m
+[31m-            >[m
+[31m-              {photos[index] ? ([m
+[31m-                <img[m
+[31m-                  src={photos[index]}[m
+[31m-                  alt={`Preview ${index + 1}`}[m
+[31m-                  className="w-full h-full object-cover"[m
+[31m-                />[m
+[31m-              ) : ([m
+[31m-                <div className="w-full h-full flex items-center justify-center text-gray-400">[m
+[31m-                  {index + 1}[m
+[31m-                </div>[m
+[31m-              )}[m
+[31m-            </div>[m
+[31m-          ))}[m
+[31m-        </div>[m
+[32m+[m[32m    <div className="relative w-full max-w-[800px] mx-auto">[m
+[32m+[m[32m      <div className="aspect-[4/3] bg-black rounded-xl overflow-hidden shadow-2xl border-4 border-white/10">[m
+[32m+[m[32m        <Webcam[m
+[32m+[m[32m          audio={false}[m
+[32m+[m[32m          ref={webcamRef}[m
+[32m+[m[32m          screenshotFormat="image/png"[m
+[32m+[m[32m          videoConstraints={{[m
+[32m+[m[32m            width: 1920,[m
+[32m+[m[32m            height: 1080,[m
+[32m+[m[32m            facingMode: facingMode,[m
+[32m+[m[32m          }}[m
+[32m+[m[32m          mirrored={mirrored}[m
+[32m+[m[32m          className="w-full h-full object-cover"[m
+[32m+[m[32m        />[m
+[32m+[m[32m      </div>[m
+[32m+[m[41m      [m
+[32m+[m[32m      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center gap-4">[m
+[32m+[m[32m        <Button[m
+[32m+[m[32m          variant="outline"[m
+[32m+[m[32m          size="icon"[m
+[32m+[m[32m          onClick={() => setMirrored(!mirrored)}[m
+[32m+[m[32m          className="h-12 w-12 rounded-full bg-white/90 hover:bg-white shadow-lg border-2"[m
+[32m+[m[32m        >[m
+[32m+[m[32m          <FlipHorizontal className="h-6 w-6" />[m
+[32m+[m[32m        </Button>[m
+[32m+[m[41m        [m
+[32m+[m[32m        <Button[m
+[32m+[m[32m          size="icon"[m
+[32m+[m[32m          onClick={() => {[m
+[32m+[m[32m            if (photosLength >= 4) {[m
+[32m+[m[32m              onMaxPhotos();[m
+[32m+[m[32m            } else {[m
+[32m+[m[32m              capture();[m
+[32m+[m[32m            }[m
+[32m+[m[32m          }}[m
+[32m+[m[32m          disabled={isCountingDown}[m
+[32m+[m[32m          className="h-12 w-12 rounded-full bg-white shadow-lg hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed"[m
+[32m+[m[32m        >[m
+[32m+[m[32m          <CameraIcon className="h-8 w-8 text-primary" />[m
+[32m+[m[32m        </Button>[m
+[32m+[m[41m        [m
+[32m+[m[32m        {isMobile && ([m
+[32m+[m[32m          <Button[m
+[32m+[m[32m            variant="outline"[m
+[32m+[m[32m            size="icon"[m
+[32m+[m[32m            onClick={toggleCamera}[m
+[32m+[m[32m            className="h-12 w-12 rounded-full bg-white/90 hover:bg-white shadow-lg border-2"[m
+[32m+[m[32m          >[m
+[32m+[m[32m            <Repeat className="h-6 w-6" />[m
+[32m+[m[32m          </Button>[m
+[32m+[m[32m        )}[m
+       </div>[m
+     </div>[m
+   );[m
+[1mdiff --git a/client/src/pages/home.tsx b/client/src/pages/home.tsx[m
+[1mindex a669b17..fff4a3a 100644[m
+[1m--- a/client/src/pages/home.tsx[m
+[1m+++ b/client/src/pages/home.tsx[m
+[36m@@ -7,7 +7,7 @@[m [mimport { Button } from "@/components/ui/button";[m
+ import { Input } from "@/components/ui/input";[m
+ import { Label } from "@/components/ui/label";[m
+ import { Switch } from "@/components/ui/switch";[m
+[31m-import { Camera, Trash2, Settings } from "lucide-react";[m
+[32m+[m[32mimport { Camera, Trash2, Settings, Repeat } from "lucide-react";[m
+ import { useToast } from "@/hooks/use-toast";[m
+ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";[m
+ import { StepProgress } from "@/components/photo-booth/step-progress";[m
+[36m@@ -29,19 +29,29 @@[m [mexport default function Home() {[m
+   const handleCapture = (photo: string) => {[m
+     setPhotos((prev) => [...prev, photo]);[m
+     setIsCountingDown(false);[m
+[32m+[m
+[32m+[m[32m    // If auto capture is in progress and we haven't reached 4 photos yet[m
+[32m+[m[32m    if (isCountingDown && photos.length < 3) {[m
+[32m+[m[32m      // Wait a moment before starting the next countdown[m
+[32m+[m[32m      setTimeout(() => {[m
+[32m+[m[32m        setIsCountingDown(true);[m
+[32m+[m[32m      }, 1500);[m
+[32m+[m[32m    }[m
+   };[m
+ [m
+   const handleStartPhotoSequence = () => {[m
+     if (photos.length >= 4) {[m
+       toast({[m
+         title: "Maximum photos reached",[m
+[31m-        description: "Please clear the strip to take more photos.",[m
+[32m+[m[32m        description: "Please clear the photos to start over.",[m
+         variant: "destructive",[m
+         duration: 3000,[m
+       });[m
+       return;[m
+     }[m
+[32m+[m[32m    // Clear existing photos when starting a new sequence[m
+     setPhotos([]);[m
+[32m+[m[32m    // Start the countdown for the first photo[m
+     setIsCountingDown(true);[m
+   };[m
+ [m
+[36m@@ -76,27 +86,51 @@[m [mexport default function Home() {[m
+       <div className="mt-8">[m
+         {currentStep === 0 ? ([m
+           // Camera Step[m
+[31m-          <div className="space-y-6 bg-white rounded-lg shadow-sm p-6 max-w-3xl mx-auto">[m
+[31m-            <div className="relative">[m
+[31m-              <PhotoBoothCamera[m
+[31m-                onCapture={handleCapture}[m
+[31m-                isCountingDown={isCountingDown}[m
+[31m-                timerDuration={timerDuration}[m
+[31m-                photosLength={photos.length}[m
+[31m-                photos={photos}[m
+[31m-                onMaxPhotos={() => {[m
+[31m-                  toast({[m
+[31m-                    title: "Maximum photos reached",[m
+[31m-                    description: "Please clear the strip to take more photos.",[m
+[31m-                    variant: "destructive",[m
+[31m-                  });[m
+[31m-                }}[m
+[31m-              />[m
+[31m-              <Countdown[m
+[31m-                isActive={isCountingDown}[m
+[31m-                onComplete={handleCapture}[m
+[31m-                duration={timerDuration}[m
+[31m-              />[m
+[32m+[m[32m          <div className="space-y-6 bg-white rounded-lg shadow-sm p-6 max-w-5xl mx-auto">[m
+[32m+[m[32m            <div className="grid md:grid-cols-[1fr,300px] gap-6">[m
+[32m+[m[32m              {/* Camera Section */}[m
+[32m+[m[32m              <div className="relative">[m
+[32m+[m[32m                <PhotoBoothCamera[m
+[32m+[m[32m                  onCapture={handleCapture}[m
+[32m+[m[32m                  isCountingDown={isCountingDown}[m
+[32m+[m[32m                  timerDuration={timerDuration}[m
+[32m+[m[32m                  photosLength={photos.length}[m
+[32m+[m[32m                  onMaxPhotos={() => {[m
+[32m+[m[32m                    toast({[m
+[32m+[m[32m                      title: "Maximum photos reached",[m
+[32m+[m[32m                      description: "Please clear the photos to start over.",[m
+[32m+[m[32m                      variant: "destructive",[m
+[32m+[m[32m                    });[m
+[32m+[m[32m                  }}[m
+[32m+[m[32m                />[m
+[32m+[m[32m                <Countdown[m
+[32m+[m[32m                  isActive={isCountingDown}[m
+[32m+[m[32m                  onComplete={handleCapture}[m
+[32m+[m[32m                  duration={timerDuration}[m
+[32m+[m[32m                />[m
+[32m+[m[32m              </div>[m
+[32m+[m
+[32m+[m[32m              {/* Preview Grid */}[m
+[32m+[m[32m              <div className="w-full grid grid-cols-2 gap-2 p-4 bg-gray-100 rounded-xl">[m
+[32m+[m[32m                {[...Array(4)].map((_, index) => ([m
+[32m+[m[32m                  <div[m
+[32m+[m[32m                    key={index}[m
+[32m+[m[32m                    className="aspect-[4/3] bg-white rounded-lg overflow-hidden shadow-md"[m
+[32m+[m[32m                  >[m
+[32m+[m[32m                    {photos[index] ? ([m
+[32m+[m[32m                      <img[m
+[32m+[m[32m                        src={photos[index]}[m
+[32m+[m[32m                        alt={`Preview ${index + 1}`}[m
+[32m+[m[32m                        className="w-full h-full object-cover"[m
+[32m+[m[32m                      />[m
+[32m+[m[32m                    ) : ([m
+[32m+[m[32m                      <div className="w-full h-full flex items-center justify-center text-gray-400">[m
+[32m+[m[32m                        {index + 1}[m
+[32m+[m[32m                      </div>[m
+[32m+[m[32m                    )}[m
+[32m+[m[32m                  </div>[m
+[32m+[m[32m                ))}[m
+[32m+[m[32m              </div>[m
+             </div>[m
+ [m
+             <div className="flex justify-between items-center">[m
+[36m@@ -107,16 +141,16 @@[m [mexport default function Home() {[m
+                   className="flex items-center gap-2"[m
+                 >[m
+                   <Camera className="h-4 w-4" />[m
+[31m-                  {photos.length === 0 ? "Auto Capture" : `Photos: ${photos.length}/4`}[m
+[32m+[m[32m                  Start Auto Capture[m
+                 </Button>[m
+                 <Button[m
+[31m-                  variant="destructive"[m
+[32m+[m[32m                  variant="outline"[m
+                   onClick={handleClear}[m
+                   disabled={photos.length === 0}[m
+                   className="flex items-center gap-2"[m
+                 >[m
+[31m-                  <Trash2 className="h-4 w-4" />[m
+[31m-                  Clear[m
+[32m+[m[32m                  <Repeat className="h-4 w-4" />[m
+[32m+[m[32m                  Retake Photos[m
+                 </Button>[m
+               </div>[m
+               <Dialog>[m

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Camera, Trash2, Settings } from "lucide-react";
+import { Camera, Trash2, Settings, Repeat } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { StepProgress } from "@/components/photo-booth/step-progress";
@@ -29,19 +29,29 @@ export default function Home() {
   const handleCapture = (photo: string) => {
     setPhotos((prev) => [...prev, photo]);
     setIsCountingDown(false);
+
+    // If auto capture is in progress and we haven't reached 4 photos yet
+    if (isCountingDown && photos.length < 3) {
+      // Wait a moment before starting the next countdown
+      setTimeout(() => {
+        setIsCountingDown(true);
+      }, 1500);
+    }
   };
 
   const handleStartPhotoSequence = () => {
     if (photos.length >= 4) {
       toast({
         title: "Maximum photos reached",
-        description: "Please clear the strip to take more photos.",
+        description: "Please clear the photos to start over.",
         variant: "destructive",
         duration: 3000,
       });
       return;
     }
+    // Clear existing photos when starting a new sequence
     setPhotos([]);
+    // Start the countdown for the first photo
     setIsCountingDown(true);
   };
 
@@ -76,27 +86,51 @@ export default function Home() {
       <div className="mt-8">
         {currentStep === 0 ? (
           // Camera Step
-          <div className="space-y-6 bg-white rounded-lg shadow-sm p-6 max-w-3xl mx-auto">
-            <div className="relative">
-              <PhotoBoothCamera
-                onCapture={handleCapture}
-                isCountingDown={isCountingDown}
-                timerDuration={timerDuration}
-                photosLength={photos.length}
-                photos={photos}
-                onMaxPhotos={() => {
-                  toast({
-                    title: "Maximum photos reached",
-                    description: "Please clear the strip to take more photos.",
-                    variant: "destructive",
-                  });
-                }}
-              />
-              <Countdown
-                isActive={isCountingDown}
-                onComplete={handleCapture}
-                duration={timerDuration}
-              />
+          <div className="space-y-6 bg-white rounded-lg shadow-sm p-6 max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-[1fr,300px] gap-6">
+              {/* Camera Section */}
+              <div className="relative">
+                <PhotoBoothCamera
+                  onCapture={handleCapture}
+                  isCountingDown={isCountingDown}
+                  timerDuration={timerDuration}
+                  photosLength={photos.length}
+                  onMaxPhotos={() => {
+                    toast({
+                      title: "Maximum photos reached",
+                      description: "Please clear the photos to start over.",
+                      variant: "destructive",
+                    });
+                  }}
+                />
+                <Countdown
+                  isActive={isCountingDown}
+                  onComplete={handleCapture}
+                  duration={timerDuration}
+                />
+              </div>
+
+              {/* Preview Grid */}
+              <div className="w-full grid grid-cols-2 gap-2 p-4 bg-gray-100 rounded-xl">
+                {[...Array(4)].map((_, index) => (
+                  <div
+                    key={index}
+                    className="aspect-[4/3] bg-white rounded-lg overflow-hidden shadow-md"
+                  >
+                    {photos[index] ? (
+                      <img
+                        src={photos[index]}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        {index + 1}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="flex justify-between items-center">
@@ -107,16 +141,16 @@ export default function Home() {
                   className="flex items-center gap-2"
                 >
                   <Camera className="h-4 w-4" />
-                  {photos.length === 0 ? "Auto Capture" : `Photos: ${photos.length}/4`}
+                  Start Auto Capture
                 </Button>
                 <Button
-                  variant="destructive"
+                  variant="outline"
                   onClick={handleClear}
                   disabled={photos.length === 0}
                   className="flex items-center gap-2"
                 >
-                  <Trash2 className="h-4 w-4" />
-                  Clear
+                  <Repeat className="h-4 w-4" />
+                  Retake Photos
                 </Button>
               </div>
               <Dialog>
