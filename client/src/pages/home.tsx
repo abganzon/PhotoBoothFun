@@ -72,27 +72,29 @@ export default function Home() {
         <h1 className="text-4xl font-bold text-gray-900">RoBooth</h1>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        <div className="space-y-6 bg-white rounded-lg shadow-sm p-6">
-          <div className="relative">
-            <PhotoBoothCamera
-              onCapture={handleCapture}
-              isCountingDown={isCountingDown}
-              timerDuration={timerDuration}
-              photosLength={photos.length}
-              onMaxPhotos={() => {
-                toast({
-                  title: "Maximum photos reached",
-                  description: "Please clear the strip to take more photos.",
-                  variant: "destructive",
-                });
-              }}
-            />
-            <Countdown
-              isActive={isCountingDown}
-              onComplete={handleCapture}
-              duration={timerDuration}
-            />
+      <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 h-[calc(100vh-120px)] overflow-hidden">
+        <div className="space-y-4 bg-white rounded-lg shadow-sm p-4 sm:p-6 flex flex-col">
+          <div className="relative flex-grow flex flex-col">
+            <div className="flex-grow">
+              <PhotoBoothCamera
+                onCapture={handleCapture}
+                isCountingDown={isCountingDown}
+                timerDuration={timerDuration}
+                photosLength={photos.length}
+                onMaxPhotos={() => {
+                  toast({
+                    title: "Maximum photos reached",
+                    description: "Please clear the strip to take more photos.",
+                    variant: "destructive",
+                  });
+                }}
+              />
+              <Countdown
+                isActive={isCountingDown}
+                onComplete={handleCapture}
+                duration={timerDuration}
+              />
+            </div>
           </div>
 
           <div className="flex justify-between items-center">
@@ -100,7 +102,8 @@ export default function Home() {
               <Button 
                 onClick={handleStartPhotoSequence} 
                 disabled={isCountingDown}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-sm sm:text-base"
+                size="sm"
               >
                 <Camera className="h-4 w-4" />
                 {photos.length === 0 ? "Auto Capture" : `Photos: ${photos.length}/4`}
@@ -110,6 +113,7 @@ export default function Home() {
                 onClick={handleClear}
                 disabled={photos.length === 0}
                 className="flex items-center gap-2"
+                size="sm"
               >
                 <Trash2 className="h-4 w-4" />
                 Clear
@@ -120,12 +124,12 @@ export default function Home() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-10 w-10"
+                  className="h-8 w-8 sm:h-10 sm:w-10"
                 >
                   <Settings className="h-4 w-4" />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="text-2xl font-bold text-center">RoBooth Settings</DialogTitle>
                 </DialogHeader>
@@ -219,69 +223,70 @@ export default function Home() {
               </DialogContent>
             </Dialog>
           </div>
+        </div>
 
-          <div className="space-y-4 bg-gray-50 rounded-lg p-6">
-            <h2 className="text-lg font-semibold">Customize Your Strip</h2>
-
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="strip-name">Strip Name</Label>
-                <Input
-                  id="strip-name"
-                  value={stripName}
-                  onChange={(e) => setStripName(e.target.value)}
-                  placeholder="Enter a name for your strip"
-                  className="bg-white"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Layout Style</Label>
-                <div className="flex gap-4">
-                  <div 
-                    className={`flex-1 p-4 border rounded-lg cursor-pointer transition-colors ${
-                      layout === "strip" 
-                        ? "border-primary bg-primary/10" 
-                        : "border-gray-200 hover:border-primary/50"
-                    }`}
-                    onClick={() => setLayout("strip")}
-                  >
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="w-16 h-24 bg-gray-200 rounded"></div>
-                      <span className="text-sm font-medium">Strip</span>
-                      <span className="text-xs text-gray-500">1x4 Layout</span>
-                    </div>
+        <div className="space-y-4 bg-white rounded-lg shadow-sm p-4 sm:p-6 flex flex-col">
+          <div className="space-y-4 flex-shrink-0">
+            <div className="space-y-2">
+              <Label htmlFor="strip-name">Strip Name</Label>
+              <Input
+                id="strip-name"
+                value={stripName}
+                onChange={(e) => setStripName(e.target.value)}
+                placeholder="Enter a name for your strip"
+                className="bg-white"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Layout Style</Label>
+              <div className="grid grid-cols-2 gap-3">
+                <div 
+                  className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                    layout === "strip" 
+                      ? "border-primary bg-primary/10" 
+                      : "border-gray-200 hover:border-primary/50"
+                  }`}
+                  onClick={() => setLayout("strip")}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-8 h-16 bg-gray-200 rounded"></div>
+                    <span className="text-xs font-medium">Strip</span>
                   </div>
-                  <div 
-                    className={`flex-1 p-4 border rounded-lg cursor-pointer transition-colors ${
-                      layout === "collage" 
-                        ? "border-primary bg-primary/10" 
-                        : "border-gray-200 hover:border-primary/50"
-                    }`}
-                    onClick={() => setLayout("collage")}
-                  >
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="w-20 h-20 bg-gray-200 rounded"></div>
-                      <span className="text-sm font-medium">Collage</span>
-                      <span className="text-xs text-gray-500">2x2 Layout</span>
+                </div>
+                <div 
+                  className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                    layout === "collage" 
+                      ? "border-primary bg-primary/10" 
+                      : "border-gray-200 hover:border-primary/50"
+                  }`}
+                  onClick={() => setLayout("collage")}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="grid grid-cols-2 gap-1 w-10">
+                      <div className="aspect-square bg-gray-200 rounded"></div>
+                      <div className="aspect-square bg-gray-200 rounded"></div>
+                      <div className="aspect-square bg-gray-200 rounded"></div>
+                      <div className="aspect-square bg-gray-200 rounded"></div>
                     </div>
+                    <span className="text-xs font-medium">Collage</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <PhotoStrip
-            photos={photos}
-            layout={layout}
-            name={stripName}
-            showDate={showDate}
-            showName={showName}
-            backgroundColor={backgroundColor}
-            nameColor={nameColor}
-            dateColor={dateColor}
-          />
+          <div className="flex-grow flex items-center justify-center min-h-0">
+            <PhotoStrip
+              photos={photos}
+              layout={layout}
+              name={stripName}
+              showDate={showDate}
+              showName={showName}
+              backgroundColor={backgroundColor}
+              nameColor={nameColor}
+              dateColor={dateColor}
+            />
+          </div>
         </div>
       </div>
     </div>
