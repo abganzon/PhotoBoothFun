@@ -42,14 +42,14 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     if (!tempCtx) return;
 
     // Set initial canvas dimensions
-    const padding = 25; // Consistent padding for both layouts
+    const padding = 20; // Reduced padding for both layouts
 
     // Calculate text space needed for name and date with layout-specific spacing
     const hasText = showName || showDate;
-    const textSpace = hasText ? (showName && showDate ? 100 : 50) : 0;
+    const textSpace = hasText ? (showName && showDate ? 80 : 40) : 0;
 
     // Define placeholder dimensions for strip layout
-    const placeholderWidth = 250; // Fixed width for placeholder images
+    const placeholderWidth = 200; // Reduced width for placeholder images
     const placeholderHeight = Math.floor(placeholderWidth * 0.75);
 
     let photoWidth: number;
@@ -63,7 +63,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       canvas.height = (hasText ? textSpace + padding : padding) + gridHeight + padding;
     } else {
       // For collage layout
-      canvas.width = 600;
+      canvas.width = 450; // Reduced from 600 to 450 for collage layout
       const gridSize = canvas.width - (padding * 2); // Total space for grid
       const cellSize = (gridSize - padding) / 2; // Size for each image cell, accounting for middle padding
       gridHeight = (cellSize * 2) + padding; // Height of the 2x2 grid including middle padding
@@ -99,7 +99,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
     // Draw title with consistent styling
     if (showName) {
-      const titleSize = layout === "strip" ? 28 : 36;
+      const titleSize = layout === "strip" ? 24 : 28; // Reduced font sizes
       tempCtx.font = `${titleSize}px Arial`;
       tempCtx.fillStyle = nameColor;
       tempCtx.textAlign = "center";
@@ -108,7 +108,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
     // Draw date if enabled
     if (showDate) {
-      const dateSize = layout === "strip" ? 18 : 22;
+      const dateSize = layout === "strip" ? 16 : 18; // Reduced font sizes
       tempCtx.font = `${dateSize}px Arial`;
       tempCtx.fillStyle = dateColor;
       tempCtx.textAlign = "center";
@@ -310,7 +310,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     <div className="flex flex-col items-center gap-2 w-full px-2 sm:px-0">
       <canvas
         ref={canvasRef}
-        className="w-full max-w-[300px] border-0 rounded-lg shadow-lg"
+        className="w-full max-w-[250px] border-0 rounded-lg shadow-lg"
         style={{ maxWidth: '100%', height: 'auto' }}
       />
       <Button
