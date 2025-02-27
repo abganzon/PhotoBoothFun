@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Camera, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -13,10 +14,54 @@ import {
 export default function Landing() {
   const [, setLocation] = useLocation();
   const [visitors, setVisitors] = useState(0);
+  const { toast } = useToast();
 
   useEffect(() => {
-    setVisitors(prev => prev + 1);
-  }, []);
+    // Track visit and update count immediately
+    const trackVisitAndUpdateCount = async () => {
+      try {
+        // Track new visit
+        await fetch('/api/visitors', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // Fetch updated count immediately after tracking visit
+        const response = await fetch('/api/visitors/count');
+        const data = await response.json();
+        setVisitors(data.count);
+      } catch (error) {
+        console.error('Error tracking visit or fetching count:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update visitor count. Please try again later.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    // Function to fetch visitor count
+    const fetchVisitorCount = async () => {
+      try {
+        const response = await fetch('/api/visitors/count');
+        const data = await response.json();
+        setVisitors(data.count);
+      } catch (error) {
+        console.error('Error fetching visitor count:', error);
+      }
+    };
+
+    // Track visit and get initial count
+    trackVisitAndUpdateCount();
+
+    // Update count every minute
+    const interval = setInterval(fetchVisitorCount, 60000);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, []); // Empty dependency array means this runs once on mount
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-sky-100 via-sky-200 to-sky-100 px-4"> {/* Modified background gradient */}
