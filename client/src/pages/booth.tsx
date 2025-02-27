@@ -98,8 +98,9 @@ export default function Booth() {
   // Render capture process
   const renderCaptureProcess = () => (
     <div className="flex gap-8 w-full max-w-7xl mx-auto p-4">
+      {/* Camera Preview */}
       <div className="flex-1">
-        <div className="relative rounded-lg overflow-hidden bg-black aspect-video">
+        <div className="relative rounded-lg overflow-hidden bg-black aspect-video mb-4">
           <video
             ref={videoRef}
             autoPlay
@@ -116,37 +117,45 @@ export default function Booth() {
           )}
         </div>
         
-        <div className="mt-4 flex gap-4">
-          <Button
-            onClick={() => setIsCameraFlipped(!isCameraFlipped)}
-            variant="outline"
-          >
-            Flip Camera
-          </Button>
-          
-          <div className="flex-1 flex items-center gap-4">
-            <Label>Timer (seconds):</Label>
-            <Slider
-              value={[duration]}
-              onValueChange={([value]) => setDuration(value)}
-              min={1}
-              max={10}
-              step={1}
-            />
-            <span className="w-8 text-center">{duration}s</span>
+        {/* Camera Controls */}
+        <div className="bg-white rounded-lg p-4 shadow-lg">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-4">
+              <Button
+                onClick={() => setIsCameraFlipped(!isCameraFlipped)}
+                variant="outline"
+                className="w-32"
+              >
+                Flip Camera
+              </Button>
+              
+              <div className="flex-1 flex items-center gap-4">
+                <Label className="min-w-fit">Timer Duration:</Label>
+                <Slider
+                  value={[duration]}
+                  onValueChange={([value]) => setDuration(value)}
+                  min={1}
+                  max={10}
+                  step={1}
+                />
+                <span className="w-12 text-center">{duration}s</span>
+              </div>
+            </div>
+            
+            <Button
+              onClick={startCountdown}
+              disabled={countdown !== null || capturedPhotos.length >= 4}
+              size="lg"
+              className="w-full"
+            >
+              {capturedPhotos.length >= 4 ? 'Next' : 'Auto Capture'}
+            </Button>
           </div>
-          
-          <Button
-            onClick={startCountdown}
-            disabled={countdown !== null || capturedPhotos.length >= 4}
-            size="lg"
-          >
-            {capturedPhotos.length >= 4 ? 'Next' : 'Capture'}
-          </Button>
         </div>
       </div>
       
-      <div className="w-80 bg-white rounded-lg p-4 shadow-lg">
+      {/* Photo Grid Preview */}
+      <div className="w-96 bg-white rounded-lg p-4 shadow-lg">
         <h3 className="font-semibold mb-4">Captured Photos ({capturedPhotos.length}/4)</h3>
         <div className="grid grid-cols-2 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -174,7 +183,7 @@ export default function Booth() {
             className="w-full mt-4"
             onClick={() => setCurrentStep('customize')}
           >
-            Customize Strip <ArrowRight className="ml-2 h-4 w-4" />
+            Next: Customize Strip <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         )}
       </div>
@@ -184,12 +193,24 @@ export default function Booth() {
   // Render customize process
   const renderCustomizeProcess = () => (
     <div className="flex gap-8 w-full max-w-7xl mx-auto p-4">
+      {/* Customization Controls */}
       <div className="w-96 bg-white rounded-lg p-6 shadow-lg">
-        <h3 className="font-semibold mb-6">Customize Your Strip</h3>
+        <h3 className="text-xl font-semibold mb-6">Customize Your Strip</h3>
         
         <div className="space-y-6">
           <div>
-            <Label>Strip Name</Label>
+            <Label className="text-sm font-medium mb-1.5">Strip Layout</Label>
+            <Select
+              value={layout}
+              onValueChange={value => setLayout(value as '2x2' | 'strip')}
+            >
+              <option value="2x2">2x2 Grid Layout</option>
+              <option value="strip">Vertical Strip Layout</option>
+            </Select>
+          </div>
+
+          <div>
+            <Label className="text-sm font-medium mb-1.5">Strip Name</Label>
             <Input
               value={stripName}
               onChange={e => setStripName(e.target.value)}
@@ -198,47 +219,52 @@ export default function Booth() {
           </div>
           
           <div>
-            <Label>Layout</Label>
-            <Select
-              value={layout}
-              onValueChange={value => setLayout(value as '2x2' | 'strip')}
-            >
-              <option value="2x2">2x2 Grid</option>
-              <option value="strip">Vertical Strip</option>
-            </Select>
+            <Label className="text-sm font-medium mb-1.5">Background Color</Label>
+            <div className="flex gap-2">
+              <Input
+                type="color"
+                value={bgColor}
+                onChange={e => setBgColor(e.target.value)}
+                className="w-20 h-10 p-1"
+              />
+              <Input
+                type="text"
+                value={bgColor}
+                onChange={e => setBgColor(e.target.value)}
+                placeholder="#FFFFFF"
+                className="flex-1"
+              />
+            </div>
           </div>
           
-          <div>
-            <Label>Background Color</Label>
-            <Input
-              type="color"
-              value={bgColor}
-              onChange={e => setBgColor(e.target.value)}
-            />
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <Label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={showDate}
-                onChange={e => setShowDate(e.target.checked)}
-              />
-              Show Date
-            </Label>
-            
-            <Label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={showName}
-                onChange={e => setShowName(e.target.checked)}
-              />
-              Show Name
-            </Label>
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">Display Options</Label>
+            <div className="flex flex-col gap-2">
+              <Label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showName}
+                  onChange={e => setShowName(e.target.checked)}
+                  className="rounded"
+                />
+                Show Strip Name
+              </Label>
+              
+              <Label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showDate}
+                  onChange={e => setShowDate(e.target.checked)}
+                  className="rounded"
+                />
+                Show Date
+              </Label>
+            </div>
           </div>
         </div>
       </div>
       
+      {/* Strip Preview */}
       <div className="flex-1">
         <div
           className="rounded-lg shadow-lg overflow-hidden"
@@ -250,7 +276,7 @@ export default function Booth() {
                 key={i}
                 src={photo}
                 alt={`Photo ${i + 1}`}
-                className="w-full aspect-square object-cover rounded-lg"
+                className="w-full aspect-square object-cover rounded-lg shadow-md"
               />
             ))}
           </div>
@@ -258,7 +284,7 @@ export default function Booth() {
           {(showName || showDate) && (
             <div className="bg-black/10 p-4 text-center">
               {showName && stripName && (
-                <p className="font-semibold">{stripName}</p>
+                <p className="font-semibold text-lg mb-1">{stripName}</p>
               )}
               {showDate && (
                 <p className="text-sm text-gray-600">
@@ -279,6 +305,9 @@ export default function Booth() {
           
           <Button onClick={() => {
             // TODO: Implement save/download functionality
+            const link = document.createElement('a');
+            link.download = `${stripName || 'photo-strip'}.jpg`;
+            // Convert the strip to an image and save
             toast({
               title: 'Success',
               description: 'Your photo strip has been saved!',
@@ -293,7 +322,7 @@ export default function Booth() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="py-4 px-6 bg-white shadow-sm">
+      <div className="py-4 px-6 bg-white shadow-sm mb-4">
         <h1 className="text-2xl font-bold">
           {currentStep === 'capture' ? 'Take Your Photos' : 'Customize Your Strip'}
         </h1>
