@@ -45,7 +45,7 @@ export function PhotoBoothCamera({
   return (
     <div className="grid grid-cols-2 gap-6">
       {/* Left Column - Camera and Controls */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="relative">
           <div className="aspect-[4/3] bg-black rounded-xl overflow-hidden shadow-2xl border-4 border-white/10">
             <Webcam
@@ -61,54 +61,54 @@ export function PhotoBoothCamera({
               className="w-full h-full object-cover"
             />
           </div>
-          
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4">
-            {isMobile && (
-              <Button
-                variant="secondary"
-                size="icon"
-                className="rounded-full"
-                onClick={toggleCamera}
-              >
-                <Repeat className="h-5 w-5" />
-              </Button>
-            )}
-            <Button
-              variant="secondary"
-              size="icon"
-              className="rounded-full"
-              onClick={() => setMirrored(!mirrored)}
-            >
-              <FlipHorizontal className="h-5 w-5" />
-            </Button>
-          </div>
         </div>
 
         {/* Camera Controls */}
-        <div className="flex gap-4 items-center">
-          <Button 
-            onClick={onStartPhotoSequence}
-            disabled={isCountingDown}
-            className="flex-1 flex items-center justify-center gap-2"
-          >
-            <CameraIcon className="h-4 w-4" />
-            {photos.length === 0 ? "Start Photo Session" : `Photos: ${photos.length}/4`}
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={onClear}
-            disabled={photos.length === 0}
-            className="flex items-center gap-2"
-          >
-            <Repeat className="h-4 w-4" />
-            Clear
-          </Button>
+        <div className="flex items-center justify-between">
+          <div className="flex gap-2">
+            <Button 
+              onClick={onStartPhotoSequence}
+              disabled={isCountingDown}
+              className="flex items-center gap-2"
+            >
+              <CameraIcon className="h-4 w-4" />
+              {photos.length === 0 ? "Start Photo Session" : `Photos: ${photos.length}/4`}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={onClear}
+              disabled={photos.length === 0}
+              className="flex items-center gap-2"
+            >
+              <Repeat className="h-4 w-4" />
+              Clear
+            </Button>
+          </div>
+          <div className="flex gap-2">
+            {isMobile && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-10 w-10 rounded-full"
+                onClick={toggleCamera}
+              >
+                <Repeat className="h-4 w-4" />
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-10 w-10 rounded-full"
+              onClick={() => setMirrored(!mirrored)}
+            >
+              <FlipHorizontal className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Right Column - Photo Preview Grid */}
-      <div className="bg-gray-50 rounded-xl p-6">
-        <h3 className="text-lg font-semibold mb-4">Photo Preview</h3>
+      <div className="bg-gray-50 rounded-xl p-4">
         <div className="grid grid-cols-2 gap-4">
           {[0, 1, 2, 3].map((index) => (
             <div
