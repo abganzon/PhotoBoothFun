@@ -91,81 +91,108 @@ export default function Home() {
       <div className="mt-8">
         {currentStep === 0 ? (
           // Camera Step
-          <div className="space-y-6 bg-white rounded-lg shadow-sm p-6 max-w-3xl mx-auto">
-            <div className="relative">
-              <PhotoBoothCamera
-                onCapture={handleCapture}
-                isCountingDown={isCountingDown}
-                timerDuration={timerDuration}
-                photosLength={photos.length}
-                onMaxPhotos={() => {
-                  toast({
-                    title: "Maximum photos reached",
-                    description: "Please clear the strip to take more photos.",
-                    variant: "destructive",
-                  });
-                }}
-              />
-              <Countdown
-                isActive={isCountingDown}
-                onComplete={handleCapture}
-                duration={timerDuration}
-              />
-            </div>
+          <div className="space-y-6 bg-white rounded-lg shadow-sm p-6 max-w-5xl mx-auto">
+            <div className="flex gap-8">
+              <div className="flex-1">
+                <div className="relative">
+                  <PhotoBoothCamera
+                    onCapture={handleCapture}
+                    isCountingDown={isCountingDown}
+                    timerDuration={timerDuration}
+                    photosLength={photos.length}
+                    onMaxPhotos={() => {
+                      toast({
+                        title: "Maximum photos reached",
+                        description: "Please clear the strip to take more photos.",
+                        variant: "destructive",
+                      });
+                    }}
+                  />
+                  <Countdown
+                    isActive={isCountingDown}
+                    onComplete={handleCapture}
+                    duration={timerDuration}
+                  />
+                </div>
 
-            <div className="flex justify-between items-center">
-              <div className="flex gap-2">
-                <Button 
-                  onClick={handleStartPhotoSequence} 
-                  disabled={isCountingDown}
-                  className="flex items-center gap-2"
-                >
-                  <Camera className="h-4 w-4" />
-                  {photos.length === 0 ? "Auto Capture" : `Photos: ${photos.length}/4`}
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={handleClear}
-                  disabled={photos.length === 0}
-                  className="flex items-center gap-2"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Clear
-                </Button>
-              </div>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-10 w-10"
-                  >
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold text-center">RoBooth Settings</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-6 py-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="timer-duration">Timer Duration (seconds)</Label>
-                      <div className="flex items-center gap-4">
-                        <Input
-                          id="timer-duration"
-                          type="number"
-                          min="1"
-                          max="10"
-                          value={timerDuration}
-                          onChange={(e) => setTimerDuration(parseInt(e.target.value) || 5)}
-                          className="w-24"
-                        />
-                        <span className="text-sm text-gray-500">Countdown time before each photo</span>
-                      </div>
-                    </div>
+                <div className="flex justify-between items-center mt-6">
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={handleStartPhotoSequence} 
+                      disabled={isCountingDown}
+                      className="flex items-center gap-2"
+                    >
+                      <Camera className="h-4 w-4" />
+                      {photos.length === 0 ? "Auto Capture" : `Photos: ${photos.length}/4`}
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={handleClear}
+                      disabled={photos.length === 0}
+                      className="flex items-center gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Clear
+                    </Button>
                   </div>
-                </DialogContent>
-              </Dialog>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-10 w-10"
+                      >
+                        <Settings className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md">
+                      <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold text-center">RoBooth Settings</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-6 py-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="timer-duration">Timer Duration (seconds)</Label>
+                          <div className="flex items-center gap-4">
+                            <Input
+                              id="timer-duration"
+                              type="number"
+                              min="1"
+                              max="10"
+                              value={timerDuration}
+                              onChange={(e) => setTimerDuration(parseInt(e.target.value) || 5)}
+                              className="w-24"
+                            />
+                            <span className="text-sm text-gray-500">Countdown time before each photo</span>
+                          </div>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </div>
+
+              {/* Captured Photos Preview */}
+              <div className="w-[2in] flex flex-col gap-4">
+                <h3 className="text-lg font-semibold text-center">Captured Photos</h3>
+                <div className="space-y-4">
+                  {[0, 1, 2, 3].map((index) => (
+                    <div
+                      key={index}
+                      className="w-[2in] h-[2in] border-2 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center"
+                    >
+                      {photos[index] ? (
+                        <img
+                          src={photos[index]}
+                          alt={`Photo ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-gray-400">Photo {index + 1}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         ) : (
