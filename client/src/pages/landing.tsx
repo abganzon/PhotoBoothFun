@@ -157,7 +157,7 @@ export default function Landing() {
         </div>
 
         {/* Footer */}
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-4 text-sm text-gray-500 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg">
+        <div className="fixed w-full md:w-auto bottom-4 mx-6 md:left-1/2 md:transform md:-translate-x-1/2 md:mx-0 flex items-center gap-4 text-sm text-gray-500 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg">
           <span className="text-gray-400">by Influenzah</span>
           <span>•</span>
           <Dialog>
