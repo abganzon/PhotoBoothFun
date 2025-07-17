@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Share2, Copy, Clock, QrCode, Camera } from "lucide-react";
+import { Share2, Copy, Clock, QrCode } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import QRCode from "react-qr-code";
 
@@ -13,29 +13,13 @@ interface ShareModalProps {
   onClose: () => void;
   photoStripId: number;
   darkMode?: boolean;
-  photos?: string[];
-  layout?: "strip" | "collage";
-  stripName?: string;
-  backgroundColor?: string;
-  nameColor?: string;
-  dateColor?: string;
-  showDate?: boolean;
-  showName?: boolean;
 }
 
 export const ShareModal: React.FC<ShareModalProps> = ({
   isOpen,
   onClose,
   photoStripId,
-  darkMode = false,
-  photos = [],
-  layout = "strip",
-  stripName,
-  backgroundColor = "#ffffff",
-  nameColor = "#000000",
-  dateColor = "#666666",
-  showDate = true,
-  showName = true
+  darkMode = false
 }) => {
   const [shareData, setShareData] = useState<{
     id: string;
@@ -105,14 +89,11 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`max-w-2xl ${darkMode ? 'bg-gray-800 text-white' : 'bg-white'}`}>
+      <DialogContent className={`max-w-md ${darkMode ? 'bg-gray-800 text-white' : 'bg-white'}`}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Camera className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl font-bold">RoBooth</span>
-            <span className="text-sm text-gray-500">- Share Photo Strip</span>
+            <Share2 className="h-5 w-5" />
+            Share Photo Strip
           </DialogTitle>
         </DialogHeader>
         

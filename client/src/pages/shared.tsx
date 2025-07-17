@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { PhotoStrip } from "@/components/photo-booth/photo-strip";
@@ -24,7 +25,6 @@ export default function SharedPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -33,13 +33,13 @@ export default function SharedPage() {
       try {
         console.log("Fetching photo strip for ID:", id);
         const response = await fetch(`/api/shared-links/${id}`);
-
+        
         console.log("Response status:", response.status);
-
+        
         if (!response.ok) {
           const errorText = await response.text();
           console.error("API Error:", errorText);
-
+          
           if (response.status === 404) {
             setError("Link not found or expired");
           } else {
@@ -50,14 +50,14 @@ export default function SharedPage() {
 
         const data = await response.json();
         console.log("Photo strip data:", data);
-
+        
         // Validate the data structure
         if (!data || !data.photos || !Array.isArray(data.photos)) {
           console.error("Invalid photo strip data structure:", data);
           setError("Invalid photo strip data");
           return;
         }
-
+        
         setPhotoStrip(data);
       } catch (error) {
         console.error("Error fetching photo strip:", error);
@@ -68,62 +68,7 @@ export default function SharedPage() {
     };
 
     fetchPhotoStrip();
-
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
   }, [id]);
-
-  const handleDownload = () => {
-    if (!photoStrip) return;
-
-    const downloadPhotoStrip = async () => {
-      try {
-        const response = await fetch(`/api/download/${id}`);
-
-        if (!response.ok) {
-          console.error("Failed to download photo strip:", response.status, response.statusText);
-          toast({
-            variant: "destructive",
-            title: "Failed to download photo strip",
-            description: "Please try again later.",
-          });
-          return;
-        }
-
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${photoStrip.stripName || "photo-strip"}.zip`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-
-        toast({
-          title: "Photo strip downloaded",
-          description: "Your photo strip has been downloaded successfully.",
-        });
-
-      } catch (error) {
-        console.error("Error downloading photo strip:", error);
-        toast({
-          variant: "destructive",
-          title: "Failed to download photo strip",
-          description: "An unexpected error occurred. Please try again later.",
-        });
-      }
-    };
-    downloadPhotoStrip();
-  };
 
   if (loading) {
     return (
@@ -175,32 +120,19 @@ export default function SharedPage() {
         </div>
 
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex justify-center">
-            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md">
-              <PhotoStrip
-                photos={photoStrip.photos as string[]}
-                layout={photoStrip.layout}
-                name={photoStrip.stripName}
-                showDate={photoStrip.showDate}
-                showName={photoStrip.showName}
-                backgroundColor={photoStrip.backgroundColor}
-                nameColor={photoStrip.nameColor || "#000000"}
-                dateColor={photoStrip.dateColor || "#666666"}
-                hideButtons={true}
-              />
-
-              <div className="flex justify-center mt-6">
-                <Button
-                  onClick={handleDownload}
-                  className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-lg"
-                >
-                  <Download className="h-5 w-5" />
-                  {isMobile ? "Save Photo" : "Download"}
-                </Button>
-              </div>
-            </div>
+          <div className="max-w-lg mx-auto">
+            <PhotoStrip
+              photos={photoStrip.photos}
+              layout={photoStrip.layout}
+              name={photoStrip.stripName}
+              showDate={photoStrip.showDate}
+              showName={photoStrip.showName}
+              backgroundColor={photoStrip.backgroundColor}
+              nameColor={photoStrip.nameColor || "#000000"}
+              dateColor={photoStrip.dateColor || "#666666"}
+            />
           </div>
-
+          
           <div className="text-center mt-6">
             <p className="text-sm text-gray-600 mb-4">
               Want to create your own photo strip? Visit our app!

@@ -84,7 +84,7 @@ export default function Home() {
     const updatedPhotos = [...photos];
     updatedPhotos.splice(index, 1);
     setPhotos(updatedPhotos);
-
+    
     toast({
       title: "Photo removed",
       description: `Photo ${index + 1} has been removed. You can now capture a new one.`,
@@ -217,7 +217,7 @@ export default function Home() {
               </div>
 
               {/* Preview Grid */}
-
+              
               <div className="space-y-3">
                   <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     Photo Preview
