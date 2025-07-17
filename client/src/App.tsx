@@ -1,30 +1,31 @@
-import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { Route, Switch, Router } from "wouter";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
-import Landing from "@/pages/landing";
-import Privacy from "@/components/Privacy"; // Added import for Privacy component
-import SharedPage from "@/pages/shared"; // Added import for SharedPage component
+import LandingPage from "@/pages/landing";
+import SharedPage from "@/pages/shared";
+import NotFound from "@/pages/not-found";
+import Privacy from "@/pages/privacy";
 
-function Router() {
-  return (
-    <Switch>
-      <Route path="/" component={Landing} />
-      <Route path="/booth" component={Home} />
-      <Route path="/privacy" component={Privacy} />
-      <Route path="/shared/:id" component={SharedPage} />
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
+const queryClient = new QueryClient();
 
-export default function App() {
+function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router />
-      <Toaster />
+      <Router>
+        <div className="min-h-screen">
+          <Switch>
+            <Route path="/" component={LandingPage} />
+            <Route path="/home" component={Home} />
+            <Route path="/shared/:id" component={SharedPage} />
+            <Route path="/privacy" component={Privacy} />
+            <Route component={NotFound} />
+          </Switch>
+          <Toaster />
+        </div>
+      </Router>
     </QueryClientProvider>
   );
 }
+
+export default App;
