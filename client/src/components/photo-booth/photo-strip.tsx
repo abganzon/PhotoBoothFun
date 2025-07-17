@@ -96,9 +96,9 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     // Calculate grid starting position - now at top when no text, or with padding when text exists
     const gridStartY = padding;
 
-    // Calculate text position - now at the bottom
-    const textStartY = gridStartY + gridHeight + padding + 20; // Position after grid with some spacing
-    const lineHeight = 38; // Consistent line height
+    // Calculate text position - now at the bottom with better spacing
+    const textStartY = gridStartY + gridHeight + padding + 25; // More generous spacing
+    const lineHeight = 42; // Increased line height for better readability
 
     const loadImage = (src: string): Promise<HTMLImageElement> => {
       return new Promise((resolve, reject) => {
@@ -204,24 +204,50 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         }
       }
 
-      // Draw title and date at bottom after photos
+      // Draw title and date at bottom after photos with enhanced styling
       if (showName) {
-        const titleSize = layout === "strip" ? 24 : 28; // Reduced font sizes
-        tempCtx.font = `${titleSize}px Arial`;
-        tempCtx.fillStyle = nameColor;
+        const titleSize = layout === "strip" ? 28 : 32; // Increased font sizes for better visibility
+        tempCtx.font = `bold ${titleSize}px "Georgia", serif`; // Use serif font for elegance
         tempCtx.textAlign = "center";
+        
+        // Add text shadow for depth
+        tempCtx.shadowColor = "rgba(0, 0, 0, 0.3)";
+        tempCtx.shadowOffsetX = 1;
+        tempCtx.shadowOffsetY = 1;
+        tempCtx.shadowBlur = 2;
+        
+        tempCtx.fillStyle = nameColor;
         tempCtx.fillText(name || "Photo Strip", canvas.width / 2, textStartY);
+        
+        // Reset shadow
+        tempCtx.shadowColor = "transparent";
+        tempCtx.shadowOffsetX = 0;
+        tempCtx.shadowOffsetY = 0;
+        tempCtx.shadowBlur = 0;
       }
 
-      // Draw date if enabled
+      // Draw date if enabled with enhanced styling
       if (showDate) {
-        const dateSize = layout === "strip" ? 16 : 18; // Reduced font sizes
-        tempCtx.font = `${dateSize}px Arial`;
-        tempCtx.fillStyle = dateColor;
+        const dateSize = layout === "strip" ? 18 : 20; // Increased font sizes
+        tempCtx.font = `${dateSize}px "Arial", sans-serif`; // Clean sans-serif for date
         tempCtx.textAlign = "center";
-        const dateText = format(new Date(), "MMMM dd, yyyy");
-        const dateY = showName ? textStartY + lineHeight : textStartY;
+        
+        // Add subtle text shadow
+        tempCtx.shadowColor = "rgba(0, 0, 0, 0.2)";
+        tempCtx.shadowOffsetX = 0.5;
+        tempCtx.shadowOffsetY = 0.5;
+        tempCtx.shadowBlur = 1;
+        
+        tempCtx.fillStyle = dateColor;
+        const dateText = format(new Date(), "MMMM dd, yyyy").toUpperCase(); // Uppercase for style
+        const dateY = showName ? textStartY + (lineHeight * 0.9) : textStartY; // Slightly tighter spacing
         tempCtx.fillText(dateText, canvas.width / 2, dateY);
+        
+        // Reset shadow
+        tempCtx.shadowColor = "transparent";
+        tempCtx.shadowOffsetX = 0;
+        tempCtx.shadowOffsetY = 0;
+        tempCtx.shadowBlur = 0;
       }
 
       // Update main canvas with the final content
