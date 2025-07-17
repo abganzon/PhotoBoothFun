@@ -11,9 +11,9 @@ import { Camera, Trash2, Settings, Repeat, Download, ChevronLeft, ChevronRight }
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { StepProgress } from "@/components/photo-booth/step-progress";
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const [currentStep, setCurrentStep] = useState(0);
   const [photos, setPhotos] = useState<string[]>([]);
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState("#E1D9D1");
@@ -33,6 +33,7 @@ export default function Home() {
     return false;
   });
   const { toast } = useToast();
+  const router = useRouter();
 
   // Persist dark mode preference
   useEffect(() => {
@@ -98,7 +99,7 @@ export default function Home() {
         <div className={`w-12 h-12 ${darkMode ? 'bg-blue-500' : 'bg-primary'} rounded-lg flex items-center justify-center`}>
           <Camera className="h-8 w-8 text-white" />
         </div>
-        <h1 className={`text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>RoBooth</h1>
+        <button onClick={() => router.push('/')} className={`text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} cursor-pointer`}>RoBooth</button>
       </div>
 
       <div className="mt-8">
