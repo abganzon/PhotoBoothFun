@@ -130,19 +130,112 @@ export default function SharedPage() {
               backgroundColor={photoStrip.backgroundColor}
               nameColor={photoStrip.nameColor || "#000000"}
               dateColor={photoStrip.dateColor || "#666666"}
+              hideButtons={true}
             />
           </div>
           
-          <div className="text-center mt-6">
-            <p className="text-sm text-gray-600 mb-4">
-              Want to create your own photo strip? Visit our app!
-            </p>
-            <Button
-              onClick={() => window.location.href = '/'}
-              variant="outline"
-            >
-              Create Photo Strip
-            </Button>
+          <div className="text-center mt-6 space-y-4">
+            <div className="flex justify-center">
+              <Button
+                onClick={async () => {
+                  // Find the canvas in the PhotoStrip component
+                  const canvas = document.querySelector('canvas');
+                  if (!canvas) {
+                    toast({
+                      title: "Error",
+                      description: "Could not find photo strip to download",
+                      variant: "destructive",
+                    });
+                    return;
+                  }
+
+                  const fileName = `${photoStrip.stripName || 'photo-strip'}-shared.png`;
+                  const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+
+                  if (isMobile) {
+                    try {
+                      // Convert canvas to blob
+                      const blob = await new Promise<Blob>((resolve) => {
+                        canvas.toBlob((blob) => {
+                          resolve(blob!);
+                        }, 'image/png');
+                      });
+
+                      // Create a File object
+                      const file = new File([blob], fileName, { type: 'image/png' });
+
+                      // Check if the Web Share API is available
+                      if (navigator.share && navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                          files: [file],
+                          title: 'Photo Strip',
+                          text: 'Download your photo strip'
+                        });
+                        
+                        toast({
+                          title: "Success!",
+                          description: "Your photo strip is ready to be saved",
+                          variant: "default",
+                          duration: 3000,
+                        });
+                      } else {
+                        // Fallback for browsers that don't support sharing files
+                        const downloadUrl = canvas.toDataURL();
+                        const link = document.createElement("a");
+                        link.download = fileName;
+                        link.href = downloadUrl;
+                        link.click();
+                        
+                        toast({
+                          title: "Photo Downloaded",
+                          description: "Check your device's download folder",
+                          variant: "default",
+                          duration: 3000,
+                        });
+                      }
+                    } catch (error) {
+                      console.error('Error sharing/downloading:', error);
+                      toast({
+                        title: "Download Failed",
+                        description: "There was an error downloading your photo",
+                        variant: "destructive",
+                        duration: 3000,
+                      });
+                    }
+                  } else {
+                    // Desktop download behavior
+                    const link = document.createElement("a");
+                    link.download = fileName;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                    
+                    toast({
+                      title: "Photo Downloaded",
+                      description: "Check your downloads folder",
+                      variant: "default",
+                      duration: 3000,
+                    });
+                  }
+                }}
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-lg font-semibold"
+              >
+                <Download className="h-5 w-5 mr-2" />
+                Download Photo Strip
+              </Button>
+            </div>
+            
+            <div className="border-t pt-4">
+              <p className="text-sm text-gray-600 mb-3">
+                Want to create your own photo strip?
+              </p>
+              <Button
+                onClick={() => window.location.href = '/'}
+                variant="outline"
+                className="border-2 border-blue-200 hover:bg-blue-50"
+              >
+                Create Your Own
+              </Button>
+            </div>
           </div>
         </div>
       </div>

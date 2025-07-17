@@ -16,6 +16,7 @@ interface PhotoStripProps {
   dateColor?: string;
   onShare?: (photoStripId: number) => void;
   darkMode?: boolean;
+  hideButtons?: boolean;
 }
 
 export const PhotoStrip: React.FC<PhotoStripProps> = ({
@@ -29,6 +30,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
   dateColor = "#666666",
   onShare,
   darkMode = false,
+  hideButtons = false,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
@@ -399,26 +401,28 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         />
       </div>
       
-      <div className="flex gap-3 mt-2">
-        <Button
-          onClick={handleDownload}
-          className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-        >
-          {isMobile ? <ImageIcon className="h-4 w-4" /> : <Download className="h-4 w-4" />}
-          {isMobile ? "Save Photo" : "Download"}
-        </Button>
-        
-        {photos.length > 0 && (
+      {!hideButtons && (
+        <div className="flex gap-3 mt-2">
           <Button
-            onClick={handleShare}
-            variant="outline"
-            className="flex items-center gap-2 px-6 py-2 rounded-xl border-2 border-blue-200 hover:bg-blue-50 transition-all duration-300"
+            onClick={handleDownload}
+            className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
           >
-            <Share2 className="h-4 w-4" />
-            Share
+            {isMobile ? <ImageIcon className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+            {isMobile ? "Save Photo" : "Download"}
           </Button>
-        )}
-      </div>
+          
+          {photos.length > 0 && (
+            <Button
+              onClick={handleShare}
+              variant="outline"
+              className="flex items-center gap-2 px-6 py-2 rounded-xl border-2 border-blue-200 hover:bg-blue-50 transition-all duration-300"
+            >
+              <Share2 className="h-4 w-4" />
+              Share
+            </Button>
+          )}
+        </div>
+      )}
       
       {photoStripId && (
         <ShareModal
