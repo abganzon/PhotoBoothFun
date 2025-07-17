@@ -28,3 +28,20 @@ export const insertPhotoStripSchema = createInsertSchema(photoStrips).pick({
 
 export type InsertPhotoStrip = z.infer<typeof insertPhotoStripSchema>;
 export type PhotoStrip = typeof photoStrips.$inferSelect;
+
+export const sharedLinks = pgTable("shared_links", {
+  id: text("id").primaryKey(),
+  photoStripId: serial("photo_strip_id").references(() => photoStrips.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  expiresAt: timestamp("expires_at").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+});
+
+export const insertSharedLinkSchema = createInsertSchema(sharedLinks).pick({
+  id: true,
+  photoStripId: true,
+  expiresAt: true,
+});
+
+export type InsertSharedLink = z.infer<typeof insertSharedLinkSchema>;
+export type SharedLink = typeof sharedLinks.$inferSelect;

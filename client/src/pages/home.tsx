@@ -401,6 +401,7 @@ export default function Home() {
                     backgroundColor={backgroundColor}
                     nameColor={nameColor}
                     dateColor={dateColor}
+                    darkMode={darkMode}
                   />
                 </div>
               </div>

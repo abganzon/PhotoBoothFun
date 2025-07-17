@@ -1,8 +1,9 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Image as ImageIcon } from "lucide-react";
+import { Download, Image as ImageIcon, Share2 } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
+import { ShareModal } from "./share-modal";
 
 interface PhotoStripProps {
   photos: string[];
@@ -13,6 +14,8 @@ interface PhotoStripProps {
   backgroundColor?: string;
   nameColor?: string;
   dateColor?: string;
+  onShare?: (photoStripId: number) => void;
+  darkMode?: boolean;
 }
 
 export const PhotoStrip: React.FC<PhotoStripProps> = ({
@@ -24,10 +27,14 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
   backgroundColor = "#ffffff",
   nameColor = "#000000",
   dateColor = "#666666",
+  onShare,
+  darkMode = false,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
   const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+  const [photoStripId, setPhotoStripId] = useState<number | null>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -332,22 +339,86 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     }
   };
 
+  const handleShare = async () => {
+    if (!photoStripId) {
+      // Save photo strip first
+      try {
+        const response = await fetch("/api/photo-strips", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            photos,
+            layout,
+            backgroundColor,
+            stripName: name,
+            showDate,
+            showName,
+            nameColor,
+            dateColor,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to save photo strip");
+        }
+
+        const savedPhotoStrip = await response.json();
+        setPhotoStripId(savedPhotoStrip.id);
+        setShowShareModal(true);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to save photo strip for sharing",
+          variant: "destructive",
+        });
+      }
+    } else {
+      setShowShareModal(true);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center gap-2 w-full px-2 sm:px-0">
-      <Button
-        onClick={handleDownload}
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2"
-      >
-        {isMobile ? <ImageIcon className="h-7 w-7" /> : <Download className="h-7 w-7" />}
-        {isMobile ? "Save to Gallery" : "Download"}
-      </Button>
+      <div className="flex gap-2">
+        <Button
+          onClick={handleDownload}
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2"
+        >
+          {isMobile ? <ImageIcon className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+          {isMobile ? "Save" : "Download"}
+        </Button>
+        
+        {photos.length > 0 && (
+          <Button
+            onClick={handleShare}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <Share2 className="h-4 w-4" />
+            Share
+          </Button>
+        )}
+      </div>
+      
       <canvas
         ref={canvasRef}
         className="w-full max-w-[250px] border-0 rounded-lg shadow-lg"
         style={{ maxWidth: '100%', height: 'auto' }}
       />
+      
+      {photoStripId && (
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          photoStripId={photoStripId}
+          darkMode={darkMode}
+        />
+      )}
     </div>
   );
 };
