@@ -53,7 +53,8 @@ export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMa
           variant="outline"
           size="icon"
           onClick={() => setMirrored(!mirrored)}
-          className="h-12 w-12 rounded-full bg-white/90 hover:bg-white shadow-lg border-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-600"
+          className="h-14 w-14 rounded-full bg-white/95 hover:bg-white shadow-xl border-2 border-gray-200 hover:border-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-600 transition-all duration-300"
+          title="Mirror camera"
         >
           <FlipHorizontal className="h-6 w-6 dark:text-white" />
         </Button>
@@ -68,9 +69,9 @@ export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMa
             }
           }}
           disabled={isCountingDown}
-          className="h-12 w-12 rounded-full bg-white shadow-lg hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:hover:bg-gray-700"
+          className="h-16 w-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 transition-all duration-300"
         >
-          <CameraIcon className="h-8 w-8 text-primary dark:text-white" />
+          <CameraIcon className="h-8 w-8 text-white" />
         </Button>
         
         {isMobile && (
@@ -78,7 +79,8 @@ export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMa
             variant="outline"
             size="icon"
             onClick={toggleCamera}
-            className="h-12 w-12 rounded-full bg-white/90 hover:bg-white shadow-lg border-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-600"
+            className="h-14 w-14 rounded-full bg-white/95 hover:bg-white shadow-xl border-2 border-gray-200 hover:border-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-600 transition-all duration-300"
+            title="Switch camera"
           >
             <Repeat className="h-6 w-6 dark:text-white" />
           </Button>

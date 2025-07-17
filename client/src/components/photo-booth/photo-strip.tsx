@@ -390,36 +390,35 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center gap-2 w-full px-2 sm:px-0">
-      <div className="flex gap-2">
+    <div className="flex flex-col items-center gap-4 w-full px-2 sm:px-0">
+      <div className="w-full max-w-[280px] bg-white rounded-2xl shadow-2xl p-4 border border-gray-100">
+        <canvas
+          ref={canvasRef}
+          className="w-full rounded-xl shadow-md"
+          style={{ maxWidth: '100%', height: 'auto' }}
+        />
+      </div>
+      
+      <div className="flex gap-3 mt-2">
         <Button
           onClick={handleDownload}
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
         >
           {isMobile ? <ImageIcon className="h-4 w-4" /> : <Download className="h-4 w-4" />}
-          {isMobile ? "Save" : "Download"}
+          {isMobile ? "Save Photo" : "Download"}
         </Button>
         
         {photos.length > 0 && (
           <Button
             onClick={handleShare}
             variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 px-6 py-2 rounded-xl border-2 border-blue-200 hover:bg-blue-50 transition-all duration-300"
           >
             <Share2 className="h-4 w-4" />
             Share
           </Button>
         )}
       </div>
-      
-      <canvas
-        ref={canvasRef}
-        className="w-full max-w-[250px] border-0 rounded-lg shadow-lg"
-        style={{ maxWidth: '100%', height: 'auto' }}
-      />
       
       {photoStripId && (
         <ShareModal

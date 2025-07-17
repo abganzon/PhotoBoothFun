@@ -210,41 +210,57 @@ export default function Home() {
               </div>
 
               {/* Preview Grid */}
-              <div className="flex flex-col gap-2">
-                <div className="w-full grid grid-cols-2 gap-2 p-4 bg-gray-100 rounded-xl">
-                  {[...Array(4)].map((_, index) => (
-                    <div
-                      key={index}
-                      className="aspect-[4/3] bg-white rounded-lg overflow-hidden shadow-md relative group hover:ring-2 hover:ring-primary/50 transition-all"
-                    >
-                      {photos[index] ? (
-                        <img
-                          src={photos[index]}
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-2xl font-semibold text-gray-300">{index + 1}</span>
-                        </div>
-                      )}
-                      {photos[index] && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleRetakePhoto(index)}
-                            className="flex items-center gap-1"
-                          >
-                            <Repeat className="h-3 w-3" />
-                            Retake
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+              
+              <div className="space-y-3">
+                  <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Photo Preview
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <div
+                        key={index}
+                        className={`aspect-[4/3] rounded-xl border-2 transition-all duration-300 ${
+                          photos[index] 
+                            ? 'border-green-400 bg-green-50 shadow-md' 
+                            : index === photos.length
+                            ? 'border-blue-400 bg-blue-50 animate-pulse'
+                            : 'border-gray-300 bg-gray-50 hover:border-gray-400'
+                        } ${darkMode ? 'dark:border-gray-600 dark:bg-gray-800' : ''} 
+                        flex items-center justify-center relative overflow-hidden group`}
+                      >
+                        {photos[index] ? (
+                          <>
+                            <img
+                              src={photos[index]}
+                              alt={`Captured ${index + 1}`}
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                            <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                              ✓
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-center">
+                            <div className={`w-10 h-10 rounded-full ${
+                              index === photos.length 
+                                ? 'bg-blue-100 border-2 border-blue-400' 
+                                : 'bg-gray-100 border-2 border-gray-300'
+                            } flex items-center justify-center mb-2 transition-all duration-300`}>
+                              <Camera className={`h-5 w-5 ${
+                                index === photos.length ? 'text-blue-500' : 'text-gray-400'
+                              }`} />
+                            </div>
+                            <span className={`text-xs font-medium ${
+                              index === photos.length ? 'text-blue-600' : 'text-gray-500'
+                            }`}>
+                              {index === photos.length ? 'Next' : `Photo ${index + 1}`}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
             </div>
           </div>
         ) : (
