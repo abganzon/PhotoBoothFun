@@ -133,30 +133,7 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* Demo Preview */}
-        <div className="mt-16 animate-fade-in" style={{ animationDelay: '1s' }}>
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-2xl max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-center text-gray-800 mb-6">See It In Action</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl p-4 aspect-[4/3] flex items-center justify-center">
-                  <span className="text-gray-400 text-sm">Strip Layout</span>
-                </div>
-                <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl p-4 aspect-[4/3] flex items-center justify-center">
-                  <span className="text-gray-400 text-sm">Auto Capture</span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl p-4 aspect-[4/3] flex items-center justify-center">
-                  <span className="text-gray-400 text-sm">Collage Layout</span>
-                </div>
-                <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl p-4 aspect-[4/3] flex items-center justify-center">
-                  <span className="text-gray-400 text-sm">Customizable</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        
 
         {/* Footer */}
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-4 text-sm text-gray-500 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg">
