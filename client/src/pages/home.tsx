@@ -84,6 +84,13 @@ export default function Home() {
     const updatedPhotos = [...photos];
     updatedPhotos.splice(index, 1);
     setPhotos(updatedPhotos);
+    
+    toast({
+      title: "Photo removed",
+      description: `Photo ${index + 1} has been removed. You can now capture a new one.`,
+      variant: "default",
+      duration: 2000,
+    });
   };
 
   const handleNext = () => {
@@ -221,12 +228,17 @@ export default function Home() {
                         key={index}
                         className={`aspect-[4/3] rounded-xl border-2 transition-all duration-300 ${
                           photos[index] 
-                            ? 'border-green-400 bg-green-50 shadow-md' 
+                            ? 'border-green-400 bg-green-50 shadow-md hover:shadow-lg' 
                             : index === photos.length
                             ? 'border-blue-400 bg-blue-50 animate-pulse'
                             : 'border-gray-300 bg-gray-50 hover:border-gray-400'
                         } ${darkMode ? 'dark:border-gray-600 dark:bg-gray-800' : ''} 
-                        flex items-center justify-center relative overflow-hidden group`}
+                        flex items-center justify-center relative overflow-hidden group cursor-pointer`}
+                        onClick={() => {
+                          if (photos[index]) {
+                            handleRetakePhoto(index);
+                          }
+                        }}
                       >
                         {photos[index] ? (
                           <>
@@ -237,6 +249,13 @@ export default function Home() {
                             />
                             <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
                               ✓
+                            </div>
+                            {/* Hover overlay for retake */}
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center rounded-lg">
+                              <div className="text-white text-center">
+                                <Trash2 className="h-6 w-6 mx-auto mb-1" />
+                                <span className="text-xs font-medium">Retake</span>
+                              </div>
                             </div>
                           </>
                         ) : (
@@ -260,6 +279,11 @@ export default function Home() {
                       </div>
                     ))}
                   </div>
+                  {photos.length > 0 && (
+                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} text-center`}>
+                      Click on any photo to retake it
+                    </p>
+                  )}
                 </div>
             </div>
           </div>
