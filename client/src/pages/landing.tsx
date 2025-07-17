@@ -88,7 +88,7 @@ export default function Landing() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style={{ animationDelay: '0.8s' }}>
             <Button
               size="lg"
-              onClick={() => setLocation("/booth")}
+              onClick={() => setLocation("/home")}
               className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 text-lg font-medium rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 gap-3"
             >
               <Camera className="h-6 w-6" />
