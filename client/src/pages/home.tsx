@@ -78,6 +78,12 @@ export default function Home() {
     setPhotos([]);
   };
 
+  const handleRetakePhoto = (index: number) => {
+    const updatedPhotos = [...photos];
+    updatedPhotos.splice(index, 1);
+    setPhotos(updatedPhotos);
+  };
+
   const handleNext = () => {
     setCurrentStep((prev) => Math.min(prev + 1, 1));
   };
@@ -222,6 +228,15 @@ export default function Home() {
                       )}
                       {photos[index] && (
                         <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleRetakePhoto(index)}
+                            className="flex items-center gap-1"
+                          >
+                            <Repeat className="h-3 w-3" />
+                            Retake
+                          </Button>
                         </div>
                       )}
                     </div>
