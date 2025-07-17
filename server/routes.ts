@@ -46,7 +46,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/shared-links/:id", async (req, res) => {
     try {
       const { id } = req.params;
+      console.log("Looking for shared link:", id);
+      
       const sharedLink = await storage.getSharedLink(id);
+      console.log("Found shared link:", sharedLink ? "Yes" : "No");
       
       if (!sharedLink) {
         res.setHeader('Content-Type', 'application/json');
@@ -55,6 +58,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const photoStrip = await storage.getPhotoStrip(sharedLink.photoStripId);
+      console.log("Found photo strip:", photoStrip ? "Yes" : "No");
+      console.log("Photo strip photos count:", photoStrip?.photos ? (photoStrip.photos as string[]).length : 0);
       
       if (!photoStrip) {
         res.setHeader('Content-Type', 'application/json');
@@ -65,6 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Content-Type', 'application/json');
       res.json(photoStrip);
     } catch (error) {
+      console.error("Error retrieving shared photo strip:", error);
       res.setHeader('Content-Type', 'application/json');
       res.status(500).json({ error: "Failed to retrieve photo strip" });
     }

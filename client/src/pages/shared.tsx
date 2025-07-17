@@ -31,9 +31,15 @@ export default function SharedPage() {
 
     const fetchPhotoStrip = async () => {
       try {
+        console.log("Fetching photo strip for ID:", id);
         const response = await fetch(`/api/shared-links/${id}`);
         
+        console.log("Response status:", response.status);
+        
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error("API Error:", errorText);
+          
           if (response.status === 404) {
             setError("Link not found or expired");
           } else {
@@ -43,8 +49,18 @@ export default function SharedPage() {
         }
 
         const data = await response.json();
+        console.log("Photo strip data:", data);
+        
+        // Validate the data structure
+        if (!data || !data.photos || !Array.isArray(data.photos)) {
+          console.error("Invalid photo strip data structure:", data);
+          setError("Invalid photo strip data");
+          return;
+        }
+        
         setPhotoStrip(data);
       } catch (error) {
+        console.error("Error fetching photo strip:", error);
         setError("Failed to load photo strip");
       } finally {
         setLoading(false);

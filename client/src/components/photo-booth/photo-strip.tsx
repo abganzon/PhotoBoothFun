@@ -110,17 +110,27 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     const loadImage = (src: string): Promise<HTMLImageElement> => {
       return new Promise((resolve, reject) => {
         const img = new Image();
-        img.crossOrigin = "anonymous";
-        if (src.startsWith('data:')) {
-          img.crossOrigin = '';
+        // Don't set crossOrigin for data URLs
+        if (!src.startsWith('data:')) {
+          img.crossOrigin = "anonymous";
         }
-        img.onload = () => resolve(img);
-        img.onerror = (e) => reject(e);
+        img.onload = () => {
+          console.log("Image loaded successfully");
+          resolve(img);
+        };
+        img.onerror = (e) => {
+          console.error("Error loading image:", e, "Source:", src.substring(0, 100) + "...");
+          reject(e);
+        };
         img.src = src;
       });
     };
 
     const drawAllPhotos = async () => {
+      console.log("Drawing photos, count:", photos.length);
+      console.log("Layout:", layout);
+      console.log("Canvas dimensions:", canvas.width, "x", canvas.height);
+      
       // Draw placeholder borders for empty layout
       if (photos.length === 0) {
         if (layout === "strip") {
