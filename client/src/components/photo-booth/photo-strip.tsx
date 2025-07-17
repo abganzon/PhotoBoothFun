@@ -59,8 +59,8 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     if (layout === "strip") {
       canvas.width = placeholderWidth + (padding * 2); // Set width to fit placeholder with padding
       gridHeight = (placeholderHeight * 4) + (padding * 3); // Height of just the photos and spacing between them
-      // When no text, bottom padding matches side padding
-      canvas.height = (hasText ? textSpace + padding : padding) + gridHeight + padding;
+      // Set canvas height with text at bottom
+      canvas.height = padding + gridHeight + (hasText ? padding + textSpace : padding);
     } else {
       // For collage layout
       canvas.width = 450; // Reduced from 600 to 450 for collage layout
@@ -70,8 +70,8 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       photoWidth = cellSize;
       photoHeight = cellSize;
 
-      // Set canvas height with text at top, when no text bottom padding matches sides
-      canvas.height = (hasText ? textSpace + padding : padding) + gridHeight + padding;
+      // Set canvas height with text at bottom
+      canvas.height = padding + gridHeight + (hasText ? padding + textSpace : padding);
     }
 
     tempCanvas.width = canvas.width;
@@ -93,32 +93,12 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       gridHeight = (photoHeight * 2) + padding;
     }
 
-    // Calculate text position - now at the top
-    const textStartY = padding * 2; // Start text from top with consistent padding
+    // Calculate grid starting position - now at top when no text, or with padding when text exists
+    const gridStartY = padding;
+
+    // Calculate text position - now at the bottom
+    const textStartY = gridStartY + gridHeight + padding + 20; // Position after grid with some spacing
     const lineHeight = 38; // Consistent line height
-
-    // Draw title with consistent styling
-    if (showName) {
-      const titleSize = layout === "strip" ? 24 : 28; // Reduced font sizes
-      tempCtx.font = `${titleSize}px Arial`;
-      tempCtx.fillStyle = nameColor;
-      tempCtx.textAlign = "center";
-      tempCtx.fillText(name || "Photo Strip", canvas.width / 2, textStartY);
-    }
-
-    // Draw date if enabled
-    if (showDate) {
-      const dateSize = layout === "strip" ? 16 : 18; // Reduced font sizes
-      tempCtx.font = `${dateSize}px Arial`;
-      tempCtx.fillStyle = dateColor;
-      tempCtx.textAlign = "center";
-      const dateText = format(new Date(), "MMMM dd, yyyy");
-      const dateY = showName ? textStartY + lineHeight : textStartY;
-      tempCtx.fillText(dateText, canvas.width / 2, dateY);
-    }
-
-    // Calculate grid starting position - now after text
-    const gridStartY = hasText ? textSpace + padding : padding;
 
     const loadImage = (src: string): Promise<HTMLImageElement> => {
       return new Promise((resolve, reject) => {
@@ -222,6 +202,26 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
             console.error("Error loading photo:", error);
           }
         }
+      }
+
+      // Draw title and date at bottom after photos
+      if (showName) {
+        const titleSize = layout === "strip" ? 24 : 28; // Reduced font sizes
+        tempCtx.font = `${titleSize}px Arial`;
+        tempCtx.fillStyle = nameColor;
+        tempCtx.textAlign = "center";
+        tempCtx.fillText(name || "Photo Strip", canvas.width / 2, textStartY);
+      }
+
+      // Draw date if enabled
+      if (showDate) {
+        const dateSize = layout === "strip" ? 16 : 18; // Reduced font sizes
+        tempCtx.font = `${dateSize}px Arial`;
+        tempCtx.fillStyle = dateColor;
+        tempCtx.textAlign = "center";
+        const dateText = format(new Date(), "MMMM dd, yyyy");
+        const dateY = showName ? textStartY + lineHeight : textStartY;
+        tempCtx.fillText(dateText, canvas.width / 2, dateY);
       }
 
       // Update main canvas with the final content
