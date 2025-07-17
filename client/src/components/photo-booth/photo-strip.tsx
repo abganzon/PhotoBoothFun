@@ -411,7 +411,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
             {isMobile ? "Save Photo" : "Download"}
           </Button>
           
-          {photos.length > 0 && (
+          {/* {photos.length > 0 && (
             <Button
               onClick={handleShare}
               variant="outline"
@@ -420,7 +420,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
               <Share2 className="h-4 w-4" />
               Share
             </Button>
-          )}
+          )} */}
         </div>
       )}
       

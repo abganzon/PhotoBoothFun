@@ -58,7 +58,7 @@ export default function Landing() {
           </p>
 
           {/* Feature Highlights */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+          {/* <div className="grid md:grid-cols-3 gap-6 mb-12 animate-fade-in" style={{ animationDelay: '0.6s' }}>
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 mx-auto">
                 <Zap className="h-6 w-6 text-white" />
@@ -82,7 +82,7 @@ export default function Landing() {
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Easy Download</h3>
               <p className="text-gray-600 text-sm">Download your photo strips instantly or share them with friends</p>
             </div>
-          </div>
+          </div> */}
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style={{ animationDelay: '0.8s' }}>
