@@ -52,7 +52,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Found shared link:", sharedLink ? "Yes" : "No");
       
       if (!sharedLink) {
-        res.setHeader('Content-Type', 'application/json');
+        console.log("Shared link not found or expired");
         res.status(404).json({ error: "Link not found or expired" });
         return;
       }
@@ -62,16 +62,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Photo strip photos count:", photoStrip?.photos ? (photoStrip.photos as string[]).length : 0);
       
       if (!photoStrip) {
-        res.setHeader('Content-Type', 'application/json');
+        console.log("Photo strip not found");
         res.status(404).json({ error: "Photo strip not found" });
         return;
       }
       
-      res.setHeader('Content-Type', 'application/json');
-      res.json(photoStrip);
+      // Ensure photos is properly formatted as an array
+      const responseData = {
+        ...photoStrip,
+        photos: Array.isArray(photoStrip.photos) ? photoStrip.photos : []
+      };
+      
+      console.log("Sending photo strip data:", responseData);
+      res.json(responseData);
     } catch (error) {
       console.error("Error retrieving shared photo strip:", error);
-      res.setHeader('Content-Type', 'application/json');
       res.status(500).json({ error: "Failed to retrieve photo strip" });
     }
   });

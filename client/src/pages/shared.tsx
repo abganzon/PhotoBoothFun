@@ -27,7 +27,11 @@ export default function SharedPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) {
+      setError("No photo strip ID provided");
+      setLoading(false);
+      return;
+    }
 
     const fetchPhotoStrip = async () => {
       try {
@@ -35,10 +39,18 @@ export default function SharedPage() {
         const response = await fetch(`/api/shared-links/${id}`);
         
         console.log("Response status:", response.status);
+        console.log("Response headers:", response.headers.get('content-type'));
         
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error("API Error:", errorText);
+          let errorMessage;
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || "Unknown error";
+          } catch {
+            errorMessage = await response.text();
+          }
+          
+          console.error("API Error:", errorMessage);
           
           if (response.status === 404) {
             setError("Link not found or expired");
@@ -49,19 +61,33 @@ export default function SharedPage() {
         }
 
         const data = await response.json();
-        console.log("Photo strip data:", data);
+        console.log("Photo strip data received:", data);
+        console.log("Photos array:", data.photos);
+        console.log("Photos length:", data.photos?.length);
         
         // Validate the data structure
-        if (!data || !data.photos || !Array.isArray(data.photos)) {
-          console.error("Invalid photo strip data structure:", data);
-          setError("Invalid photo strip data");
+        if (!data) {
+          console.error("No data received");
+          setError("No data received from server");
+          return;
+        }
+
+        if (!data.photos) {
+          console.error("No photos in data");
+          setError("No photos found in photo strip");
+          return;
+        }
+
+        if (!Array.isArray(data.photos)) {
+          console.error("Photos is not an array:", typeof data.photos, data.photos);
+          setError("Invalid photo strip data format");
           return;
         }
         
         setPhotoStrip(data);
       } catch (error) {
-        console.error("Error fetching photo strip:", error);
-        setError("Failed to load photo strip");
+        console.error("Network or parsing error:", error);
+        setError("Failed to load photo strip - network error");
       } finally {
         setLoading(false);
       }
@@ -121,16 +147,22 @@ export default function SharedPage() {
 
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="max-w-lg mx-auto">
+            {console.log("Rendering PhotoStrip with:", {
+              photos: photoStrip.photos,
+              layout: photoStrip.layout,
+              photosLength: photoStrip.photos?.length
+            })}
             <PhotoStrip
-              photos={photoStrip.photos}
-              layout={photoStrip.layout}
-              name={photoStrip.stripName}
+              photos={Array.isArray(photoStrip.photos) ? photoStrip.photos : []}
+              layout={photoStrip.layout as "strip" | "collage"}
+              name={photoStrip.stripName || undefined}
               showDate={photoStrip.showDate}
               showName={photoStrip.showName}
               backgroundColor={photoStrip.backgroundColor}
               nameColor={photoStrip.nameColor || "#000000"}
               dateColor={photoStrip.dateColor || "#666666"}
               hideButtons={true}
+              darkMode={false}
             />
           </div>
           
