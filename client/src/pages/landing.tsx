@@ -1,11 +1,10 @@
-
 /// <reference types="react" />
-import * as React from 'react';
-import { useEffect } from 'react';
-import { Link, useLocation } from 'wouter';
-import { Camera, Heart, Sparkles, Zap, Users, Download } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
-import { Button } from '@/components/ui/button';
+import * as React from "react";
+import { useEffect } from "react";
+import { Link, useLocation } from "wouter";
+import { Camera, Heart, Sparkles, Zap, Users, Download } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -25,8 +24,14 @@ export default function Landing() {
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-200 to-purple-200 rounded-full opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-indigo-200 to-blue-200 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div
+          className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full opacity-20 animate-pulse"
+          style={{ animationDelay: "1s" }}
+        ></div>
+        <div
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-indigo-200 to-blue-200 rounded-full opacity-10 animate-pulse"
+          style={{ animationDelay: "2s" }}
+        ></div>
       </div>
 
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
@@ -48,13 +53,20 @@ export default function Landing() {
           </div>
 
           {/* Tagline */}
-          <p className="text-2xl md:text-3xl text-gray-600 mb-6 font-light animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <p
+            className="text-2xl md:text-3xl text-gray-600 mb-6 font-light animate-fade-in"
+            style={{ animationDelay: "0.2s" }}
+          >
             Your Digital Photobooth Experience
           </p>
-          
-          <p className="text-lg md:text-xl text-gray-500 mb-12 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            Create stunning photo strips and collages with professional-quality results. 
-            Perfect for events, parties, or just having fun with friends!
+
+          <p
+            className="text-lg md:text-xl text-gray-500 mb-12 max-w-2xl mx-auto animate-fade-in"
+            style={{ animationDelay: "0.4s" }}
+          >
+            Create stunning photo strips and collages with professional-quality
+            results. Perfect for events, parties, or just having fun with
+            friends!
           </p>
 
           {/* Feature Highlights */}
@@ -85,7 +97,10 @@ export default function Landing() {
           </div> */}
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style={{ animationDelay: '0.8s' }}>
+          <div
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in"
+            style={{ animationDelay: "0.8s" }}
+          >
             <Button
               size="lg"
               onClick={() => setLocation("/home")}
@@ -97,9 +112,9 @@ export default function Landing() {
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
+                <Button
+                  variant="outline"
+                  size="lg"
                   className="border-2 border-purple-300 text-purple-600 hover:bg-purple-50 px-8 py-4 text-lg font-medium rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 gap-3"
                 >
                   <Heart className="h-6 w-6" />
@@ -108,23 +123,31 @@ export default function Landing() {
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                  <DialogTitle className="text-3xl font-bold text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Support RoBooth</DialogTitle>
+                  <DialogTitle className="text-3xl font-bold text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Support RoBooth
+                  </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-6 py-6">
                   <p className="text-center text-gray-600 text-lg leading-relaxed">
-                    Thank you for considering supporting RoBooth! Your contribution helps keep this service running and enables continuous improvements.
+                    Thank you for considering supporting RoBooth! Your
+                    contribution helps keep this service running and enables
+                    continuous improvements.
                   </p>
                   <div className="flex flex-col items-center gap-6">
                     <div className="bg-gradient-to-b from-blue-50 via-white to-purple-50 p-8 rounded-2xl shadow-lg border border-gray-100">
-                      <img 
-                        src="/IMG_9239.jpeg" 
-                        alt="GCash QR Code" 
-                        className="w-64 h-64 object-contain rounded-xl shadow-inner bg-white p-2" 
+                      <img
+                        src="/IMG_9239.jpeg"
+                        alt="GCash QR Code"
+                        className="w-64 h-64 object-contain rounded-xl shadow-inner bg-white p-2"
                       />
                     </div>
                     <div className="text-center bg-blue-50 px-6 py-4 rounded-xl shadow-sm">
-                      <p className="text-base font-medium text-blue-600 mb-1">GCash Number</p>
-                      <p className="text-xl font-bold text-blue-800">09391935233</p>
+                      <p className="text-base font-medium text-blue-600 mb-1">
+                        GCash Number
+                      </p>
+                      <p className="text-xl font-bold text-blue-800">
+                        09391935233
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -133,26 +156,28 @@ export default function Landing() {
           </div>
         </div>
 
-        
-
         {/* Footer */}
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-4 text-sm text-gray-500 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg">
-          <span className="font-medium">v1.0.0</span>
-          <span>•</span>
-          <span className="text-gray-400">by influenzah</span>
+          <span className="text-gray-400">by Influenzah</span>
           <span>•</span>
           <Dialog>
             <DialogTrigger asChild>
-              <button className="text-blue-600 hover:text-blue-700 font-medium transition-colors">Privacy Policy</button>
+              <button className="text-blue-600 hover:text-blue-700 font-medium transition-colors">
+                Privacy Policy
+              </button>
             </DialogTrigger>
             <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle className="text-3xl font-bold text-gray-900 text-center">Features & Privacy Policy</DialogTitle>
+                <DialogTitle className="text-3xl font-bold text-gray-900 text-center">
+                  Features & Privacy Policy
+                </DialogTitle>
               </DialogHeader>
               <div className="grid md:grid-cols-2 gap-8 py-6">
                 {/* Features Column */}
                 <div>
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-6">Features</h2>
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+                    Features
+                  </h2>
                   <div className="space-y-6">
                     <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
                       <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
@@ -198,10 +223,13 @@ export default function Landing() {
 
                 {/* Privacy Policy Column */}
                 <div>
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-6">Privacy Policy</h2>
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+                    Privacy Policy
+                  </h2>
                   <div className="bg-white p-6 rounded-xl shadow-sm mb-8">
                     <p className="text-lg text-gray-600 leading-relaxed">
-                      Your privacy is my priority. This policy explains how your images and personal data are handled.
+                      Your privacy is my priority. This policy explains how your
+                      images and personal data are handled.
                     </p>
                   </div>
 
@@ -211,7 +239,11 @@ export default function Landing() {
                         <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
                         Image Processing
                       </h3>
-                      <p className="text-gray-600 pl-5">All image processing happens locally within your browser on your device. No images are uploaded to external servers.</p>
+                      <p className="text-gray-600 pl-5">
+                        All image processing happens locally within your browser
+                        on your device. No images are uploaded to external
+                        servers.
+                      </p>
                     </div>
 
                     <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
@@ -219,7 +251,11 @@ export default function Landing() {
                         <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-3"></span>
                         Data Collection
                       </h3>
-                      <p className="text-gray-600 pl-5">I do not collect or store any images you process with this application. Your images stay entirely on your device.</p>
+                      <p className="text-gray-600 pl-5">
+                        I do not collect or store any images you process with
+                        this application. Your images stay entirely on your
+                        device.
+                      </p>
                     </div>
 
                     <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
@@ -227,7 +263,10 @@ export default function Landing() {
                         <span className="inline-block w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
                         No Server Transmission
                       </h3>
-                      <p className="text-gray-600 pl-5">All processing is done client-side, ensuring that your images are never transmitted to any servers.</p>
+                      <p className="text-gray-600 pl-5">
+                        All processing is done client-side, ensuring that your
+                        images are never transmitted to any servers.
+                      </p>
                     </div>
 
                     <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
@@ -235,7 +274,10 @@ export default function Landing() {
                         <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-3"></span>
                         Third-Party Services
                       </h3>
-                      <p className="text-gray-600 pl-5">No third-party services are used that would require uploading or sharing your images.</p>
+                      <p className="text-gray-600 pl-5">
+                        No third-party services are used that would require
+                        uploading or sharing your images.
+                      </p>
                     </div>
 
                     <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
@@ -243,7 +285,10 @@ export default function Landing() {
                         <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-3"></span>
                         Policy Updates
                       </h3>
-                      <p className="text-gray-600 pl-5">This privacy policy may be updated periodically, with any changes posted on this page.</p>
+                      <p className="text-gray-600 pl-5">
+                        This privacy policy may be updated periodically, with
+                        any changes posted on this page.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -255,10 +300,16 @@ export default function Landing() {
 
       <style jsx>{`
         @keyframes fade-in {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
-        
+
         .animate-fade-in {
           animation: fade-in 0.8s ease-out forwards;
           opacity: 0;
