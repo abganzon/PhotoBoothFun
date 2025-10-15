@@ -32,6 +32,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
   hideButtons = false,
   darkMode = false,
   showShareButton = false,
+  onShare,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
