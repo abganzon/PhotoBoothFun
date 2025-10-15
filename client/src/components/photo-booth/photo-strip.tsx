@@ -353,8 +353,15 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
   };
 
   const handleShare = () => {
-    if (onShare) {
+    if (onShare && typeof onShare === 'function') {
       onShare();
+    } else {
+      toast({
+        title: "Share not available",
+        description: "Share functionality is not available for this photo strip",
+        variant: "default",
+        duration: 2000,
+      });
     }
   };
 
