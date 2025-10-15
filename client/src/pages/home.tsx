@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Camera, Trash2, Settings, Repeat, Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { Camera, Trash2, Settings, Repeat, Download, ChevronLeft, ChevronRight, Share } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { StepProgress } from "@/components/photo-booth/step-progress";
 import { useLocation } from 'wouter';
+import QRCode from 'qrcode.react';
 
 export default function Home() {
   const [photos, setPhotos] = useState<string[]>([]);
@@ -35,6 +36,8 @@ export default function Home() {
   const { toast } = useToast();
   const [location, setLocation] = useLocation();
   const [currentStep, setCurrentStep] = useState(0);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
 
   // Persist dark mode preference
   useEffect(() => {
@@ -55,7 +58,7 @@ export default function Home() {
       setPhotos(updatedPhotos);
       setRecaptureIndex(null);
       setIsCountingDown(false);
-      
+
       toast({
         title: "Photo recaptured",
         description: `Photo ${recaptureIndex + 1} has been updated`,
@@ -101,7 +104,7 @@ export default function Home() {
 
   const handleRetakePhoto = (index: number) => {
     setRecaptureIndex(index);
-    
+
     toast({
       title: "Recapture mode",
       description: `Click Auto Capture or the camera button to recapture Photo ${index + 1}`,
@@ -116,6 +119,32 @@ export default function Home() {
 
   const handlePrevious = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
+  };
+
+  const handleShare = () => {
+    const currentState = {
+      photos,
+      stripName,
+      showDate,
+      showName,
+      backgroundColor,
+      nameColor,
+      dateColor,
+      layout,
+    };
+    const url = `${window.location.origin}/share?state=${encodeURIComponent(JSON.stringify(currentState))}`;
+    setShareUrl(url);
+    setShareModalOpen(true);
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(shareUrl);
+    toast({
+      title: "Link copied",
+      description: "The shareable link has been copied to your clipboard.",
+      variant: "default",
+      duration: 2000,
+    });
   };
 
   return (
@@ -244,7 +273,7 @@ export default function Home() {
               </div>
 
               {/* Preview Grid */}
-              
+
               <div className="space-y-3">
                   <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     Photo Preview
@@ -459,7 +488,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-6">
-              <div className={`w-full ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-xl p-4`}>
+              <div className={`w-full max-w-[280px] ${darkMode ? 'bg-gray-700' : 'bg-white'} rounded-xl p-4`}>
                 <div className={`mx-auto ${layout === 'strip' ? 'max-w-[300px]' : 'max-w-[600px]'}`}>
                   <PhotoStrip
                     photos={photos}
@@ -471,13 +500,38 @@ export default function Home() {
                     nameColor={nameColor}
                     dateColor={dateColor}
                     darkMode={darkMode}
+                    showShareButton={true}
                   />
                 </div>
               </div>
+              {photos.length > 0 && (
+                <Button onClick={handleShare} className="w-full flex items-center gap-2">
+                  <Share className="h-4 w-4" />
+                  Share Strip
+                </Button>
+              )}
             </div>
           </div>
         )}
       </div>
+
+      <Dialog open={shareModalOpen} onOpenChange={setShareModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Share Your Photo Strip</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="text-center">
+              {shareUrl && <QRCode value={shareUrl} size={256} />}
+            </div>
+            <div className="flex items-center gap-2">
+              <Input id="share-url" value={shareUrl} readOnly className="flex-1" />
+              <Button onClick={handleCopyLink}>Copy Link</Button>
+            </div>
+            <p className="text-sm text-center text-gray-500">Scan the QR code or copy the link to share.</p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

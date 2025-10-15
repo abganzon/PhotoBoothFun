@@ -14,9 +14,9 @@ interface PhotoStripProps {
   backgroundColor?: string;
   nameColor?: string;
   dateColor?: string;
-  onShare?: (photoStripId: number) => void;
-  darkMode?: boolean;
   hideButtons?: boolean;
+  darkMode?: boolean;
+  showShareButton?: boolean;
 }
 
 export const PhotoStrip: React.FC<PhotoStripProps> = ({
@@ -28,9 +28,9 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
   backgroundColor = "#ffffff",
   nameColor = "#000000",
   dateColor = "#666666",
-  onShare,
-  darkMode = false,
   hideButtons = false,
+  darkMode = false,
+  showShareButton = false,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
@@ -132,7 +132,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       console.log("Drawing photos, count:", photos.length);
       console.log("Layout:", layout);
       console.log("Canvas dimensions:", canvas.width, "x", canvas.height);
-      
+
       // Draw placeholder borders for empty layout
       if (photos.length === 0) {
         if (layout === "strip") {
@@ -172,7 +172,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
             if (layout === "strip") {
               x = padding;
               y = gridStartY + (i * (placeholderHeight + padding));
-              
+
               // Calculate dimensions to maintain aspect ratio and fill placeholder
               const aspectRatio = img.width / img.height;
               let drawWidth = placeholderWidth;
@@ -228,16 +228,16 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         const titleSize = layout === "strip" ? 28 : 32; // Increased font sizes for better visibility
         tempCtx.font = `bold ${titleSize}px "Georgia", serif`; // Use serif font for elegance
         tempCtx.textAlign = "center";
-        
+
         // Add text shadow for depth
         tempCtx.shadowColor = "rgba(0, 0, 0, 0.3)";
         tempCtx.shadowOffsetX = 1;
         tempCtx.shadowOffsetY = 1;
         tempCtx.shadowBlur = 2;
-        
+
         tempCtx.fillStyle = nameColor;
         tempCtx.fillText(name || "Photo Strip", canvas.width / 2, textStartY);
-        
+
         // Reset shadow
         tempCtx.shadowColor = "transparent";
         tempCtx.shadowOffsetX = 0;
@@ -250,18 +250,18 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         const dateSize = layout === "strip" ? 18 : 20; // Increased font sizes
         tempCtx.font = `${dateSize}px "Arial", sans-serif`; // Clean sans-serif for date
         tempCtx.textAlign = "center";
-        
+
         // Add subtle text shadow
         tempCtx.shadowColor = "rgba(0, 0, 0, 0.2)";
         tempCtx.shadowOffsetX = 0.5;
         tempCtx.shadowOffsetY = 0.5;
         tempCtx.shadowBlur = 1;
-        
+
         tempCtx.fillStyle = dateColor;
         const dateText = format(new Date(), "MMMM dd, yyyy").toUpperCase(); // Uppercase for style
         const dateY = showName ? textStartY + (lineHeight * 0.9) : textStartY; // Slightly tighter spacing
         tempCtx.fillText(dateText, canvas.width / 2, dateY);
-        
+
         // Reset shadow
         tempCtx.shadowColor = "transparent";
         tempCtx.shadowOffsetX = 0;
@@ -304,7 +304,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
             title: 'Photo Strip',
             text: 'Download or share your photo strip'
           });
-          
+
           toast({
             title: "Success!",
             description: "Your photo strip is ready to be saved or shared",
@@ -318,7 +318,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
           link.download = fileName;
           link.href = downloadUrl;
           link.click();
-          
+
           toast({
             title: "Photo Downloaded",
             description: "Check your device's download folder",
@@ -341,7 +341,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       link.download = fileName;
       link.href = canvas.toDataURL();
       link.click();
-      
+
       toast({
         title: "Photo Downloaded",
         description: "Check your downloads folder",
@@ -400,7 +400,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
           style={{ maxWidth: '100%', height: 'auto' }}
         />
       </div>
-      
+
       {!hideButtons && (
         <div className="flex gap-3 mt-2">
           <Button
@@ -410,8 +410,8 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
             {isMobile ? <ImageIcon className="h-4 w-4" /> : <Download className="h-4 w-4" />}
             {isMobile ? "Save Photo" : "Download"}
           </Button>
-          
-          {/* {photos.length > 0 && (
+
+          {showShareButton && photos.length > 0 && (
             <Button
               onClick={handleShare}
               variant="outline"
@@ -420,10 +420,10 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
               <Share2 className="h-4 w-4" />
               Share
             </Button>
-          )} */}
+          )}
         </div>
       )}
-      
+
       {photoStripId && (
         <ShareModal
           isOpen={showShareModal}
