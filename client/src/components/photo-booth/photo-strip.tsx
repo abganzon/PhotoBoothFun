@@ -17,6 +17,7 @@ interface PhotoStripProps {
   hideButtons?: boolean;
   darkMode?: boolean;
   showShareButton?: boolean;
+  onShare?: () => void;
 }
 
 export const PhotoStrip: React.FC<PhotoStripProps> = ({
@@ -351,43 +352,9 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     }
   };
 
-  const handleShare = async () => {
-    if (!photoStripId) {
-      // Save photo strip first
-      try {
-        const response = await fetch("/api/photo-strips", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            photos,
-            layout,
-            backgroundColor,
-            stripName: name,
-            showDate,
-            showName,
-            nameColor,
-            dateColor,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to save photo strip");
-        }
-
-        const savedPhotoStrip = await response.json();
-        setPhotoStripId(savedPhotoStrip.id);
-        setShowShareModal(true);
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to save photo strip for sharing",
-          variant: "destructive",
-        });
-      }
-    } else {
-      setShowShareModal(true);
+  const handleShare = () => {
+    if (onShare) {
+      onShare();
     }
   };
 

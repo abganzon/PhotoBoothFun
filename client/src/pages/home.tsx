@@ -121,20 +121,56 @@ export default function Home() {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
-  const handleShare = () => {
-    const currentState = {
-      photos,
-      stripName,
-      showDate,
-      showName,
-      backgroundColor,
-      nameColor,
-      dateColor,
-      layout,
-    };
-    const url = `${window.location.origin}/share?state=${encodeURIComponent(JSON.stringify(currentState))}`;
-    setShareUrl(url);
-    setShareModalOpen(true);
+  const handleShare = async () => {
+    try {
+      // First, save the photo strip
+      const response = await fetch("/api/photo-strips", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          photos,
+          layout,
+          backgroundColor,
+          stripName,
+          showDate,
+          showName,
+          nameColor,
+          dateColor,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save photo strip");
+      }
+
+      const savedPhotoStrip = await response.json();
+
+      // Then create a share link
+      const shareResponse = await fetch("/api/shared-links", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ photoStripId: savedPhotoStrip.id }),
+      });
+
+      if (!shareResponse.ok) {
+        throw new Error("Failed to generate share link");
+      }
+
+      const shareData = await shareResponse.json();
+      const fullUrl = `${window.location.origin}${shareData.url}`;
+      setShareUrl(fullUrl);
+      setShareModalOpen(true);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create share link",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleCopyLink = () => {
@@ -501,15 +537,10 @@ export default function Home() {
                     dateColor={dateColor}
                     darkMode={darkMode}
                     showShareButton={true}
+                    onShare={handleShare}
                   />
                 </div>
               </div>
-              {photos.length > 0 && (
-                <Button onClick={handleShare} className="w-full flex items-center gap-2">
-                  <Share className="h-4 w-4" />
-                  Share Strip
-                </Button>
-              )}
             </div>
           </div>
         )}
