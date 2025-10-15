@@ -599,29 +599,6 @@ export default function Home() {
                     onShare={handleShare}
                   />
                 </div>
-                {/* Save and Share Buttons */}
-                <div className="flex justify-center items-center gap-4 mt-6">
-                  {true && photos.length > 0 && (
-                    <>
-                      <Button
-                        onClick={saveToGallery}
-                        variant="outline"
-                        className="flex items-center gap-2 px-6 py-2 rounded-xl border-2 border-green-200 hover:bg-green-50 transition-all duration-300"
-                      >
-                        <ImageIcon className="h-4 w-4" />
-                        Save
-                      </Button>
-                      <Button
-                        onClick={handleShare}
-                        variant="outline"
-                        className="flex items-center gap-2 px-6 py-2 rounded-xl border-2 border-blue-200 hover:bg-blue-50 transition-all duration-300"
-                      >
-                        <Share2 className="h-4 w-4" />
-                        Share
-                      </Button>
-                    </>
-                  )}
-                </div>
               </div>
             </div>
           </div>
