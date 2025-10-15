@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useRoute } from "wouter";
 import { PhotoStrip } from "@/components/photo-booth/photo-strip";
 import { Button } from "@/components/ui/button";
 import { Download, Clock, AlertCircle } from "lucide-react";
@@ -20,14 +20,15 @@ interface SharedPhotoStrip {
 }
 
 export default function SharedPage() {
-  const { id } = useParams<{ id: string }>();
+  const [match, params] = useRoute("/shared/:id");
+  const id = params?.id;
   const [photoStrip, setPhotoStrip] = useState<SharedPhotoStrip | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!id) {
+    if (!match || !id) {
       setError("No photo strip ID provided");
       setLoading(false);
       return;
