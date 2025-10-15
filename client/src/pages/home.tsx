@@ -7,12 +7,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Camera, Trash2, Settings, Repeat, Download, ChevronLeft, ChevronRight, Share } from "lucide-react";
+import { Camera, Trash2, Settings, Repeat, Download, ChevronLeft, ChevronRight, Share2, ImageIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { StepProgress } from "@/components/photo-booth/step-progress";
 import { useLocation } from 'wouter';
 import { QRCode } from 'react-qr-code';
+
+// Define an interface for the stored photo strip data
+interface StoredPhotoStrip {
+  id: string;
+  timestamp: number;
+  stripData: {
+    photos: string[];
+    layout: "strip" | "collage";
+    backgroundColor: string;
+    stripName: string;
+    showDate: boolean;
+    showName: boolean;
+    nameColor: string;
+    dateColor: string;
+  };
+}
 
 export default function Home() {
   const [photos, setPhotos] = useState<string[]>([]);
@@ -183,6 +199,49 @@ export default function Home() {
     });
   };
 
+  // Function to save photo strip to local storage
+  const saveToGallery = () => {
+    const stripData = {
+      photos,
+      layout,
+      backgroundColor,
+      stripName,
+      showDate,
+      showName,
+      nameColor,
+      dateColor,
+    };
+
+    const newStrip: StoredPhotoStrip = {
+      id: Date.now().toString(), // Simple unique ID
+      timestamp: Date.now(),
+      stripData,
+    };
+
+    try {
+      const existingStripsJson = localStorage.getItem("photoStrips");
+      const existingStrips: StoredPhotoStrip[] = existingStripsJson
+        ? JSON.parse(existingStripsJson)
+        : [];
+
+      const updatedStrips = [...existingStrips, newStrip];
+      localStorage.setItem("photoStrips", JSON.stringify(updatedStrips));
+
+      toast({
+        title: "Saved to Gallery",
+        description: "Your photo strip has been saved locally.",
+        variant: "default",
+        duration: 2000,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save to gallery.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className={`container mx-auto py-8 ${darkMode ? 'dark bg-gray-900 text-white' : 'bg-gradient-to-b from-blue-50 to-white text-gray-900'}`}>
       <div className="flex items-center gap-4 mb-8 justify-center">
@@ -223,14 +282,14 @@ export default function Home() {
                 <div className="flex justify-between items-center">
                   <div className="flex gap-2">
                     {photos.length < 4 || recaptureIndex !== null ? (
-                      <Button 
+                      <Button
                         onClick={() => {
                           if (recaptureIndex !== null) {
                             setIsCountingDown(true);
                           } else {
                             handleStartPhotoSequence();
                           }
-                        }} 
+                        }}
                         disabled={isCountingDown}
                         className="flex items-center gap-2"
                       >
@@ -238,7 +297,7 @@ export default function Home() {
                         {recaptureIndex !== null ? `Recapture Photo ${recaptureIndex + 1}` : 'Auto Capture'}
                       </Button>
                     ) : (
-                      <Button 
+                      <Button
                         onClick={handleNext}
                         className="flex items-center gap-2"
                       >
@@ -319,12 +378,12 @@ export default function Home() {
                       <div
                         key={index}
                         className={`aspect-[4/3] rounded-xl border-2 transition-all duration-300 ${
-                          photos[index] 
-                            ? 'border-green-400 bg-green-50 shadow-md hover:shadow-lg' 
+                          photos[index]
+                            ? 'border-green-400 bg-green-50 shadow-md hover:shadow-lg'
                             : index === photos.length
                             ? 'border-blue-400 bg-blue-50 animate-pulse'
                             : 'border-gray-300 bg-gray-50 hover:border-gray-400'
-                        } ${darkMode ? 'dark:border-gray-600 dark:bg-gray-800' : ''} 
+                        } ${darkMode ? 'dark:border-gray-600 dark:bg-gray-800' : ''}
                         flex items-center justify-center relative overflow-hidden group cursor-pointer`}
                         onClick={() => {
                           if (photos[index]) {
@@ -353,8 +412,8 @@ export default function Home() {
                         ) : (
                           <div className="text-center">
                             <div className={`w-10 h-10 rounded-full ${
-                              index === photos.length 
-                                ? 'bg-blue-100 border-2 border-blue-400' 
+                              index === photos.length
+                                ? 'bg-blue-100 border-2 border-blue-400'
                                 : 'bg-gray-100 border-2 border-gray-300'
                             } flex items-center justify-center mb-2 transition-all duration-300`}>
                               <Camera className={`h-5 w-5 ${
@@ -407,11 +466,11 @@ export default function Home() {
                 <div className="space-y-2">
                   <Label className={darkMode ? 'text-white' : ''}>Layout Style</Label>
                   <div className="flex gap-4">
-                    <div 
+                    <div
                       className={`flex-1 p-4 border rounded-lg cursor-pointer transition-colors ${
-                        layout === "strip" 
-                          ? darkMode 
-                            ? "border-blue-500 bg-blue-500/10" 
+                        layout === "strip"
+                          ? darkMode
+                            ? "border-blue-500 bg-blue-500/10"
                             : "border-primary bg-primary/10"
                           : darkMode
                             ? "border-gray-600 hover:border-blue-500/50 bg-gray-700"
@@ -429,11 +488,11 @@ export default function Home() {
                         <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>1x4 Layout</span>
                       </div>
                     </div>
-                    <div 
+                    <div
                       className={`flex-1 p-4 border rounded-lg cursor-pointer transition-colors ${
-                        layout === "collage" 
-                          ? darkMode 
-                            ? "border-blue-500 bg-blue-500/10" 
+                        layout === "collage"
+                          ? darkMode
+                            ? "border-blue-500 bg-blue-500/10"
                             : "border-primary bg-primary/10"
                           : darkMode
                             ? "border-gray-600 hover:border-blue-500/50 bg-gray-700"
@@ -539,6 +598,29 @@ export default function Home() {
                     showShareButton={true}
                     onShare={handleShare}
                   />
+                </div>
+                {/* Save and Share Buttons */}
+                <div className="flex justify-center items-center gap-4 mt-6">
+                  {true && photos.length > 0 && (
+                    <>
+                      <Button
+                        onClick={saveToGallery}
+                        variant="outline"
+                        className="flex items-center gap-2 px-6 py-2 rounded-xl border-2 border-green-200 hover:bg-green-50 transition-all duration-300"
+                      >
+                        <ImageIcon className="h-4 w-4" />
+                        Save
+                      </Button>
+                      <Button
+                        onClick={handleShare}
+                        variant="outline"
+                        className="flex items-center gap-2 px-6 py-2 rounded-xl border-2 border-blue-200 hover:bg-blue-50 transition-all duration-300"
+                      >
+                        <Share2 className="h-4 w-4" />
+                        Share
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

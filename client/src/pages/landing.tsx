@@ -2,7 +2,7 @@
 import * as React from "react";
 import { useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Camera, Heart, Sparkles, Zap, Users, Download } from "lucide-react";
+import { Camera, Heart, Sparkles, Zap, Users, Download, Image as ImageIcon } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -108,6 +108,16 @@ export default function Landing() {
             >
               <Camera className="h-6 w-6" />
               Start Photo Booth
+            </Button>
+
+            <Button
+              size="lg"
+              onClick={() => setLocation("/gallery")}
+              variant="outline"
+              className="border-2 border-indigo-300 text-indigo-600 hover:bg-indigo-50 px-8 py-4 text-lg font-medium rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 gap-3"
+            >
+              <ImageIcon className="h-6 w-6" />
+              My Gallery
             </Button>
 
             <Dialog>
@@ -298,7 +308,7 @@ export default function Landing() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fade-in {
           from {
             opacity: 0;

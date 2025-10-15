@@ -162,8 +162,9 @@ export default function SharedPage() {
               backgroundColor={photoStrip.backgroundColor}
               nameColor={photoStrip.nameColor || "#000000"}
               dateColor={photoStrip.dateColor || "#666666"}
-              hideButtons={true}
+              hideButtons={false}
               darkMode={false}
+              showShareButton={false}
             />
           </div>
           

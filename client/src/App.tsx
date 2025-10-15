@@ -6,6 +6,7 @@ import LandingPage from "@/pages/landing";
 import SharedPage from "@/pages/shared";
 import NotFound from "@/pages/not-found";
 import Privacy from "@/pages/privacy";
+import Gallery from "@/pages/gallery";
 
 const queryClient = new QueryClient();
 
@@ -17,6 +18,7 @@ function App() {
           <Switch>
             <Route path="/" component={LandingPage} />
             <Route path="/home" component={Home} />
+            <Route path="/gallery" component={Gallery} />
             <Route path="/shared/:id" component={SharedPage} />
             <Route path="/privacy" component={Privacy} />
             <Route component={NotFound} />
