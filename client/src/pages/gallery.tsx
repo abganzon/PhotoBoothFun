@@ -67,14 +67,14 @@ export default function Gallery() {
               <div key={strip.id} className="bg-white rounded-xl shadow-lg p-4">
                 <div className="relative">
                   <PhotoStrip
-                    photos={strip.photos}
-                    layout={strip.layout}
-                    name={strip.stripName}
-                    backgroundColor={strip.backgroundColor}
-                    nameColor={strip.nameColor}
-                    dateColor={strip.dateColor}
-                    showDate={strip.showDate}
-                    showName={strip.showName}
+                    photos={strip.photos || []}
+                    layout={strip.layout || "strip"}
+                    name={strip.stripName || ""}
+                    backgroundColor={strip.backgroundColor || "#E1D9D1"}
+                    nameColor={strip.nameColor || "#000000"}
+                    dateColor={strip.dateColor || "#666666"}
+                    showDate={strip.showDate !== false}
+                    showName={strip.showName !== false}
                     hideButtons={false}
                     darkMode={false}
                   />

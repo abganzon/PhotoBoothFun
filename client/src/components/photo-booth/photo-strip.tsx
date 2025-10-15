@@ -47,6 +47,12 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Ensure photos is an array
+    if (!Array.isArray(photos)) {
+      console.error("Photos prop is not an array:", photos);
+      return;
+    }
+
     // Create a new canvas for photo composition
     const tempCanvas = document.createElement("canvas");
     const tempCtx = tempCanvas.getContext("2d");
