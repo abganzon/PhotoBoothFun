@@ -8,10 +8,11 @@ interface CameraProps {
   isCountingDown: boolean;
   timerDuration: number;
   photosLength: number;
+  recaptureIndex: number | null;
   onMaxPhotos: () => void;
 }
 
-export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMaxPhotos }: CameraProps) {
+export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, recaptureIndex, onMaxPhotos }: CameraProps) {
   const webcamRef = useRef<Webcam>(null);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
   const [mirrored, setMirrored] = useState(true);
@@ -53,7 +54,7 @@ export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMa
           variant="outline"
           size="icon"
           onClick={() => setMirrored(!mirrored)}
-          className="h-14 w-14 rounded-full bg-white/95 hover:bg-white shadow-xl border-2 border-gray-200 hover:border-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-600 transition-all duration-300"
+          className="h-16 w-16 rounded-full bg-white/95 hover:bg-white shadow-xl border-2 border-gray-200 hover:border-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-600 transition-all duration-300"
           title="Mirror camera"
         >
           <FlipHorizontal className="h-6 w-6 dark:text-white" />
@@ -62,7 +63,9 @@ export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMa
         <Button
           size="icon"
           onClick={() => {
-            if (photosLength >= 4) {
+            if (recaptureIndex !== null) {
+              capture();
+            } else if (photosLength >= 4) {
               onMaxPhotos();
             } else {
               capture();
@@ -79,7 +82,7 @@ export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, onMa
             variant="outline"
             size="icon"
             onClick={toggleCamera}
-            className="h-14 w-14 rounded-full bg-white/95 hover:bg-white shadow-xl border-2 border-gray-200 hover:border-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-600 transition-all duration-300"
+            className="h-16 w-16 rounded-full bg-white/95 hover:bg-white shadow-xl border-2 border-gray-200 hover:border-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-600 transition-all duration-300"
             title="Switch camera"
           >
             <Repeat className="h-6 w-6 dark:text-white" />

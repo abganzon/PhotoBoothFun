@@ -48,15 +48,32 @@ export default function Home() {
   }, [darkMode]);
 
   const handleCapture = (photo: string) => {
-    setPhotos((prev) => [...prev, photo]);
-    setIsCountingDown(false);
+    if (recaptureIndex !== null) {
+      // Replace photo at specific index
+      const updatedPhotos = [...photos];
+      updatedPhotos[recaptureIndex] = photo;
+      setPhotos(updatedPhotos);
+      setRecaptureIndex(null);
+      setIsCountingDown(false);
+      
+      toast({
+        title: "Photo recaptured",
+        description: `Photo ${recaptureIndex + 1} has been updated`,
+        variant: "default",
+        duration: 2000,
+      });
+    } else {
+      // Add new photo
+      setPhotos((prev) => [...prev, photo]);
+      setIsCountingDown(false);
 
-    // If auto capture is in progress and we haven't reached 4 photos yet
-    if (isCountingDown && photos.length < 3) {
-      // Wait a moment before starting the next countdown
-      setTimeout(() => {
-        setIsCountingDown(true);
-      }, 1500);
+      // If auto capture is in progress and we haven't reached 4 photos yet
+      if (isCountingDown && photos.length < 3) {
+        // Wait a moment before starting the next countdown
+        setTimeout(() => {
+          setIsCountingDown(true);
+        }, 1500);
+      }
     }
   };
 
@@ -80,16 +97,16 @@ export default function Home() {
     setPhotos([]);
   };
 
+  const [recaptureIndex, setRecaptureIndex] = useState<number | null>(null);
+
   const handleRetakePhoto = (index: number) => {
-    const updatedPhotos = [...photos];
-    updatedPhotos.splice(index, 1);
-    setPhotos(updatedPhotos);
+    setRecaptureIndex(index);
     
     toast({
-      title: "Photo removed",
-      description: `Photo ${index + 1} has been removed. You can now capture a new one.`,
+      title: "Recapture mode",
+      description: `Click Auto Capture or the camera button to recapture Photo ${index + 1}`,
       variant: "default",
-      duration: 2000,
+      duration: 3000,
     });
   };
 
@@ -122,6 +139,7 @@ export default function Home() {
                     isCountingDown={isCountingDown}
                     timerDuration={timerDuration}
                     photosLength={photos.length}
+                    recaptureIndex={recaptureIndex}
                     onMaxPhotos={() => {
                       toast({
                         title: "Maximum photos reached",
@@ -139,14 +157,20 @@ export default function Home() {
 
                 <div className="flex justify-between items-center">
                   <div className="flex gap-2">
-                    {photos.length < 4 ? (
+                    {photos.length < 4 || recaptureIndex !== null ? (
                       <Button 
-                        onClick={handleStartPhotoSequence} 
+                        onClick={() => {
+                          if (recaptureIndex !== null) {
+                            setIsCountingDown(true);
+                          } else {
+                            handleStartPhotoSequence();
+                          }
+                        }} 
                         disabled={isCountingDown}
                         className="flex items-center gap-2"
                       >
                         <Camera className="h-4 w-4" />
-                        Auto Capture
+                        {recaptureIndex !== null ? `Recapture Photo ${recaptureIndex + 1}` : 'Auto Capture'}
                       </Button>
                     ) : (
                       <Button 
@@ -159,12 +183,15 @@ export default function Home() {
                     )}
                     <Button
                       variant="outline"
-                      onClick={handleClear}
+                      onClick={() => {
+                        setPhotos([]);
+                        setRecaptureIndex(null);
+                      }}
                       disabled={photos.length === 0}
                       className="flex items-center gap-2"
                     >
                       <Repeat className="h-4 w-4" />
-                      Retake
+                      Retake All
                     </Button>
                     <Dialog>
                       <DialogTrigger asChild>
