@@ -74,4 +74,6 @@ app.get("/api/shared-links/:id", async (req, res) => {
   }
 });
 
-export const handler = serverless(app);
+export const handler = serverless(app, {
+  basePath: '/.netlify/functions/api'
+});
