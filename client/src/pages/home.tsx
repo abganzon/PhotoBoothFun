@@ -593,6 +593,7 @@ export default function Home() {
                     darkMode={darkMode}
                     showShareButton={true}
                     onShare={handleShare}
+                    onSaveToGallery={saveToGallery}
                   />
                 </div>
               </div>
