@@ -4,6 +4,25 @@
 
 This is a web-based photo booth application that allows users to capture multiple photos, customize them with various layouts and styling options, and share them via time-limited links. The application provides a fun, interactive experience similar to traditional photo booth strips with modern customization features.
 
+## Recent Changes (October 16, 2025)
+
+### Netlify Deployment Fix
+- **Issue**: API endpoints were returning 404 errors on Netlify deployment
+- **Solution**: 
+  - Installed `serverless-http` package
+  - Created Netlify Function wrapper at `netlify/functions/api.ts`
+  - Configured `netlify.toml` with proper redirects and build settings
+  - API routes now work correctly in serverless environment using basePath configuration
+
+### Gallery Functionality Enhancement
+- **Issue**: "Save to Gallery" button was missing, and gallery data structure was mismatched
+- **Fixes**:
+  - Fixed `saveToGallery` function to use flat data structure matching Gallery page expectations
+  - Added `onSaveToGallery` prop to PhotoStrip component
+  - Added "Save to Gallery" button in PhotoStrip component (green border button)
+  - Gallery page now correctly displays saved photo strips from localStorage
+  - Fixed QRCode import to use default import instead of named import
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
