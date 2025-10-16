@@ -201,7 +201,9 @@ export default function Home() {
 
   // Function to save photo strip to local storage
   const saveToGallery = () => {
-    const stripData = {
+    const newStrip = {
+      id: Date.now().toString(),
+      timestamp: Date.now(),
       photos,
       layout,
       backgroundColor,
@@ -212,15 +214,9 @@ export default function Home() {
       dateColor,
     };
 
-    const newStrip: StoredPhotoStrip = {
-      id: Date.now().toString(), // Simple unique ID
-      timestamp: Date.now(),
-      stripData,
-    };
-
     try {
       const existingStripsJson = localStorage.getItem("photoStrips");
-      const existingStrips: StoredPhotoStrip[] = existingStripsJson
+      const existingStrips = existingStripsJson
         ? JSON.parse(existingStripsJson)
         : [];
 
