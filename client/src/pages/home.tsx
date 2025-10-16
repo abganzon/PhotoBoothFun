@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { StepProgress } from "@/components/photo-booth/step-progress";
 import { useLocation } from 'wouter';
-import { QRCode } from 'react-qr-code';
+import QRCode from 'react-qr-code';
 
 // Define an interface for the stored photo strip data
 interface StoredPhotoStrip {
