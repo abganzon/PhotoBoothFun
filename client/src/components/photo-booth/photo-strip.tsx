@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Image as ImageIcon, Share2 } from "lucide-react";
+import { Download, Image as ImageIcon, Share2, Save } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { ShareModal } from "./share-modal";
@@ -18,6 +18,7 @@ interface PhotoStripProps {
   darkMode?: boolean;
   showShareButton?: boolean;
   onShare?: () => void;
+  onSaveToGallery?: () => void;
 }
 
 export const PhotoStrip: React.FC<PhotoStripProps> = ({
@@ -33,6 +34,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
   darkMode = false,
   showShareButton = false,
   onShare,
+  onSaveToGallery,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
@@ -383,7 +385,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       </div>
 
       {!hideButtons && (
-        <div className="flex gap-3 mt-2">
+        <div className="flex gap-3 mt-2 flex-wrap justify-center">
           <Button
             onClick={handleDownload}
             className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
@@ -391,6 +393,17 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
             {isMobile ? <ImageIcon className="h-4 w-4" /> : <Download className="h-4 w-4" />}
             {isMobile ? "Save Photo" : "Download"}
           </Button>
+
+          {onSaveToGallery && photos.length > 0 && (
+            <Button
+              onClick={onSaveToGallery}
+              variant="outline"
+              className="flex items-center gap-2 px-6 py-2 rounded-xl border-2 border-green-200 hover:bg-green-50 transition-all duration-300"
+            >
+              <Save className="h-4 w-4" />
+              Save to Gallery
+            </Button>
+          )}
 
           {showShareButton && photos.length > 0 && (
             <Button
