@@ -74,6 +74,27 @@ app.get("/api/shared-links/:id", async (req, res) => {
   }
 });
 
+// Visitor counter endpoints (Netlify function)
+app.get('/api/visitors', async (req, res) => {
+  try {
+    const count = await storage.getVisitorCount();
+    res.setHeader('Content-Type', 'application/json');
+    res.json({ count });
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to read visitor count' });
+  }
+});
+
+app.post('/api/visitors/increment', async (req, res) => {
+  try {
+    const count = await storage.incrementVisitorCount();
+    res.setHeader('Content-Type', 'application/json');
+    res.json({ count });
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to increment visitor count' });
+  }
+});
+
 export const handler = serverless(app, {
   basePath: '/.netlify/functions/api'
 });
