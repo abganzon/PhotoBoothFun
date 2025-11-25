@@ -228,13 +228,58 @@ export default function Home() {
     };
 
     try {
+      // Calculate approximate size of the data
+      const stripJson = JSON.stringify(newStrip);
+      const stripSizeInBytes = new Blob([stripJson]).size;
+      const stripSizeInMB = stripSizeInBytes / (1024 * 1024);
+
+      // Warn if strip is larger than 2MB
+      if (stripSizeInMB > 2) {
+        toast({
+          title: "Warning",
+          description: `This photo strip is ${stripSizeInMB.toFixed(2)}MB. It may take up significant storage space.`,
+          variant: "default",
+        });
+      }
+
+      // Check localStorage space before saving
+      const testKey = `__test_size_${Date.now()}__`;
+      
+      try {
+        localStorage.setItem(testKey, stripJson);
+        localStorage.removeItem(testKey);
+      } catch (e) {
+        if (e instanceof Error && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
+          toast({
+            title: "Storage Full",
+            description: "Local storage is full. Please clear some old photo strips from your gallery or browser storage to save new ones.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw e;
+      }
+
       const existingStripsJson = localStorage.getItem("photoStrips");
       const existingStrips = existingStripsJson
         ? JSON.parse(existingStripsJson)
         : [];
 
       const updatedStrips = [...existingStrips, newStrip];
-      localStorage.setItem("photoStrips", JSON.stringify(updatedStrips));
+      
+      try {
+        localStorage.setItem("photoStrips", JSON.stringify(updatedStrips));
+      } catch (e) {
+        if (e instanceof Error && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
+          toast({
+            title: "Storage Full",
+            description: "Local storage is full. Cannot save this photo strip. Please delete some strips from your gallery.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw e;
+      }
 
       toast({
         title: "Saved to Gallery",
@@ -243,9 +288,10 @@ export default function Home() {
         duration: 2000,
       });
     } catch (error) {
+      console.error("Error saving to gallery:", error);
       toast({
         title: "Error",
-        description: "Failed to save to gallery.",
+        description: "Failed to save to gallery. Please check your browser storage or clear space.",
         variant: "destructive",
       });
     }
