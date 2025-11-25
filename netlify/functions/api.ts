@@ -27,8 +27,16 @@ app.post("/api/shared-links", async (req, res) => {
     const linkId = randomUUID();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
     
+    // Get the photo strip to verify it exists
+    const photoStrip = await storage.getPhotoStrip(photoStripId);
+    if (!photoStrip) {
+      res.status(404).json({ error: "Photo strip not found" });
+      return;
+    }
+    
     const sharedLink = await storage.createSharedLink({
       id: linkId,
+      userId: photoStrip.userId,
       photoStripId,
       expiresAt
     });

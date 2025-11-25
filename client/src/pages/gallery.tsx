@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
+import { useAuth } from "@clerk/clerk-react";
 import { Link } from "wouter";
 import { Camera, Trash2, Download, Share2 } from "lucide-react";
 import QRCode from 'react-qr-code';
@@ -23,6 +24,7 @@ interface SavedStrip {
 }
 
 export default function Gallery() {
+  const { userId } = useAuth();
   const [savedStrips, setSavedStrips] = useState<SavedStrip[]>([]);
   const { toast } = useToast();
   const photoStripRefs = useRef<{ [key: string]: HTMLCanvasElement | null }>({});
@@ -146,12 +148,18 @@ export default function Gallery() {
   };
 
   const handleShareStrip = async (strip: SavedStrip) => {
+    if (!userId) {
+      toast({ title: 'Sign in required', description: 'Please sign in to create a shareable link.', variant: 'default' });
+      return;
+    }
+
     try {
-      // First save the strip to server (requires auth)
+      // First save the strip to server
       const response = await fetch("/api/photo-strips", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          userId,
           photos: strip.photos,
           layout: strip.layout,
           backgroundColor: strip.backgroundColor,
@@ -164,10 +172,6 @@ export default function Gallery() {
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
-          toast({ title: 'Sign in required', description: 'Please sign in to create a shareable link.', variant: 'default' });
-          return;
-        }
         throw new Error('Failed to save photo strip');
       }
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "@clerk/clerk-react";
 import { PhotoBoothCamera } from "@/components/photo-booth/camera";
 import { Countdown } from "@/components/photo-booth/countdown";
 import { ColorPicker } from "@/components/photo-booth/color-picker";
@@ -31,6 +32,7 @@ interface StoredPhotoStrip {
 }
 
 export default function Home() {
+  const { userId } = useAuth();
   const [photos, setPhotos] = useState<string[]>([]);
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState("#E1D9D1");
@@ -138,6 +140,15 @@ export default function Home() {
   };
 
   const handleShare = async () => {
+    if (!userId) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to create a shareable link",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       // First, save the photo strip
       const response = await fetch("/api/photo-strips", {
@@ -146,6 +157,7 @@ export default function Home() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          userId,
           photos,
           layout,
           backgroundColor,
@@ -181,6 +193,7 @@ export default function Home() {
       setShareUrl(fullUrl);
       setShareModalOpen(true);
     } catch (error) {
+      console.error(error);
       toast({
         title: "Error",
         description: "Failed to create share link",

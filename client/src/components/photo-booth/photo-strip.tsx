@@ -388,7 +388,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         <div className="flex gap-3 mt-2 flex-wrap justify-center">
           <Button onClick={handleDownload} className="px-4 py-2">
             {isMobile ? <ImageIcon className="h-4 w-4" /> : <Download className="h-4 w-4" />}
-            <span className="ml-2">{isMobile ? "Save" : "Download"}</span>
+            <span className="ml-2">Download</span>
           </Button>
 
           {onSaveToGallery && photos.length > 0 && (

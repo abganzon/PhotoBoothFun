@@ -11,9 +11,11 @@ export function Header() {
   const [, setLocation] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [visitors, setVisitors] = useState<number | null>(null);
-  // Fetch visitor count once per session (increment on first visit), then subscribe to SSE
+  
+  // Fetch visitor count and setup polling for real-time sync
   useEffect(() => {
     let mounted = true;
+    let pollInterval: NodeJS.Timeout | null = null;
 
     const fetchCurrent = async () => {
       try {
@@ -26,48 +28,63 @@ export function Header() {
       }
     };
 
+    const incrementVisitor = async () => {
+      try {
+        const res = await fetch('/api/visitors/increment', { method: 'POST' });
+        if (res.ok) {
+          const data = await res.json();
+          return typeof data?.count === 'number' ? data.count : null;
+        }
+        return null;
+      } catch (e) {
+        return null;
+      }
+    };
+
     const run = async () => {
       try {
         const hasVisited = typeof window !== 'undefined' && sessionStorage.getItem('robooth_visited');
         if (!hasVisited) {
-          const res = await fetch('/api/visitors/increment', { method: 'POST' });
-          if (res.ok) {
-            const data = await res.json();
-            if (mounted) setVisitors(typeof data?.count === 'number' ? data.count : null);
-            if (typeof window !== 'undefined') sessionStorage.setItem('robooth_visited', '1');
+          // First visit: increment counter
+          const count = await incrementVisitor();
+          if (mounted && count !== null) {
+            setVisitors(count);
+          }
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('robooth_visited', '1');
           }
         } else {
+          // Not first visit: just fetch current count
           const current = await fetchCurrent();
-          if (mounted && current !== null) setVisitors(current);
+          if (mounted && current !== null) {
+            setVisitors(current);
+          }
         }
       } catch (e) {
         console.error('Visitor count fetch failed', e);
       }
     };
 
+    // Initial fetch
     run();
 
-    // SSE subscription
-    let es: EventSource | null = null;
-    try {
-      es = new EventSource('/api/visitors/stream');
-      es.onmessage = (ev) => {
-        try {
-          const data = JSON.parse(ev.data);
-          if (mounted && typeof data.count === 'number') setVisitors(data.count);
-        } catch (e) {
-          // ignore parse errors
+    // Setup polling to sync visitor count every 5 seconds
+    // This works on both local development and Netlify serverless
+    pollInterval = setInterval(async () => {
+      try {
+        const current = await fetchCurrent();
+        if (mounted && current !== null) {
+          setVisitors(current);
         }
-      };
-      es.onerror = () => {
-        // If SSE errors, we'll silently fallback to periodic fetches (handled above initially)
-      };
-    } catch (e) {
-      // EventSource may not be available in some environments
-      console.error('SSE not available', e);
-    }
+      } catch (e) {
+        // Silently ignore polling errors
+      }
+    }, 5000);
 
-    return () => { mounted = false; if (es) es.close(); };
+    return () => {
+      mounted = false;
+      if (pollInterval) clearInterval(pollInterval);
+    };
   }, []);
 
   return (
