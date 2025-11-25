@@ -1,10 +1,31 @@
 import express, { type Request, Response, NextFunction } from "express";
+// Load local environment variables from `.env.local` during development so the
+// server can inject the publishable key into the client HTML when present.
+// This keeps local dev behavior consistent with how Vite exposes `VITE_` vars.
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
+import { clerkMiddleware } from "@clerk/express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
+
+// Add Clerk middleware only if secret key is available
+if (process.env.CLERK_SECRET_KEY) {
+  app.use(clerkMiddleware({
+    secretKey: process.env.CLERK_SECRET_KEY,
+  }));
+} else {
+  // Fallback middleware that doesn't require Clerk setup
+  app.use((req, res, next) => {
+    req.userId = undefined;
+    next();
+  });
+}
 
 app.use((req, res, next) => {
   const start = Date.now();

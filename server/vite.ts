@@ -39,7 +39,10 @@ export async function setupVite(app: Express, server: Server) {
         process.exit(1);
       },
     },
-    server: serverOptions,
+    server: {
+      ...serverOptions,
+      allowedHosts: true as any,
+    } as any,
     appType: "custom",
   });
 
@@ -57,6 +60,24 @@ export async function setupVite(app: Express, server: Server) {
 
       // always reload the index.html file from disk incase it changes
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
+
+      // Inject a server-side fallback for the Clerk publishable key into the page
+      // This helps when the Vite environment variable isn't available in the
+      // client (for example when running the custom dev server). The server
+      // will provide the key if present in process.env so the client can read
+      // `window.__VITE_CLERK_PUBLISHABLE_KEY` as a last-resort fallback.
+      const serverPublishableKey =
+        process.env.VITE_CLERK_PUBLISHABLE_KEY ||
+        process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+        process.env.CLERK_PUBLISHABLE_KEY ||
+        "";
+
+      if (serverPublishableKey) {
+        const script = `\n    <script>window.__VITE_CLERK_PUBLISHABLE_KEY=${JSON.stringify(
+          serverPublishableKey,
+        )}</script>\n`;
+        template = template.replace("</head>", `${script}</head>`);
+      }
       template = template.replace(
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`,

@@ -33,4 +33,9 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
   },
+  define: {
+    "process.env.VITE_CLERK_PUBLISHABLE_KEY": JSON.stringify(
+      process.env.VITE_CLERK_PUBLISHABLE_KEY
+    ),
+  },
 });

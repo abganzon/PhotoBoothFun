@@ -1,15 +1,64 @@
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
+import { getAuth } from "@clerk/express";
 import { storage } from "./storage";
 import { insertPhotoStripSchema, insertSharedLinkSchema } from "@shared/schema";
 import { randomUUID } from "crypto";
 
+// Extend Express Request to include userId
+declare global {
+  namespace Express {
+    interface Request {
+      userId?: string;
+    }
+  }
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
 
-  app.post("/api/photo-strips", async (req, res) => {
+  // SSE clients for visitor count realtime updates
+  const sseClients = new Set<any>();
+  // heartbeat to keep connections alive
+  const heartbeatInterval = setInterval(() => {
+    sseClients.forEach((client) => {
+      try {
+        client.write(': keep-alive\n\n');
+      } catch (e) {
+        // ignore write errors; cleanup happens on close
+      }
+    });
+  }, 25000);
+
+  // Middleware to require authentication on API routes
+  const requireAuth = (req: Request, res: any, next: any) => {
+    // Try to get userId from Clerk if available, otherwise check req.userId
+    let userId = req.userId;
+    
+    if (!userId) {
+      try {
+        const auth = getAuth(req);
+        userId = auth.userId || undefined;
+      } catch (e) {
+        // Clerk not available, userId remains undefined
+      }
+    }
+    
+    if (!userId) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+    req.userId = userId;
+    next();
+  };
+
+  app.post("/api/photo-strips", requireAuth, async (req, res) => {
     try {
-      const data = insertPhotoStripSchema.parse(req.body);
+      const userId = req.userId!;
+      const data = insertPhotoStripSchema.parse({
+        ...req.body,
+        userId,
+      });
       const photoStrip = await storage.createPhotoStrip(data);
       res.setHeader('Content-Type', 'application/json');
       res.json(photoStrip);
@@ -19,14 +68,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/shared-links", async (req, res) => {
+  app.post("/api/shared-links", requireAuth, async (req, res) => {
     try {
+      const userId = req.userId!;
       const { photoStripId } = req.body;
       const linkId = randomUUID();
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
       
       const sharedLink = await storage.createSharedLink({
         id: linkId,
+        userId,
         photoStripId,
         expiresAt
       });
@@ -78,6 +129,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error retrieving shared photo strip:", error);
       res.status(500).json({ error: "Failed to retrieve photo strip" });
+    }
+  });
+
+  // Visitor counter - public endpoints
+  app.get("/api/visitors", async (req, res) => {
+    try {
+      const count = await storage.getVisitorCount();
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ count });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to read visitor count' });
+    }
+  });
+
+  app.post("/api/visitors/increment", async (req, res) => {
+    try {
+      const count = await storage.incrementVisitorCount();
+      // Broadcast to SSE clients
+      sseClients.forEach((client) => {
+        try {
+          client.write(`data: ${JSON.stringify({ count })}\n\n`);
+        } catch (e) {
+          // ignore
+        }
+      });
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ count });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to increment visitor count' });
+    }
+  });
+
+  // Server-Sent Events endpoint for visitor count realtime updates
+  app.get('/api/visitors/stream', async (req, res) => {
+    try {
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+      // send initial value
+      const count = await storage.getVisitorCount();
+      res.write(`data: ${JSON.stringify({ count })}\n\n`);
+
+      // add to client set
+      sseClients.add(res);
+
+      req.on('close', () => {
+        sseClients.delete(res);
+      });
+    } catch (e) {
+      res.status(500).end();
+    }
+  });
+
+  // User's gallery - requires authentication
+  app.get("/api/photo-strips", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId!;
+      const photoStrips = await storage.getPhotoStripsByUserId(userId);
+      res.setHeader('Content-Type', 'application/json');
+      res.json(photoStrips);
+    } catch (error) {
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ error: "Failed to retrieve photo strips" });
     }
   });
 

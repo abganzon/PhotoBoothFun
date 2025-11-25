@@ -4,6 +4,7 @@ import { z } from "zod";
 
 export const photoStrips = pgTable("photo_strips", {
   id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   photos: jsonb("photos").notNull(),
   layout: text("layout").notNull(),
@@ -16,6 +17,7 @@ export const photoStrips = pgTable("photo_strips", {
 });
 
 export const insertPhotoStripSchema = createInsertSchema(photoStrips).pick({
+  userId: true,
   photos: true,
   layout: true,
   backgroundColor: true,
@@ -31,6 +33,7 @@ export type PhotoStrip = typeof photoStrips.$inferSelect;
 
 export const sharedLinks = pgTable("shared_links", {
   id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
   photoStripId: serial("photo_strip_id").references(() => photoStrips.id),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   expiresAt: timestamp("expires_at").notNull(),
@@ -39,6 +42,7 @@ export const sharedLinks = pgTable("shared_links", {
 
 export const insertSharedLinkSchema = createInsertSchema(sharedLinks).pick({
   id: true,
+  userId: true,
   photoStripId: true,
   expiresAt: true,
 });

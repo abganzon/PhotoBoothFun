@@ -1,12 +1,13 @@
 
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --radius: 0.5rem;
-    --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+    --radius: 0.6rem;
+    --font-sans: Inter, 'IBM Plex Sans', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   }
 
   * {
@@ -22,18 +23,195 @@
   }
 
   .card {
-    @apply rounded-lg border bg-card p-6 shadow-sm;
+    @apply rounded-lg border bg-card p-5 shadow-sm;
   }
 
   .button-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2;
+    @apply bg-primary text-primary-foreground hover:bg-primary/95 rounded-lg px-4 py-2 font-semibold;
   }
 
   .drop-zone {
-    @apply border-2 border-dashed rounded-lg p-8 transition-colors;
+    @apply border-2 border-dashed rounded-lg p-6 transition-colors bg-transparent;
   }
 
   .drop-zone-active {
     @apply border-primary bg-primary/10;
+  }
+}
+
+@layer utilities {
+  @keyframes blob {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(14, 165, 233, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(14, 165, 233, 0.8);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  @keyframes gradient-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .animate-blob {
+    animation: blob 8s infinite;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out forwards;
+  }
+
+  .animate-slide-in {
+    animation: slide-in-right 0.5s ease-out;
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+    background: linear-gradient(90deg, #e0f2fe, #bfdbfe, #e0f2fe);
+    background-size: 1000px 100%;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-gradient {
+    animation: gradient-shift 3s ease infinite;
+    background-size: 200% 200%;
+  }
+
+  /* Subtle card accent for gallery */
+  .card-accent {
+    background: linear-gradient(90deg, rgba(14,165,233,0.12), rgba(99,102,241,0.10));
+  }
+
+  .btn-bounce:hover {
+    transform: translateY(-3px) scale(1.01);
+    transition: transform 220ms cubic-bezier(.22,.9,.27,1);
+  }
+
+  .fade-in-up {
+    transform: translateY(8px);
+    opacity: 0;
+    animation: fade-in 0.6s ease-out forwards;
+  }
+
+  /* Enhanced glass morphism effect */
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .dark .glass-effect {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(51, 65, 85, 0.3);
+  }
+
+  /* Gradient text utility */
+  .gradient-text {
+    @apply bg-gradient-to-r bg-clip-text text-transparent;
+  }
+
+  /* Smooth transitions for interactive elements */
+  .smooth-transition {
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Hover lift effect */
+  .hover-lift {
+    transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 300ms ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Center Clerk UserButton popup on small screens (non-invasive, mobile-only) */
+@media (max-width: 768px) {
+  /* Common Clerk popover/modal class names and data-attribute fallbacks */
+  .clerk-user-button__popover,
+  .clerk-popover,
+  .clerk-dialog,
+  .clerk-modal,
+  [data-clerk-root] [role="dialog"],
+  [data-clerk-root] .clerk-modal {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    max-width: calc(100% - 2rem) !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Ensure any overlay-rooted panels don't force a large offset */
+  .clerk-popover[style],
+  .clerk-modal[style] {
+    margin-left: 0 !important;
   }
 }
