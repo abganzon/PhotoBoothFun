@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { ShareModal } from "./share-modal";
 
-export type FontType = "impact" | "arial" | "georgia" | "trebuchet";
+export type FontType = "arial" | "georgia" | "trebuchet" | "vegan" | "elegance" | "inspiration";
 
 interface PhotoStripProps {
   photos: string[];
@@ -242,7 +242,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       // Draw title and date at bottom after photos with enhanced styling
       if (showName) {
         const titleSize = layout === "strip" ? 28 : 32; // Increased font sizes for better visibility
-        const fontFamily = font === "impact" ? "Impact" : font === "arial" ? "Arial" : font === "georgia" ? "Georgia" : "Trebuchet MS";
+        const fontFamily = font === "arial" ? "Arial" : font === "georgia" ? "Georgia" : font === "trebuchet" ? "Trebuchet MS" : font === "vegan" ? "Verdana, sans-serif" : font === "elegance" ? "Georgia, serif" : "Comic Sans MS, cursive";
         tempCtx.font = `bold ${titleSize}px "${fontFamily}"`;
         tempCtx.textAlign = "center";
 
@@ -265,7 +265,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       // Draw date if enabled with enhanced styling
       if (showDate) {
         const dateSize = layout === "strip" ? 18 : 20; // Increased font sizes
-        const fontFamily = font === "impact" ? "Impact" : font === "arial" ? "Arial" : font === "georgia" ? "Georgia" : "Trebuchet MS";
+        const fontFamily = font === "arial" ? "Arial" : font === "georgia" ? "Georgia" : font === "trebuchet" ? "Trebuchet MS" : font === "vegan" ? "Verdana, sans-serif" : font === "elegance" ? "Georgia, serif" : "Comic Sans MS, cursive";
         tempCtx.font = `${dateSize}px "${fontFamily}"`;
         tempCtx.textAlign = "center";
 
