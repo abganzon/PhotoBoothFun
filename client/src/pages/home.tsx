@@ -558,11 +558,11 @@ export default function Home() {
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label className={`text-sm sm:text-base font-semibold ${darkMode ? 'text-slate-100' : ''}`}>Layout Style</Label>
-                  <div className="flex gap-2 sm:gap-4 flex-col xs:flex-row">
+                  <div className="flex gap-1 sm:gap-2 flex-col xs:flex-row">
                     <div
-                      className={`flex-1 p-3 sm:p-4 border rounded-xl cursor-pointer transition-all duration-300 hover-lift ${
+                      className={`flex-1 p-2 sm:p-3 border rounded-lg cursor-pointer transition-all duration-300 hover-lift ${
                         layout === "strip"
                           ? darkMode
                             ? "border-sky-500 bg-sky-500/10 shadow-md"
@@ -573,18 +573,18 @@ export default function Home() {
                       }`}
                       onClick={() => setLayout("strip")}
                     >
-                      <div className="flex flex-col items-center gap-1">
-                        <div className={`w-16 h-24 sm:w-20 sm:h-[120px] ${darkMode ? 'bg-slate-600' : 'bg-slate-200'} rounded flex flex-col gap-1 p-1`}>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <div className={`w-10 h-14 sm:w-12 sm:h-16 ${darkMode ? 'bg-slate-600' : 'bg-slate-200'} rounded flex flex-col gap-0.5 p-0.5`}>
                           {[...Array(4)].map((_, i) => (
                             <div key={i} className={`flex-1 ${darkMode ? 'bg-slate-700' : 'bg-white'} rounded`} />
                           ))}
                         </div>
-                        <span className={`text-xs sm:text-sm font-bold ${darkMode ? 'text-slate-100' : ''}`}>Strip</span>
+                        <span className={`text-xs font-bold ${darkMode ? 'text-slate-100' : ''}`}>Strip</span>
                         <span className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>1x4</span>
                       </div>
                     </div>
                     <div
-                      className={`flex-1 p-3 sm:p-4 border rounded-xl cursor-pointer transition-all duration-300 hover-lift ${
+                      className={`flex-1 p-2 sm:p-3 border rounded-lg cursor-pointer transition-all duration-300 hover-lift ${
                         layout === "collage"
                           ? darkMode
                             ? "border-sky-500 bg-sky-500/10 shadow-md"
@@ -595,13 +595,13 @@ export default function Home() {
                       }`}
                       onClick={() => setLayout("collage")}
                     >
-                      <div className="flex flex-col items-center gap-1">
-                        <div className={`w-20 h-20 sm:w-24 sm:h-24 ${darkMode ? 'bg-slate-600' : 'bg-slate-200'} rounded grid grid-cols-2 gap-1 p-1`}>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <div className={`w-12 h-12 sm:w-14 sm:h-14 ${darkMode ? 'bg-slate-600' : 'bg-slate-200'} rounded grid grid-cols-2 gap-0.5 p-0.5`}>
                           {[...Array(4)].map((_, i) => (
-                            <div key={i} className={`aspect-[4/3] ${darkMode ? 'bg-slate-700' : 'bg-white'} rounded`} />
+                            <div key={i} className={`aspect-square ${darkMode ? 'bg-slate-700' : 'bg-white'} rounded`} />
                           ))}
                         </div>
-                        <span className={`text-xs sm:text-sm font-bold ${darkMode ? 'text-slate-100' : ''}`}>Collage</span>
+                        <span className={`text-xs font-bold ${darkMode ? 'text-slate-100' : ''}`}>Collage</span>
                         <span className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>2x2</span>
                       </div>
                     </div>
