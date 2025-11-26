@@ -1,19 +1,18 @@
-<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#4f46e5;stop-opacity:1" />
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9"/>
+      <stop offset="50%" style="stop-color:#3b82f6"/>
+      <stop offset="100%" style="stop-color:#4f46e5"/>
     </linearGradient>
   </defs>
-  <!-- Gradient background with rounded corners -->
-  <rect width="128" height="128" rx="24" fill="url(#grad)"/>
   
-  <!-- Large Centered Lucide Camera Icon (white) - scaled to fit -->
-  <g transform="translate(18, 22) scale(2.2)">
-    <!-- Camera body -->
-    <path d="M14.5 4h-5L9 1H5L3.5 4H1a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <!-- Camera lens -->
-    <circle cx="8" cy="12" r="3.5" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Rounded rectangle background -->
+  <rect x="0" y="0" width="64" height="64" rx="14" ry="14" fill="url(#bgGradient)"/>
+  
+  <!-- Camera icon (centered and scaled) -->
+  <g transform="translate(14, 14) scale(1.5)" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+    <circle cx="12" cy="13" r="3"/>
   </g>
 </svg>
