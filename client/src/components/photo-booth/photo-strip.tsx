@@ -378,12 +378,59 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
   return (
     <div className="flex flex-col items-center gap-4 w-full px-2 sm:px-0">
-      <div className="w-full max-w-[280px] bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-4 border border-slate-100 dark:border-slate-700">
-        <canvas
-          ref={canvasRef}
-          className="w-full rounded-lg shadow-sm"
-          style={{ maxWidth: '100%', height: 'auto' }}
-        />
+      <div className="w-full max-w-[280px] relative">
+        {/* Film strip container */}
+        <div className="bg-black dark:bg-black rounded-lg shadow-lg p-3 sm:p-4 relative overflow-hidden"
+          style={{
+            backgroundImage: `
+              repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 12px,
+                rgba(255, 255, 255, 0.03) 12px,
+                rgba(255, 255, 255, 0.03) 13px
+              ),
+              repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 8px,
+                rgba(255, 255, 255, 0.05) 8px,
+                rgba(255, 255, 255, 0.05) 9px
+              )
+            `,
+          }}
+        >
+          {/* Left perforations */}
+          <div className="absolute left-0 top-0 bottom-0 w-3 flex flex-col justify-around items-center py-2 pointer-events-none"
+            style={{
+              backgroundImage: `radial-gradient(circle, rgba(0, 0, 0, 0.8) 45%, transparent 45%)`,
+              backgroundSize: '100% 24px',
+              backgroundPosition: '0 0',
+              backgroundRepeat: 'repeat-y',
+            }}
+          />
+          
+          {/* Right perforations */}
+          <div className="absolute right-0 top-0 bottom-0 w-3 flex flex-col justify-around items-center py-2 pointer-events-none"
+            style={{
+              backgroundImage: `radial-gradient(circle, rgba(0, 0, 0, 0.8) 45%, transparent 45%)`,
+              backgroundSize: '100% 24px',
+              backgroundPosition: '0 0',
+              backgroundRepeat: 'repeat-y',
+            }}
+          />
+          
+          {/* Canvas with padding for perforations */}
+          <div className="px-5 py-1">
+            <div className="bg-white dark:bg-slate-800 rounded-md shadow-sm border border-slate-100 dark:border-slate-700 p-2">
+              <canvas
+                ref={canvasRef}
+                className="w-full rounded-sm shadow-sm"
+                style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {!hideButtons && (
