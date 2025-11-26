@@ -4,7 +4,15 @@
 
 This is a web-based photo booth application that allows users to capture multiple photos, customize them with various layouts and styling options, and share them via time-limited links. The application provides a fun, interactive experience similar to traditional photo booth strips with modern customization features.
 
-## Recent Changes (October 16, 2025)
+## Recent Changes (November 26, 2025)
+
+### UI Protection Enhancements
+- **Share Button Protection**: Added `isSharing` state in gallery and home pages to prevent double-clicks on share buttons that could break share links/QR codes
+- **Auto Capture Protection**: Added `isSequenceInProgress` state to prevent double-clicking auto capture button during photo sequence, which previously could reset captured images
+- **Retake All Reset**: "Retake All" button now properly resets sequence state and countdown timers
+- **Top Donator Card**: Added Top Donator feature card on landing page displaying donator name and peso currency amount
+
+## Previous Changes (October 16, 2025)
 
 ### Netlify Deployment Fix
 - **Issue**: API endpoints were returning 404 errors on Netlify deployment
