@@ -156,7 +156,17 @@ export function Header() {
               </SignInButton>
             </SignedOut>
             <SignedIn>
-              <UserButton appearance={{ elements: { userButtonAvatarBox: "w-8 h-8" } }} afterSignOutUrl="/" />
+              <div className="flex items-center">
+                <UserButton 
+                  appearance={{ 
+                    elements: { 
+                      userButtonAvatarBox: "w-8 h-8",
+                      userPopoverBox: "fixed md:absolute left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0"
+                    } 
+                  }} 
+                  afterSignOutUrl="/" 
+                />
+              </div>
             </SignedIn>
 
             {/* Mobile menu trigger placed beside the profile */}
