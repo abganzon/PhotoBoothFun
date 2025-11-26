@@ -216,8 +216,10 @@
   }
 }
 
-/* Center Clerk user profile popup on mobile */
-.cl-internal-1ljmodc {
-  left: 50%;
-  transform: translateX(-50%);
+/* Center Clerk user profile popup on mobile only */
+@media (max-width: 768px) {
+  .cl-internal-1ljmodc {
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
