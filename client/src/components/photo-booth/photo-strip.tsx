@@ -94,21 +94,11 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Preload fonts before rendering
-    const fontsToLoad = [fontFamilyMap[fontName], fontFamilyMap[fontDate]];
-    ensureFontsLoaded(fontsToLoad).then(() => {
-      drawContent();
-    }).catch(() => {
-      drawContent();
-    });
-
-    const drawContent = () => {
-
-    // Ensure photos is an array
-    if (!Array.isArray(photos)) {
-      console.error("Photos prop is not an array:", photos);
-      return;
-    }
+    const drawContent = async () => {
+      if (!Array.isArray(photos)) {
+        console.error("Photos prop is not an array:", photos);
+        return;
+      }
 
     // Create a new canvas for photo composition
     const tempCanvas = document.createElement("canvas");
@@ -345,6 +335,15 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
     drawAllPhotos();
     };
+
+    // Preload fonts before rendering
+    const fontsToLoad = [fontFamilyMap[fontName], fontFamilyMap[fontDate]];
+    ensureFontsLoaded(fontsToLoad).then(() => {
+      drawContent();
+    }).catch(() => {
+      drawContent();
+    });
+  }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout, fontName, fontDate]);
 
   const handleDownload = async () => {
     const canvas = canvasRef.current;
