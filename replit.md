@@ -6,11 +6,16 @@ This is a web-based photo booth application that allows users to capture multipl
 
 ## Recent Changes (November 26, 2025)
 
-### UI Protection Enhancements
+### UI Improvements & Bug Fixes
+- **Save to Gallery Protection**: Added guard to `saveToGallery` function preventing saves with fewer than 4 photos, with clear toast feedback
+- **Gallery Card Sizing**: Improved gallery card layout with `max-w-sm` constraints, layout-specific widths (180px strip, 260px collage), and scale-90 previews for compact presentation
+- **All 3 Top Donator Cards**: Landing page now displays 3 Top Donator cards (amber, rose, violet themes) with Heart icons, names, and PHP amounts
+- **Removed Unused Import**: Cleaned up unused `Save` icon import from landing.tsx
+
+### Previous UI Protection Enhancements
 - **Share Button Protection**: Added `isSharing` state in gallery and home pages to prevent double-clicks on share buttons that could break share links/QR codes
 - **Auto Capture Protection**: Added `isSequenceInProgress` state to prevent double-clicking auto capture button during photo sequence, which previously could reset captured images
 - **Retake All Reset**: "Retake All" button now properly resets sequence state and countdown timers
-- **Top Donator Card**: Added Top Donator feature card on landing page displaying donator name and peso currency amount
 
 ## Previous Changes (October 16, 2025)
 
