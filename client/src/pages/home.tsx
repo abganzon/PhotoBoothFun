@@ -48,7 +48,8 @@ export default function Home() {
   const [showName, setShowName] = useState(true);
   const [nameColor, setNameColor] = useState("#000000");
   const [dateColor, setDateColor] = useState("#666666");
-  const [font, setFont] = useState<FontType>("bebas");
+  const [fontName, setFontName] = useState<FontType>("bebas");
+  const [fontDate, setFontDate] = useState<FontType>("oswald");
   const [layout, setLayout] = useState<"strip" | "collage">("strip");
   const [timerDuration, setTimerDuration] = useState(5);
   const [darkMode, setDarkMode] = useState(() => {
@@ -642,9 +643,41 @@ export default function Home() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="font-select" className={`text-xs sm:text-sm ${darkMode ? 'text-slate-100' : ''}`}>Font</Label>
-                      <Select value={font} onValueChange={(value) => setFont(value as FontType)}>
-                        <SelectTrigger id="font-select" className={darkMode ? 'bg-slate-600 border-slate-500' : ''}>
+                      <Label htmlFor="font-name-select" className={`text-xs sm:text-sm ${darkMode ? 'text-slate-100' : ''}`}>Name Font</Label>
+                      <Select value={fontName} onValueChange={(value) => setFontName(value as FontType)}>
+                        <SelectTrigger id="font-name-select" className={darkMode ? 'bg-slate-600 border-slate-500' : ''}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="bebas">Bebas Neue</SelectItem>
+                          <SelectItem value="oswald">Oswald</SelectItem>
+                          <SelectItem value="anton">Anton</SelectItem>
+                          <SelectItem value="righteous">Righteous</SelectItem>
+                          <SelectItem value="poppins">Poppins</SelectItem>
+                          <SelectItem value="montserrat">Montserrat</SelectItem>
+                          <SelectItem value="raleway">Raleway</SelectItem>
+                          <SelectItem value="playfair">Playfair Display</SelectItem>
+                          <SelectItem value="greatvibes">Great Vibes</SelectItem>
+                          <SelectItem value="cormorant">Cormorant Garamond</SelectItem>
+                          <SelectItem value="lora">Lora</SelectItem>
+                          <SelectItem value="garamond">EB Garamond</SelectItem>
+                          <SelectItem value="pacifico">Pacifico</SelectItem>
+                          <SelectItem value="caveat">Caveat</SelectItem>
+                          <SelectItem value="quicksand">Quicksand</SelectItem>
+                          <SelectItem value="ubuntu">Ubuntu</SelectItem>
+                          <SelectItem value="nunito">Nunito</SelectItem>
+                          <SelectItem value="roboto">Roboto</SelectItem>
+                          <SelectItem value="opensans">Open Sans</SelectItem>
+                          <SelectItem value="lato">Lato</SelectItem>
+                          <SelectItem value="inter">Inter</SelectItem>
+                          <SelectItem value="worksans">Work Sans</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="font-date-select" className={`text-xs sm:text-sm ${darkMode ? 'text-slate-100' : ''}`}>Date Font</Label>
+                      <Select value={fontDate} onValueChange={(value) => setFontDate(value as FontType)}>
+                        <SelectTrigger id="font-date-select" className={darkMode ? 'bg-slate-600 border-slate-500' : ''}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -729,7 +762,8 @@ export default function Home() {
                     backgroundColor={backgroundColor}
                     nameColor={nameColor}
                     dateColor={dateColor}
-                    font={font}
+                    fontName={fontName}
+                    fontDate={fontDate}
                     darkMode={darkMode}
                     showShareButton={true}
                     onShare={handleShare}

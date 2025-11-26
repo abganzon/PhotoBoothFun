@@ -16,7 +16,8 @@ interface PhotoStripProps {
   backgroundColor?: string;
   nameColor?: string;
   dateColor?: string;
-  font?: FontType;
+  fontName?: FontType;
+  fontDate?: FontType;
   hideButtons?: boolean;
   darkMode?: boolean;
   showShareButton?: boolean;
@@ -34,7 +35,8 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
   backgroundColor = "#ffffff",
   nameColor = "#000000",
   dateColor = "#666666",
-  font = "georgia",
+  fontName = "bebas",
+  fontDate = "oswald",
   hideButtons = false,
   darkMode = false,
   showShareButton = false,
@@ -242,7 +244,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       // Draw title and date at bottom after photos with enhanced styling
       if (showName) {
         const titleSize = layout === "strip" ? 28 : 32; // Increased font sizes for better visibility
-        const fontFamily = font === "bebas" ? "Bebas Neue" : font === "oswald" ? "Oswald" : font === "anton" ? "Anton" : font === "righteous" ? "Righteous" : font === "poppins" ? "Poppins" : font === "montserrat" ? "Montserrat" : font === "raleway" ? "Raleway" : font === "playfair" ? "Playfair Display" : font === "greatvibes" ? "Great Vibes" : font === "cormorant" ? "Cormorant Garamond" : font === "lora" ? "Lora" : font === "garamond" ? "EB Garamond" : font === "pacifico" ? "Pacifico" : font === "caveat" ? "Caveat" : font === "quicksand" ? "Quicksand" : font === "ubuntu" ? "Ubuntu" : font === "nunito" ? "Nunito" : font === "roboto" ? "Roboto" : font === "opensans" ? "Open Sans" : font === "lato" ? "Lato" : font === "inter" ? "Inter" : font === "worksans" ? "Work Sans" : "Bebas Neue";
+        const fontFamily = fontName === "bebas" ? "Bebas Neue" : fontName === "oswald" ? "Oswald" : fontName === "anton" ? "Anton" : fontName === "righteous" ? "Righteous" : fontName === "poppins" ? "Poppins" : fontName === "montserrat" ? "Montserrat" : fontName === "raleway" ? "Raleway" : fontName === "playfair" ? "Playfair Display" : fontName === "greatvibes" ? "Great Vibes" : fontName === "cormorant" ? "Cormorant Garamond" : fontName === "lora" ? "Lora" : fontName === "garamond" ? "EB Garamond" : fontName === "pacifico" ? "Pacifico" : fontName === "caveat" ? "Caveat" : fontName === "quicksand" ? "Quicksand" : fontName === "ubuntu" ? "Ubuntu" : fontName === "nunito" ? "Nunito" : fontName === "roboto" ? "Roboto" : fontName === "opensans" ? "Open Sans" : fontName === "lato" ? "Lato" : fontName === "inter" ? "Inter" : fontName === "worksans" ? "Work Sans" : "Bebas Neue";
         tempCtx.font = `bold ${titleSize}px "${fontFamily}"`;
         tempCtx.textAlign = "center";
 
@@ -265,7 +267,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       // Draw date if enabled with enhanced styling
       if (showDate) {
         const dateSize = layout === "strip" ? 18 : 20; // Increased font sizes
-        const fontFamily = font === "bebas" ? "Bebas Neue" : font === "oswald" ? "Oswald" : font === "anton" ? "Anton" : font === "righteous" ? "Righteous" : font === "poppins" ? "Poppins" : font === "montserrat" ? "Montserrat" : font === "raleway" ? "Raleway" : font === "playfair" ? "Playfair Display" : font === "greatvibes" ? "Great Vibes" : font === "cormorant" ? "Cormorant Garamond" : font === "lora" ? "Lora" : font === "garamond" ? "EB Garamond" : font === "pacifico" ? "Pacifico" : font === "caveat" ? "Caveat" : font === "quicksand" ? "Quicksand" : font === "ubuntu" ? "Ubuntu" : font === "nunito" ? "Nunito" : font === "roboto" ? "Roboto" : font === "opensans" ? "Open Sans" : font === "lato" ? "Lato" : font === "inter" ? "Inter" : font === "worksans" ? "Work Sans" : "Bebas Neue";
+        const fontFamily = fontDate === "bebas" ? "Bebas Neue" : fontDate === "oswald" ? "Oswald" : fontDate === "anton" ? "Anton" : fontDate === "righteous" ? "Righteous" : fontDate === "poppins" ? "Poppins" : fontDate === "montserrat" ? "Montserrat" : fontDate === "raleway" ? "Raleway" : fontDate === "playfair" ? "Playfair Display" : fontDate === "greatvibes" ? "Great Vibes" : fontDate === "cormorant" ? "Cormorant Garamond" : fontDate === "lora" ? "Lora" : fontDate === "garamond" ? "EB Garamond" : fontDate === "pacifico" ? "Pacifico" : fontDate === "caveat" ? "Caveat" : fontDate === "quicksand" ? "Quicksand" : fontDate === "ubuntu" ? "Ubuntu" : fontDate === "nunito" ? "Nunito" : fontDate === "roboto" ? "Roboto" : fontDate === "opensans" ? "Open Sans" : fontDate === "lato" ? "Lato" : fontDate === "inter" ? "Inter" : fontDate === "worksans" ? "Work Sans" : "Oswald";
         tempCtx.font = `${dateSize}px "${fontFamily}"`;
         tempCtx.textAlign = "center";
 
@@ -295,7 +297,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     };
 
     drawAllPhotos();
-  }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout, font]);
+  }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout, fontName, fontDate]);
 
   const handleDownload = async () => {
     const canvas = canvasRef.current;
