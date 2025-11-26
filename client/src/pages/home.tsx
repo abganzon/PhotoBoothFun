@@ -370,8 +370,7 @@ export default function Home() {
                         data-testid="button-auto-capture"
                       >
                         <Camera className="h-4 w-4" />
-                        <span className="hidden sm:inline">{recaptureIndex !== null ? `Recapture Photo ${recaptureIndex + 1}` : isSequenceInProgress ? 'Capturing...' : 'Auto Capture'}</span>
-                        <span className="sm:hidden">{recaptureIndex !== null ? `Recapture Photo ${recaptureIndex + 1}` : isSequenceInProgress ? 'Capturing...' : 'Auto'}</span>
+                        <span>{recaptureIndex !== null ? `Recapture Photo ${recaptureIndex + 1}` : isSequenceInProgress ? 'Capturing...' : 'Auto'}</span>
                       </Button>
                     ) : (
                       <Button
@@ -395,8 +394,7 @@ export default function Home() {
                       data-testid="button-retake-all"
                     >
                       <Repeat className="h-4 w-4" />
-                      <span className="hidden sm:inline">Retake All</span>
-                      <span className="sm:hidden">Retake</span>
+                      <span>Retake</span>
                     </Button>
                     <Dialog>
                       <DialogTrigger asChild>
