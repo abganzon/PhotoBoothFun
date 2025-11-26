@@ -26,6 +26,43 @@ interface PhotoStripProps {
   isSharing?: boolean;
 }
 
+const fontFamilyMap: { [key in FontType]: string } = {
+  bebas: "Bebas Neue",
+  oswald: "Oswald",
+  anton: "Anton",
+  righteous: "Righteous",
+  poppins: "Poppins",
+  montserrat: "Montserrat",
+  raleway: "Raleway",
+  playfair: "Playfair Display",
+  greatvibes: "Great Vibes",
+  cormorant: "Cormorant Garamond",
+  lora: "Lora",
+  garamond: "EB Garamond",
+  pacifico: "Pacifico",
+  caveat: "Caveat",
+  quicksand: "Quicksand",
+  ubuntu: "Ubuntu",
+  nunito: "Nunito",
+  roboto: "Roboto",
+  opensans: "Open Sans",
+  lato: "Lato",
+  inter: "Inter",
+  worksans: "Work Sans",
+};
+
+const ensureFontsLoaded = async (fonts: string[]): Promise<void> => {
+  if (!document.fonts) return;
+  try {
+    const fontPromises = fonts.map((fontName) =>
+      document.fonts.load(`12px "${fontName}"`)
+    );
+    await Promise.all(fontPromises);
+  } catch (e) {
+    console.warn("Font loading error:", e);
+  }
+};
+
 export const PhotoStrip: React.FC<PhotoStripProps> = ({
   photos,
   layout,
@@ -56,6 +93,16 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    // Preload fonts before rendering
+    const fontsToLoad = [fontFamilyMap[fontName], fontFamilyMap[fontDate]];
+    ensureFontsLoaded(fontsToLoad).then(() => {
+      drawContent();
+    }).catch(() => {
+      drawContent();
+    });
+
+    const drawContent = () => {
 
     // Ensure photos is an array
     if (!Array.isArray(photos)) {
@@ -244,7 +291,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       // Draw title and date at bottom after photos with enhanced styling
       if (showName) {
         const titleSize = layout === "strip" ? 28 : 32; // Increased font sizes for better visibility
-        const fontFamily = fontName === "bebas" ? "Bebas Neue" : fontName === "oswald" ? "Oswald" : fontName === "anton" ? "Anton" : fontName === "righteous" ? "Righteous" : fontName === "poppins" ? "Poppins" : fontName === "montserrat" ? "Montserrat" : fontName === "raleway" ? "Raleway" : fontName === "playfair" ? "Playfair Display" : fontName === "greatvibes" ? "Great Vibes" : fontName === "cormorant" ? "Cormorant Garamond" : fontName === "lora" ? "Lora" : fontName === "garamond" ? "EB Garamond" : fontName === "pacifico" ? "Pacifico" : fontName === "caveat" ? "Caveat" : fontName === "quicksand" ? "Quicksand" : fontName === "ubuntu" ? "Ubuntu" : fontName === "nunito" ? "Nunito" : fontName === "roboto" ? "Roboto" : fontName === "opensans" ? "Open Sans" : fontName === "lato" ? "Lato" : fontName === "inter" ? "Inter" : fontName === "worksans" ? "Work Sans" : "Bebas Neue";
+        const fontFamily = fontFamilyMap[fontName];
         tempCtx.font = `bold ${titleSize}px "${fontFamily}"`;
         tempCtx.textAlign = "center";
 
@@ -267,7 +314,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       // Draw date if enabled with enhanced styling
       if (showDate) {
         const dateSize = layout === "strip" ? 18 : 20; // Increased font sizes
-        const fontFamily = fontDate === "bebas" ? "Bebas Neue" : fontDate === "oswald" ? "Oswald" : fontDate === "anton" ? "Anton" : fontDate === "righteous" ? "Righteous" : fontDate === "poppins" ? "Poppins" : fontDate === "montserrat" ? "Montserrat" : fontDate === "raleway" ? "Raleway" : fontDate === "playfair" ? "Playfair Display" : fontDate === "greatvibes" ? "Great Vibes" : fontDate === "cormorant" ? "Cormorant Garamond" : fontDate === "lora" ? "Lora" : fontDate === "garamond" ? "EB Garamond" : fontDate === "pacifico" ? "Pacifico" : fontDate === "caveat" ? "Caveat" : fontDate === "quicksand" ? "Quicksand" : fontDate === "ubuntu" ? "Ubuntu" : fontDate === "nunito" ? "Nunito" : fontDate === "roboto" ? "Roboto" : fontDate === "opensans" ? "Open Sans" : fontDate === "lato" ? "Lato" : fontDate === "inter" ? "Inter" : fontDate === "worksans" ? "Work Sans" : "Oswald";
+        const fontFamily = fontFamilyMap[fontDate];
         tempCtx.font = `${dateSize}px "${fontFamily}"`;
         tempCtx.textAlign = "center";
 
@@ -297,7 +344,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     };
 
     drawAllPhotos();
-  }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout, fontName, fontDate]);
+    };
 
   const handleDownload = async () => {
     const canvas = canvasRef.current;
