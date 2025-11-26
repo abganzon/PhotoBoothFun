@@ -631,6 +631,35 @@ export default function Home() {
                         onCheckedChange={setShowName}
                       />
                     </div>
+                    <Select value={fontName} onValueChange={(value) => setFontName(value as FontType)}>
+                      <SelectTrigger id="font-name-select" className={darkMode ? 'bg-slate-600 border-slate-500' : ''}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="bebas">Bebas Neue</SelectItem>
+                        <SelectItem value="oswald">Oswald</SelectItem>
+                        <SelectItem value="anton">Anton</SelectItem>
+                        <SelectItem value="righteous">Righteous</SelectItem>
+                        <SelectItem value="poppins">Poppins</SelectItem>
+                        <SelectItem value="montserrat">Montserrat</SelectItem>
+                        <SelectItem value="raleway">Raleway</SelectItem>
+                        <SelectItem value="playfair">Playfair Display</SelectItem>
+                        <SelectItem value="greatvibes">Great Vibes</SelectItem>
+                        <SelectItem value="cormorant">Cormorant Garamond</SelectItem>
+                        <SelectItem value="lora">Lora</SelectItem>
+                        <SelectItem value="garamond">EB Garamond</SelectItem>
+                        <SelectItem value="pacifico">Pacifico</SelectItem>
+                        <SelectItem value="caveat">Caveat</SelectItem>
+                        <SelectItem value="quicksand">Quicksand</SelectItem>
+                        <SelectItem value="ubuntu">Ubuntu</SelectItem>
+                        <SelectItem value="nunito">Nunito</SelectItem>
+                        <SelectItem value="roboto">Roboto</SelectItem>
+                        <SelectItem value="opensans">Open Sans</SelectItem>
+                        <SelectItem value="lato">Lato</SelectItem>
+                        <SelectItem value="inter">Inter</SelectItem>
+                        <SelectItem value="worksans">Work Sans</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <div className="flex items-center justify-between gap-4">
                       <div className="space-y-0.5 flex-1">
                         <Label htmlFor="show-date" className={`text-xs sm:text-sm ${darkMode ? 'text-slate-100' : ''}`}>Show Date</Label>
@@ -642,70 +671,35 @@ export default function Home() {
                         onCheckedChange={setShowDate}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="font-name-select" className={`text-xs sm:text-sm ${darkMode ? 'text-slate-100' : ''}`}>Name Font</Label>
-                      <Select value={fontName} onValueChange={(value) => setFontName(value as FontType)}>
-                        <SelectTrigger id="font-name-select" className={darkMode ? 'bg-slate-600 border-slate-500' : ''}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="bebas">Bebas Neue</SelectItem>
-                          <SelectItem value="oswald">Oswald</SelectItem>
-                          <SelectItem value="anton">Anton</SelectItem>
-                          <SelectItem value="righteous">Righteous</SelectItem>
-                          <SelectItem value="poppins">Poppins</SelectItem>
-                          <SelectItem value="montserrat">Montserrat</SelectItem>
-                          <SelectItem value="raleway">Raleway</SelectItem>
-                          <SelectItem value="playfair">Playfair Display</SelectItem>
-                          <SelectItem value="greatvibes">Great Vibes</SelectItem>
-                          <SelectItem value="cormorant">Cormorant Garamond</SelectItem>
-                          <SelectItem value="lora">Lora</SelectItem>
-                          <SelectItem value="garamond">EB Garamond</SelectItem>
-                          <SelectItem value="pacifico">Pacifico</SelectItem>
-                          <SelectItem value="caveat">Caveat</SelectItem>
-                          <SelectItem value="quicksand">Quicksand</SelectItem>
-                          <SelectItem value="ubuntu">Ubuntu</SelectItem>
-                          <SelectItem value="nunito">Nunito</SelectItem>
-                          <SelectItem value="roboto">Roboto</SelectItem>
-                          <SelectItem value="opensans">Open Sans</SelectItem>
-                          <SelectItem value="lato">Lato</SelectItem>
-                          <SelectItem value="inter">Inter</SelectItem>
-                          <SelectItem value="worksans">Work Sans</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="font-date-select" className={`text-xs sm:text-sm ${darkMode ? 'text-slate-100' : ''}`}>Date Font</Label>
-                      <Select value={fontDate} onValueChange={(value) => setFontDate(value as FontType)}>
-                        <SelectTrigger id="font-date-select" className={darkMode ? 'bg-slate-600 border-slate-500' : ''}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="bebas">Bebas Neue</SelectItem>
-                          <SelectItem value="oswald">Oswald</SelectItem>
-                          <SelectItem value="anton">Anton</SelectItem>
-                          <SelectItem value="righteous">Righteous</SelectItem>
-                          <SelectItem value="poppins">Poppins</SelectItem>
-                          <SelectItem value="montserrat">Montserrat</SelectItem>
-                          <SelectItem value="raleway">Raleway</SelectItem>
-                          <SelectItem value="playfair">Playfair Display</SelectItem>
-                          <SelectItem value="greatvibes">Great Vibes</SelectItem>
-                          <SelectItem value="cormorant">Cormorant Garamond</SelectItem>
-                          <SelectItem value="lora">Lora</SelectItem>
-                          <SelectItem value="garamond">EB Garamond</SelectItem>
-                          <SelectItem value="pacifico">Pacifico</SelectItem>
-                          <SelectItem value="caveat">Caveat</SelectItem>
-                          <SelectItem value="quicksand">Quicksand</SelectItem>
-                          <SelectItem value="ubuntu">Ubuntu</SelectItem>
-                          <SelectItem value="nunito">Nunito</SelectItem>
-                          <SelectItem value="roboto">Roboto</SelectItem>
-                          <SelectItem value="opensans">Open Sans</SelectItem>
-                          <SelectItem value="lato">Lato</SelectItem>
-                          <SelectItem value="inter">Inter</SelectItem>
-                          <SelectItem value="worksans">Work Sans</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <Select value={fontDate} onValueChange={(value) => setFontDate(value as FontType)}>
+                      <SelectTrigger id="font-date-select" className={darkMode ? 'bg-slate-600 border-slate-500' : ''}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="bebas">Bebas Neue</SelectItem>
+                        <SelectItem value="oswald">Oswald</SelectItem>
+                        <SelectItem value="anton">Anton</SelectItem>
+                        <SelectItem value="righteous">Righteous</SelectItem>
+                        <SelectItem value="poppins">Poppins</SelectItem>
+                        <SelectItem value="montserrat">Montserrat</SelectItem>
+                        <SelectItem value="raleway">Raleway</SelectItem>
+                        <SelectItem value="playfair">Playfair Display</SelectItem>
+                        <SelectItem value="greatvibes">Great Vibes</SelectItem>
+                        <SelectItem value="cormorant">Cormorant Garamond</SelectItem>
+                        <SelectItem value="lora">Lora</SelectItem>
+                        <SelectItem value="garamond">EB Garamond</SelectItem>
+                        <SelectItem value="pacifico">Pacifico</SelectItem>
+                        <SelectItem value="caveat">Caveat</SelectItem>
+                        <SelectItem value="quicksand">Quicksand</SelectItem>
+                        <SelectItem value="ubuntu">Ubuntu</SelectItem>
+                        <SelectItem value="nunito">Nunito</SelectItem>
+                        <SelectItem value="roboto">Roboto</SelectItem>
+                        <SelectItem value="opensans">Open Sans</SelectItem>
+                        <SelectItem value="lato">Lato</SelectItem>
+                        <SelectItem value="inter">Inter</SelectItem>
+                        <SelectItem value="worksans">Work Sans</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
