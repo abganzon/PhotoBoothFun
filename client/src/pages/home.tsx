@@ -48,7 +48,7 @@ export default function Home() {
   const [showName, setShowName] = useState(true);
   const [nameColor, setNameColor] = useState("#000000");
   const [dateColor, setDateColor] = useState("#666666");
-  const [font, setFont] = useState<FontType>("georgia");
+  const [font, setFont] = useState<FontType>("impact");
   const [layout, setLayout] = useState<"strip" | "collage">("strip");
   const [timerDuration, setTimerDuration] = useState(5);
   const [darkMode, setDarkMode] = useState(() => {
@@ -648,11 +648,10 @@ export default function Home() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="georgia">Georgia</SelectItem>
-                          <SelectItem value="arial">Arial</SelectItem>
-                          <SelectItem value="courier">Courier New</SelectItem>
-                          <SelectItem value="verdana">Verdana</SelectItem>
                           <SelectItem value="impact">Impact</SelectItem>
+                          <SelectItem value="arial">Arial</SelectItem>
+                          <SelectItem value="georgia">Georgia</SelectItem>
+                          <SelectItem value="trebuchet">Trebuchet MS</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
