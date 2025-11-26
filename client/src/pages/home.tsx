@@ -560,7 +560,7 @@ export default function Home() {
 
                 <div className="space-y-1.5">
                   <Label className={`text-sm sm:text-base font-semibold ${darkMode ? 'text-slate-100' : ''}`}>Layout Style</Label>
-                  <div className="flex gap-1 sm:gap-2 flex-col xs:flex-row">
+                  <div className="flex gap-1 sm:gap-2 flex-row">
                     <div
                       className={`flex-1 p-2 sm:p-3 border rounded-lg cursor-pointer transition-all duration-300 hover-lift ${
                         layout === "strip"
