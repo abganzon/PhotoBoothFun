@@ -96,12 +96,13 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-              <div className="p-4 rounded-2xl bg-white/80 dark:bg-slate-800/70 backdrop-blur-md border border-blue-100 dark:border-slate-700 shadow-md hover:shadow-lg transition-all duration-200">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/30 dark:to-pink-900/30 backdrop-blur-md border border-rose-200 dark:border-rose-700/50 shadow-md hover:shadow-lg transition-all duration-200" data-testid="card-top-donator">
                 <div className="flex items-center gap-3">
-                  <Zap className="h-6 w-6 text-blue-500" />
+                  <Heart className="h-6 w-6 text-rose-500" />
                   <div>
-                    <div className="text-sm font-semibold text-slate-800 dark:text-slate-100">Instant Share</div>
-                    <div className="text-xs text-slate-500 dark:text-slate-300">Share links and downloads instantly</div>
+                    <div className="text-sm font-semibold text-slate-800 dark:text-slate-100">Top Donator</div>
+                    <div className="text-xs text-rose-600 dark:text-rose-300 font-medium">Juan Dela Cruz</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-300">PHP 5,000.00</div>
                   </div>
                 </div>
               </div>

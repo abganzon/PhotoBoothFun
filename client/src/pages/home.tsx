@@ -56,6 +56,8 @@ export default function Home() {
   const [currentStep, setCurrentStep] = useState(0);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
+  const [isSharing, setIsSharing] = useState(false);
+  const [isSequenceInProgress, setIsSequenceInProgress] = useState(false);
 
   // Persist dark mode preference
   useEffect(() => {
@@ -85,37 +87,46 @@ export default function Home() {
       });
     } else {
       // Add new photo
+      const newPhotosLength = photos.length + 1;
       setPhotos((prev) => [...prev, photo]);
       setIsCountingDown(false);
 
       // If auto capture is in progress and we haven't reached 4 photos yet
-      if (isCountingDown && photos.length < 3) {
+      if (isSequenceInProgress && newPhotosLength < 4) {
         // Wait a moment before starting the next countdown
         setTimeout(() => {
           setIsCountingDown(true);
         }, 1500);
+      } else if (newPhotosLength >= 4) {
+        // End the sequence when we have 4 photos
+        setIsSequenceInProgress(false);
       }
     }
   };
 
   const handleStartPhotoSequence = () => {
-    if (photos.length >= 4) {
-      toast({
-        title: "Maximum photos reached",
-        description: "Please clear the photos to start over.",
-        variant: "destructive",
-        duration: 3000,
-      });
+    if (photos.length >= 4 || isSequenceInProgress) {
+      if (photos.length >= 4) {
+        toast({
+          title: "Maximum photos reached",
+          description: "Please clear the photos to start over.",
+          variant: "destructive",
+          duration: 3000,
+        });
+      }
       return;
     }
     // Clear existing photos when starting a new sequence
     setPhotos([]);
-    // Start the countdown for the first photo
+    // Mark sequence as in progress and start the countdown
+    setIsSequenceInProgress(true);
     setIsCountingDown(true);
   };
 
   const handleClear = () => {
     setPhotos([]);
+    setIsSequenceInProgress(false);
+    setIsCountingDown(false);
   };
 
   const [recaptureIndex, setRecaptureIndex] = useState<number | null>(null);
@@ -148,6 +159,9 @@ export default function Home() {
       });
       return;
     }
+
+    if (isSharing) return;
+    setIsSharing(true);
 
     try {
       // First, save the photo strip
@@ -199,6 +213,8 @@ export default function Home() {
         description: "Failed to create share link",
         variant: "destructive",
       });
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -338,12 +354,13 @@ export default function Home() {
                             handleStartPhotoSequence();
                           }
                         }}
-                        disabled={isCountingDown}
-                        className="flex items-center gap-2 flex-1 sm:flex-none text-sm sm:text-base bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                        disabled={isCountingDown || isSequenceInProgress}
+                        className="flex items-center gap-2 flex-1 sm:flex-none text-sm sm:text-base bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                        data-testid="button-auto-capture"
                       >
                         <Camera className="h-4 w-4" />
-                        <span className="hidden sm:inline">{recaptureIndex !== null ? `Recapture Photo ${recaptureIndex + 1}` : 'Auto Capture'}</span>
-                        <span className="sm:hidden">{recaptureIndex !== null ? `Recapture` : 'Capture'}</span>
+                        <span className="hidden sm:inline">{recaptureIndex !== null ? `Recapture Photo ${recaptureIndex + 1}` : isSequenceInProgress ? 'Capturing...' : 'Auto Capture'}</span>
+                        <span className="sm:hidden">{recaptureIndex !== null ? `Recapture` : isSequenceInProgress ? 'Capturing...' : 'Capture'}</span>
                       </Button>
                     ) : (
                       <Button
@@ -359,9 +376,12 @@ export default function Home() {
                       onClick={() => {
                         setPhotos([]);
                         setRecaptureIndex(null);
+                        setIsSequenceInProgress(false);
+                        setIsCountingDown(false);
                       }}
-                      disabled={photos.length === 0}
+                      disabled={photos.length === 0 && !isSequenceInProgress}
                       className="flex items-center gap-2 flex-1 sm:flex-none text-xs sm:text-sm hover-lift transition-all duration-200"
+                      data-testid="button-retake-all"
                     >
                       <Repeat className="h-4 w-4" />
                       <span className="hidden sm:inline">Retake All</span>
@@ -649,6 +669,7 @@ export default function Home() {
                     showShareButton={true}
                     onShare={handleShare}
                     onSaveToGallery={saveToGallery}
+                    isSharing={isSharing}
                   />
                 </div>
               </div>

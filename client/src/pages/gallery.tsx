@@ -30,6 +30,7 @@ export default function Gallery() {
   const photoStripRefs = useRef<{ [key: string]: HTMLCanvasElement | null }>({});
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
+  const [isSharing, setIsSharing] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("photoStrips");
@@ -153,6 +154,9 @@ export default function Gallery() {
       return;
     }
 
+    if (isSharing) return;
+    setIsSharing(true);
+
     try {
       // First save the strip to server
       const response = await fetch("/api/photo-strips", {
@@ -195,6 +199,8 @@ export default function Gallery() {
     } catch (e) {
       console.error(e);
       toast({ title: 'Error', description: 'Unable to create share link', variant: 'destructive' });
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -271,10 +277,12 @@ export default function Gallery() {
                     onClick={() => handleShareStrip(strip)}
                     variant="outline"
                     size="sm"
-                    className="flex-none w-28 text-sky-600 dark:text-sky-300 border-2 border-sky-100 hover:bg-sky-50 dark:hover:bg-slate-800 shadow-sm transition-all duration-200"
+                    disabled={isSharing}
+                    className="flex-none w-28 text-sky-600 dark:text-sky-300 border-2 border-sky-100 hover:bg-sky-50 dark:hover:bg-slate-800 shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    data-testid={`button-share-strip-${strip.id}`}
                   >
                     <Share2 className="h-4 w-4 mr-2 inline" />
-                    Share
+                    {isSharing ? 'Sharing...' : 'Share'}
                   </Button>
                   <Button 
                     onClick={() => deleteStrip(strip.id)} 
