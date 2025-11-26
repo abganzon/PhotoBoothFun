@@ -371,7 +371,7 @@ export default function Home() {
                       >
                         <Camera className="h-4 w-4" />
                         <span className="hidden sm:inline">{recaptureIndex !== null ? `Recapture Photo ${recaptureIndex + 1}` : isSequenceInProgress ? 'Capturing...' : 'Auto Capture'}</span>
-                        <span className="sm:hidden">{recaptureIndex !== null ? `Recapture` : isSequenceInProgress ? 'Capturing...' : 'Capture'}</span>
+                        <span className="sm:hidden">{recaptureIndex !== null ? `Recapture Photo ${recaptureIndex + 1}` : isSequenceInProgress ? 'Capturing...' : 'Auto'}</span>
                       </Button>
                     ) : (
                       <Button
