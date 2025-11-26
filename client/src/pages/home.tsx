@@ -48,7 +48,7 @@ export default function Home() {
   const [showName, setShowName] = useState(true);
   const [nameColor, setNameColor] = useState("#000000");
   const [dateColor, setDateColor] = useState("#666666");
-  const [font, setFont] = useState<FontType>("arial");
+  const [font, setFont] = useState<FontType>("bebas");
   const [layout, setLayout] = useState<"strip" | "collage">("strip");
   const [timerDuration, setTimerDuration] = useState(5);
   const [darkMode, setDarkMode] = useState(() => {
@@ -648,12 +648,28 @@ export default function Home() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="arial">Arial</SelectItem>
-                          <SelectItem value="georgia">Georgia</SelectItem>
-                          <SelectItem value="trebuchet">Trebuchet MS</SelectItem>
-                          <SelectItem value="vegan">Vegan Style</SelectItem>
-                          <SelectItem value="elegance">Sheer Elegance</SelectItem>
-                          <SelectItem value="inspiration">Inspiration</SelectItem>
+                          <SelectItem value="bebas">Bebas Neue</SelectItem>
+                          <SelectItem value="oswald">Oswald</SelectItem>
+                          <SelectItem value="anton">Anton</SelectItem>
+                          <SelectItem value="righteous">Righteous</SelectItem>
+                          <SelectItem value="poppins">Poppins</SelectItem>
+                          <SelectItem value="montserrat">Montserrat</SelectItem>
+                          <SelectItem value="raleway">Raleway</SelectItem>
+                          <SelectItem value="playfair">Playfair Display</SelectItem>
+                          <SelectItem value="greatvibes">Great Vibes</SelectItem>
+                          <SelectItem value="cormorant">Cormorant Garamond</SelectItem>
+                          <SelectItem value="lora">Lora</SelectItem>
+                          <SelectItem value="garamond">EB Garamond</SelectItem>
+                          <SelectItem value="pacifico">Pacifico</SelectItem>
+                          <SelectItem value="caveat">Caveat</SelectItem>
+                          <SelectItem value="quicksand">Quicksand</SelectItem>
+                          <SelectItem value="ubuntu">Ubuntu</SelectItem>
+                          <SelectItem value="nunito">Nunito</SelectItem>
+                          <SelectItem value="roboto">Roboto</SelectItem>
+                          <SelectItem value="opensans">Open Sans</SelectItem>
+                          <SelectItem value="lato">Lato</SelectItem>
+                          <SelectItem value="inter">Inter</SelectItem>
+                          <SelectItem value="worksans">Work Sans</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
