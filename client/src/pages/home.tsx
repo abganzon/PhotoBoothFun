@@ -3,11 +3,18 @@ import { useAuth } from "@clerk/clerk-react";
 import { PhotoBoothCamera } from "@/components/photo-booth/camera";
 import { Countdown } from "@/components/photo-booth/countdown";
 import { ColorPicker } from "@/components/photo-booth/color-picker";
-import { PhotoStrip } from "@/components/photo-booth/photo-strip";
+import { PhotoStrip, type FontType } from "@/components/photo-booth/photo-strip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Camera, Trash2, Settings, Repeat, Download, ChevronLeft, ChevronRight, Share2, ImageIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -41,6 +48,7 @@ export default function Home() {
   const [showName, setShowName] = useState(true);
   const [nameColor, setNameColor] = useState("#000000");
   const [dateColor, setDateColor] = useState("#666666");
+  const [font, setFont] = useState<FontType>("georgia");
   const [layout, setLayout] = useState<"strip" | "collage">("strip");
   const [timerDuration, setTimerDuration] = useState(5);
   const [darkMode, setDarkMode] = useState(() => {
@@ -633,6 +641,21 @@ export default function Home() {
                         onCheckedChange={setShowDate}
                       />
                     </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="font-select" className={`text-xs sm:text-sm ${darkMode ? 'text-slate-100' : ''}`}>Font</Label>
+                      <Select value={font} onValueChange={(value) => setFont(value as FontType)}>
+                        <SelectTrigger id="font-select" className={darkMode ? 'bg-slate-600 border-slate-500' : ''}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="georgia">Georgia</SelectItem>
+                          <SelectItem value="arial">Arial</SelectItem>
+                          <SelectItem value="courier">Courier New</SelectItem>
+                          <SelectItem value="verdana">Verdana</SelectItem>
+                          <SelectItem value="impact">Impact</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
 
@@ -689,6 +712,7 @@ export default function Home() {
                     backgroundColor={backgroundColor}
                     nameColor={nameColor}
                     dateColor={dateColor}
+                    font={font}
                     darkMode={darkMode}
                     showShareButton={true}
                     onShare={handleShare}

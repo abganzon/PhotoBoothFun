@@ -5,6 +5,8 @@ import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { ShareModal } from "./share-modal";
 
+export type FontType = "georgia" | "arial" | "courier" | "verdana" | "impact";
+
 interface PhotoStripProps {
   photos: string[];
   layout: "strip" | "collage";
@@ -14,6 +16,7 @@ interface PhotoStripProps {
   backgroundColor?: string;
   nameColor?: string;
   dateColor?: string;
+  font?: FontType;
   hideButtons?: boolean;
   darkMode?: boolean;
   showShareButton?: boolean;
@@ -31,6 +34,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
   backgroundColor = "#ffffff",
   nameColor = "#000000",
   dateColor = "#666666",
+  font = "georgia",
   hideButtons = false,
   darkMode = false,
   showShareButton = false,
@@ -238,7 +242,8 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       // Draw title and date at bottom after photos with enhanced styling
       if (showName) {
         const titleSize = layout === "strip" ? 28 : 32; // Increased font sizes for better visibility
-        tempCtx.font = `bold ${titleSize}px "Georgia", serif`; // Use serif font for elegance
+        const fontFamily = font === "georgia" ? "Georgia" : font === "arial" ? "Arial" : font === "courier" ? "Courier New" : font === "verdana" ? "Verdana" : "Impact";
+        tempCtx.font = `bold ${titleSize}px "${fontFamily}"`;
         tempCtx.textAlign = "center";
 
         // Add text shadow for depth
@@ -260,7 +265,8 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       // Draw date if enabled with enhanced styling
       if (showDate) {
         const dateSize = layout === "strip" ? 18 : 20; // Increased font sizes
-        tempCtx.font = `${dateSize}px "Arial", sans-serif`; // Clean sans-serif for date
+        const fontFamily = font === "georgia" ? "Georgia" : font === "arial" ? "Arial" : font === "courier" ? "Courier New" : font === "verdana" ? "Verdana" : "Impact";
+        tempCtx.font = `${dateSize}px "${fontFamily}"`;
         tempCtx.textAlign = "center";
 
         // Add subtle text shadow
@@ -289,7 +295,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     };
 
     drawAllPhotos();
-  }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout]);
+  }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout, font]);
 
   const handleDownload = async () => {
     const canvas = canvasRef.current;
