@@ -230,6 +230,17 @@ export default function Home() {
 
   // Function to save photo strip to local storage
   const saveToGallery = () => {
+    // Guard: Require exactly 4 photos to save
+    if (photos.length < 4) {
+      toast({
+        title: "Not enough photos",
+        description: `Capture ${4 - photos.length} more photo${4 - photos.length > 1 ? 's' : ''} before saving.`,
+        variant: "destructive",
+        duration: 3000,
+      });
+      return;
+    }
+
     const newStrip = {
       id: Date.now().toString(),
       timestamp: Date.now(),
@@ -428,6 +439,21 @@ export default function Home() {
                                 checked={darkMode}
                                 onCheckedChange={setDarkMode}
                               />
+                            </div>
+
+                            <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+                              <Button
+                                onClick={saveToGallery}
+                                disabled={photos.length < 4}
+                                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+                                data-testid="button-save-to-gallery-settings"
+                              >
+                                <ImageIcon className="h-4 w-4" />
+                                Save to Gallery
+                              </Button>
+                              <p className="text-xs text-slate-500 text-center mt-2">
+                                {photos.length < 4 ? `Capture ${4 - photos.length} more photo${4 - photos.length > 1 ? 's' : ''} to save` : 'Save your photo strip to the gallery'}
+                              </p>
                             </div>
                           </div>
                         </div>

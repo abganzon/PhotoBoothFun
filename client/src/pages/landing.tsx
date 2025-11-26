@@ -2,7 +2,7 @@
 import * as React from "react";
 import { useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Camera, Heart, Sparkles, Zap, Users, Download, Image as ImageIcon } from "lucide-react";
+import { Camera, Heart, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -85,18 +85,19 @@ export default function Landing() {
               </Button>
             </div>
 
-            {/* Feature Pills */}
+            {/* Top Donators */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-8 animate-fade-in" style={{ animationDelay: "0.6s" }}>
-              <div className="p-4 rounded-2xl bg-white/80 dark:bg-slate-800/70 backdrop-blur-md border border-sky-100 dark:border-slate-700 shadow-md hover:shadow-lg transition-all duration-200">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/30 dark:to-yellow-900/30 backdrop-blur-md border border-amber-200 dark:border-amber-700/50 shadow-md hover:shadow-lg transition-all duration-200" data-testid="card-top-donator-1">
                 <div className="flex items-center gap-3">
-                  <Sparkles className="h-6 w-6 text-sky-500" />
+                  <Heart className="h-6 w-6 text-amber-500" />
                   <div>
-                    <div className="text-sm font-semibold text-slate-800 dark:text-slate-100">4 Photo Strip</div>
-                    <div className="text-xs text-slate-500 dark:text-slate-300">Create classic vertical strips</div>
+                    <div className="text-sm font-semibold text-slate-800 dark:text-slate-100">Top Donator</div>
+                    <div className="text-xs text-amber-600 dark:text-amber-300 font-medium">Maria Santos</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-300">PHP 10,000.00</div>
                   </div>
                 </div>
               </div>
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/30 dark:to-pink-900/30 backdrop-blur-md border border-rose-200 dark:border-rose-700/50 shadow-md hover:shadow-lg transition-all duration-200" data-testid="card-top-donator">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/30 dark:to-pink-900/30 backdrop-blur-md border border-rose-200 dark:border-rose-700/50 shadow-md hover:shadow-lg transition-all duration-200" data-testid="card-top-donator-2">
                 <div className="flex items-center gap-3">
                   <Heart className="h-6 w-6 text-rose-500" />
                   <div>
@@ -106,12 +107,13 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-              <div className="p-4 rounded-2xl bg-white/80 dark:bg-slate-800/70 backdrop-blur-md border border-indigo-100 dark:border-slate-700 shadow-md hover:shadow-lg transition-all duration-200">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/30 dark:to-purple-900/30 backdrop-blur-md border border-violet-200 dark:border-violet-700/50 shadow-md hover:shadow-lg transition-all duration-200" data-testid="card-top-donator-3">
                 <div className="flex items-center gap-3">
-                  <Download className="h-6 w-6 text-indigo-500" />
+                  <Heart className="h-6 w-6 text-violet-500" />
                   <div>
-                    <div className="text-sm font-semibold text-slate-800 dark:text-slate-100">Download</div>
-                    <div className="text-xs text-slate-500 dark:text-slate-300">Export high-quality PNGs</div>
+                    <div className="text-sm font-semibold text-slate-800 dark:text-slate-100">Top Donator</div>
+                    <div className="text-xs text-violet-600 dark:text-violet-300 font-medium">Pedro Reyes</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-300">PHP 2,500.00</div>
                   </div>
                 </div>
               </div>
@@ -140,43 +142,60 @@ export default function Landing() {
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent mb-6">
                     Features
                   </h2>
-                  <div className="space-y-6">
-                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center">
+                  <div className="space-y-4">
+                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center">
                         <span className="inline-block w-3 h-3 bg-gradient-to-r from-sky-500 to-indigo-500 rounded-full mr-3 shadow-lg"></span>
                         Photo Booth Experience
                       </h3>
-                      <ul className="text-slate-700 dark:text-slate-200 pl-5 list-disc ml-4 space-y-2 font-medium">
-                        <li>Take up to 4 photos in sequence</li>
-                        <li>Automatic countdown timer</li>
+                      <ul className="text-slate-700 dark:text-slate-200 pl-5 list-disc ml-4 space-y-1.5 text-sm font-medium">
+                        <li>Take up to 4 photos in sequence with auto-capture</li>
+                        <li>Customizable countdown timer (1-10 seconds)</li>
                         <li>Camera flip and mirror controls</li>
-                        <li>Mobile device support</li>
+                        <li>Recapture individual photos anytime</li>
+                        <li>Mobile and desktop support with touch controls</li>
                       </ul>
                     </div>
 
-                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center">
+                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center">
                         <span className="inline-block w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mr-3 shadow-lg"></span>
                         Customization Options
                       </h3>
-                      <ul className="text-slate-700 dark:text-slate-200 pl-5 list-disc ml-4 space-y-2 font-medium">
-                        <li>Strip and collage layouts</li>
-                        <li>Custom strip name</li>
-                        <li>Adjustable timer duration</li>
-                        <li>Background color selection</li>
-                        <li>Date and name display options</li>
+                      <ul className="text-slate-700 dark:text-slate-200 pl-5 list-disc ml-4 space-y-1.5 text-sm font-medium">
+                        <li>Strip (vertical) and Collage (2x2) layouts</li>
+                        <li>Custom strip name with text color selection</li>
+                        <li>Background color picker</li>
+                        <li>Date and name display toggle</li>
+                        <li>Text color customization for name and date</li>
                       </ul>
                     </div>
 
-                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center">
+                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center">
                         <span className="inline-block w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mr-3 shadow-lg"></span>
+                        Sharing & Gallery
+                      </h3>
+                      <ul className="text-slate-700 dark:text-slate-200 pl-5 list-disc ml-4 space-y-1.5 text-sm font-medium">
+                        <li>Download photo strips as high-quality PNG files</li>
+                        <li>Save strips to local gallery</li>
+                        <li>Generate shareable links with QR codes</li>
+                        <li>10-minute expiring share links for privacy</li>
+                        <li>View shared strips without authentication</li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center">
+                        <span className="inline-block w-3 h-3 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full mr-3 shadow-lg"></span>
                         User Interface
                       </h3>
-                      <ul className="text-slate-700 dark:text-slate-200 pl-5 list-disc ml-4 space-y-2 font-medium">
-                        <li>Modern, intuitive design</li>
+                      <ul className="text-slate-700 dark:text-slate-200 pl-5 list-disc ml-4 space-y-1.5 text-sm font-medium">
+                        <li>Modern glassmorphic design</li>
+                        <li>Dark and light mode support</li>
                         <li>Real-time camera preview</li>
-                        <li>Interactive controls</li>
+                        <li>Responsive mobile and desktop layouts</li>
+                        <li>Real-time visitor counter</li>
                         <li>Status notifications and toasts</li>
                       </ul>
                     </div>
@@ -188,68 +207,70 @@ export default function Landing() {
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent mb-6">
                     Privacy Policy
                   </h2>
-                  <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-6 rounded-xl shadow-sm mb-8 border border-sky-100 dark:border-slate-600">
-                    <p className="text-lg text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
-                      Your privacy is my priority. This policy explains how your
-                      images and personal data are handled.
+                  <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl shadow-sm mb-6 border border-sky-100 dark:border-slate-600">
+                    <p className="text-base text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
+                      Your privacy is our priority. This policy explains how your images and personal data are handled.
                     </p>
                   </div>
 
-                  <div className="space-y-6">
-                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center">
+                  <div className="space-y-4">
+                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center">
                         <span className="inline-block w-3 h-3 bg-gradient-to-r from-sky-500 to-indigo-500 rounded-full mr-3 shadow-lg"></span>
                         Image Processing
                       </h3>
-                      <p className="text-slate-700 dark:text-slate-200 pl-5 font-medium">
-                        All image processing happens locally within your browser
-                        on your device. No images are uploaded to external
-                        servers.
+                      <p className="text-slate-700 dark:text-slate-200 pl-5 text-sm font-medium">
+                        All image processing happens locally within your browser on your device. No images are uploaded to external servers unless you explicitly choose to share them.
                       </p>
                     </div>
 
-                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center">
+                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center">
                         <span className="inline-block w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mr-3 shadow-lg"></span>
-                        Data Collection
+                        Local Storage
                       </h3>
-                      <p className="text-slate-700 dark:text-slate-200 pl-5 font-medium">
-                        I do not collect or store any images you process with
-                        this application. Your images stay entirely on your
-                        device.
+                      <p className="text-slate-700 dark:text-slate-200 pl-5 text-sm font-medium">
+                        Your photo strips are stored in your browser's local storage. We do not collect or store any images on our servers. Your images stay entirely on your device.
                       </p>
                     </div>
 
-                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center">
+                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center">
                         <span className="inline-block w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mr-3 shadow-lg"></span>
-                        No Server Transmission
+                        Shared Links & Expiration
                       </h3>
-                      <p className="text-slate-700 dark:text-slate-200 pl-5 font-medium">
-                        All processing is done client-side, ensuring that your
-                        images are never transmitted to any servers.
+                      <p className="text-slate-700 dark:text-slate-200 pl-5 text-sm font-medium">
+                        Share links expire after 10 minutes for security and privacy. After expiration, the shared photo strip is no longer accessible. Shareable links are unique and cannot be guessed.
                       </p>
                     </div>
 
-                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center">
-                        <span className="inline-block w-3 h-3 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full mr-3 shadow-lg"></span>
-                        Third-Party Services
+                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center">
+                        <span className="inline-block w-3 h-3 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full mr-3 shadow-lg"></span>
+                        User Authentication
                       </h3>
-                      <p className="text-slate-700 dark:text-slate-200 pl-5 font-medium">
-                        No third-party services are used that would require
-                        uploading or sharing your images.
+                      <p className="text-slate-700 dark:text-slate-200 pl-5 text-sm font-medium">
+                        User authentication is handled securely by Clerk. We do not store passwords or sensitive authentication details. Your user ID is used only to associate your share links with your account.
                       </p>
                     </div>
 
-                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center">
+                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center">
+                        <span className="inline-block w-3 h-3 bg-gradient-to-r from-yellow-500 to-lime-500 rounded-full mr-3 shadow-lg"></span>
+                        Visitor Tracking
+                      </h3>
+                      <p className="text-slate-700 dark:text-slate-200 pl-5 text-sm font-medium">
+                        We track a simple visitor counter displayed on the header for informational purposes only. This counter does not collect personal information or track individual users.
+                      </p>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center">
                         <span className="inline-block w-3 h-3 bg-gradient-to-r from-red-500 to-rose-500 rounded-full mr-3 shadow-lg"></span>
                         Policy Updates
                       </h3>
-                      <p className="text-slate-700 dark:text-slate-200 pl-5 font-medium">
-                        This privacy policy may be updated periodically, with
-                        any changes posted on this page.
+                      <p className="text-slate-700 dark:text-slate-200 pl-5 text-sm font-medium">
+                        This privacy policy may be updated periodically to reflect new features and changes. Your continued use of the application indicates acceptance of the updated policy.
                       </p>
                     </div>
                   </div>

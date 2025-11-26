@@ -237,13 +237,13 @@ export default function Gallery() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {savedStrips.map((strip) => (
-              <div key={strip.id} className="group relative rounded-2xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+              <div key={strip.id} className="group relative rounded-2xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 max-w-sm mx-auto w-full">
                 <div className="h-1 bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-600" />
-                <div className="p-4 sm:p-5 flex flex-col items-center">
-                  <div className="w-full max-w-xs">
-                    <div className="rounded-lg overflow-hidden bg-transparent flex items-center justify-center p-2">
+                <div className="p-4 flex flex-col items-center">
+                  <div className="w-full flex justify-center" style={{ maxWidth: strip.layout === 'strip' ? '180px' : '260px' }}>
+                    <div className="rounded-lg overflow-hidden bg-transparent flex items-center justify-center transform scale-90 origin-top">
                       <PhotoStrip
                         photos={strip.photos || []}
                         layout={strip.layout || "strip"}
@@ -258,17 +258,17 @@ export default function Gallery() {
                       />
                     </div>
                   </div>
-                  <div className="mt-4 text-center w-full">
-                    <div className="font-semibold text-slate-900 dark:text-slate-100 text-lg truncate">{strip.stripName || 'Untitled'}</div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{new Date(strip.timestamp).toLocaleDateString()}</div>
+                  <div className="mt-3 text-center w-full">
+                    <div className="font-semibold text-slate-900 dark:text-slate-100 text-base truncate">{strip.stripName || 'Untitled'}</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{new Date(strip.timestamp).toLocaleDateString()}</div>
                   </div>
                 </div>
-                <div className="px-4 sm:px-5 pb-4 sm:pb-5 flex items-center gap-2">
+                <div className="px-4 pb-4 flex items-center justify-center gap-2 flex-wrap">
                   <Button 
                     onClick={() => downloadStrip(strip)} 
                     variant="default" 
                     size="sm" 
-                    className="flex-1 sm:flex-none bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200 gap-2"
+                    className="bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200 gap-1.5"
                   >
                     <Download className="h-4 w-4" />
                     <span>Download</span>
@@ -278,17 +278,17 @@ export default function Gallery() {
                     variant="outline"
                     size="sm"
                     disabled={isSharing}
-                    className="flex-none w-28 text-sky-600 dark:text-sky-300 border-2 border-sky-100 hover:bg-sky-50 dark:hover:bg-slate-800 shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-sky-600 dark:text-sky-300 border-2 border-sky-100 hover:bg-sky-50 dark:hover:bg-slate-800 shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed gap-1.5"
                     data-testid={`button-share-strip-${strip.id}`}
                   >
-                    <Share2 className="h-4 w-4 mr-2 inline" />
+                    <Share2 className="h-4 w-4" />
                     {isSharing ? 'Sharing...' : 'Share'}
                   </Button>
                   <Button 
                     onClick={() => deleteStrip(strip.id)} 
                     variant="destructive" 
-                    size="sm" 
-                    className="flex-none w-10 h-10 p-0 shadow-md hover:shadow-lg transition-all duration-200"
+                    size="icon"
+                    className="shadow-md hover:shadow-lg transition-all duration-200"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
