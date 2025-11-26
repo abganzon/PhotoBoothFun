@@ -3,7 +3,6 @@ import { useAuth } from "@clerk/clerk-react";
 import { PhotoBoothCamera } from "@/components/photo-booth/camera";
 import { Countdown } from "@/components/photo-booth/countdown";
 import { ColorPicker } from "@/components/photo-booth/color-picker";
-import { CustomizationStickerPicker, type StickerType } from "@/components/photo-booth/customization-sticker-picker";
 import { PhotoStrip } from "@/components/photo-booth/photo-strip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,7 +41,6 @@ export default function Home() {
   const [showName, setShowName] = useState(true);
   const [nameColor, setNameColor] = useState("#000000");
   const [dateColor, setDateColor] = useState("#666666");
-  const [sticker, setSticker] = useState<StickerType>("none");
   const [layout, setLayout] = useState<"strip" | "collage">("strip");
   const [timerDuration, setTimerDuration] = useState(5);
   const [darkMode, setDarkMode] = useState(() => {
@@ -639,13 +637,6 @@ export default function Home() {
                 </div>
 
                 <div className="space-y-4">
-                  <Label className={`text-sm sm:text-base font-semibold ${darkMode ? 'text-slate-100' : ''}`}>Sticker</Label>
-                  <div className={`${darkMode ? 'bg-slate-700 border border-slate-600' : 'bg-slate-50 border border-slate-200'} rounded-xl p-3 sm:p-4 space-y-3`}>
-                    <CustomizationStickerPicker sticker={sticker} onChange={setSticker} />
-                  </div>
-                </div>
-
-                <div className="space-y-4">
                   <Label className={`text-sm sm:text-base font-semibold ${darkMode ? 'text-slate-100' : ''}`}>Colors</Label>
                   <div className={`${darkMode ? 'bg-slate-700 border border-slate-600' : 'bg-slate-50 border border-slate-200'} rounded-xl p-3 sm:p-4 space-y-3`}>
                     <div className="space-y-2">
@@ -698,7 +689,6 @@ export default function Home() {
                     backgroundColor={backgroundColor}
                     nameColor={nameColor}
                     dateColor={dateColor}
-                    sticker={sticker}
                     darkMode={darkMode}
                     showShareButton={true}
                     onShare={handleShare}
