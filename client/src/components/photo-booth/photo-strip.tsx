@@ -4,6 +4,7 @@ import { Download, Image as ImageIcon, Share2, Save } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { ShareModal } from "./share-modal";
+import type { StickerType } from "./customization-sticker-picker";
 
 interface PhotoStripProps {
   photos: string[];
@@ -17,6 +18,7 @@ interface PhotoStripProps {
   hideButtons?: boolean;
   darkMode?: boolean;
   showShareButton?: boolean;
+  sticker?: StickerType;
   onShare?: () => void;
   onSaveToGallery?: () => void;
   isSharing?: boolean;
@@ -34,6 +36,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
   hideButtons = false,
   darkMode = false,
   showShareButton = false,
+  sticker = "none",
   onShare,
   onSaveToGallery,
   isSharing = false,
@@ -235,6 +238,127 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         }
       }
 
+      // Apply sticker overlays after drawing photos
+      if (sticker && sticker !== "none") {
+        const drawSticker = (ctx: CanvasRenderingContext2D, stickerType: StickerType, photoIndex: number) => {
+          const offset = photoIndex % 2;
+          
+          if (layout === "strip") {
+            if (stickerType === "stars") {
+              // Red stars
+              ctx.fillStyle = "#FF0000";
+              const starSize = 20;
+              const positions = [
+                { x: 30, y: 20 },
+                { x: 160, y: 40 },
+                { x: 40, y: 140 },
+              ];
+              
+              const drawStar = (cx: number, cy: number, radius: number) => {
+                ctx.beginPath();
+                for (let i = 0; i < 5; i++) {
+                  const angle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+                  const x = cx + radius * Math.cos(angle);
+                  const y = cy + radius * Math.sin(angle);
+                  i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.fill();
+              };
+              
+              positions.forEach((pos) => {
+                drawStar(
+                  padding + pos.x,
+                  gridStartY + photoIndex * (placeholderHeight + padding) + pos.y,
+                  starSize
+                );
+              });
+            } else if (stickerType === "graffiti") {
+              // Graffiti tag text
+              ctx.fillStyle = "#FF0000";
+              ctx.font = "bold 24px Arial";
+              ctx.textAlign = "left";
+              ctx.fillText(
+                "YEAH",
+                padding + 20,
+                gridStartY + photoIndex * (placeholderHeight + padding) + 50
+              );
+            } else if (stickerType === "toronto") {
+              // Toronto text
+              ctx.fillStyle = "#FF0000";
+              ctx.font = "bold 18px Arial";
+              ctx.textAlign = "left";
+              ctx.fillText(
+                "TORONTO",
+                padding + 15,
+                gridStartY + photoIndex * (placeholderHeight + padding) + 30
+              );
+            } else if (stickerType === "guitar") {
+              // Simple guitar outline
+              ctx.strokeStyle = "#FF0000";
+              ctx.lineWidth = 2;
+              const baseX = padding + 150;
+              const baseY = gridStartY + photoIndex * (placeholderHeight + padding) + 50;
+              ctx.strokeRect(baseX - 15, baseY - 30, 30, 60);
+              ctx.beginPath();
+              ctx.arc(baseX, baseY, 8, 0, Math.PI * 2);
+              ctx.stroke();
+            }
+          } else {
+            // Collage layout
+            const col = photoIndex % 2;
+            const row = Math.floor(photoIndex / 2);
+            const cellX = padding + col * (photoWidth + padding);
+            const cellY = gridStartY + row * (photoHeight + padding);
+            
+            if (stickerType === "stars") {
+              ctx.fillStyle = "#FF0000";
+              const starSize = 15;
+              const positions = [{ x: 20, y: 20 }, { x: 130, y: 130 }];
+              
+              const drawStar = (cx: number, cy: number, radius: number) => {
+                ctx.beginPath();
+                for (let i = 0; i < 5; i++) {
+                  const angle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+                  const x = cx + radius * Math.cos(angle);
+                  const y = cy + radius * Math.sin(angle);
+                  i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.fill();
+              };
+              
+              positions.forEach((pos) => {
+                drawStar(cellX + pos.x, cellY + pos.y, starSize);
+              });
+            } else if (stickerType === "graffiti") {
+              ctx.fillStyle = "#FF0000";
+              ctx.font = "bold 20px Arial";
+              ctx.textAlign = "left";
+              ctx.fillText("YEAH", cellX + 15, cellY + 40);
+            } else if (stickerType === "toronto") {
+              ctx.fillStyle = "#FF0000";
+              ctx.font = "bold 16px Arial";
+              ctx.textAlign = "left";
+              ctx.fillText("TORONTO", cellX + 10, cellY + 30);
+            } else if (stickerType === "guitar") {
+              ctx.strokeStyle = "#FF0000";
+              ctx.lineWidth = 2;
+              ctx.strokeRect(cellX + 100, cellY + 50, 25, 50);
+              ctx.beginPath();
+              ctx.arc(cellX + 112, cellY + 80, 7, 0, Math.PI * 2);
+              ctx.stroke();
+            }
+          }
+        };
+        
+        // Draw stickers on first two photos
+        drawSticker(tempCtx, sticker, 0);
+        if (photos.length > 1) {
+          drawSticker(tempCtx, sticker, 1);
+        }
+      }
+
       // Draw title and date at bottom after photos with enhanced styling
       if (showName) {
         const titleSize = layout === "strip" ? 28 : 32; // Increased font sizes for better visibility
@@ -289,7 +413,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     };
 
     drawAllPhotos();
-  }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout]);
+  }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout, sticker]);
 
   const handleDownload = async () => {
     const canvas = canvasRef.current;
