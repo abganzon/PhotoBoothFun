@@ -68,20 +68,20 @@ export default function Landing() {
               <Button 
                 size="lg" 
                 onClick={() => setLocation("/home")} 
-                className="px-12 py-4 text-lg font-bold bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 hover-lift"
+                className="w-full sm:w-44 px-12 py-4 text-lg font-bold bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 hover-lift"
               >
                 <Camera className="h-6 w-6 mr-3" />
-                Start Photo Booth
+                Start
               </Button>
 
               <Button 
                 size="lg" 
                 variant="outline"
                 onClick={() => setLocation("/gallery")} 
-                className="px-12 py-4 text-lg font-bold border-2 border-sky-500 text-sky-600 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-slate-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+                className="w-full sm:w-44 px-12 py-4 text-lg font-bold border-2 border-sky-500 text-sky-600 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-slate-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
               >
                 <ImageIcon className="h-6 w-6 mr-3" />
-                View Gallery
+                Gallery
               </Button>
             </div>
 
