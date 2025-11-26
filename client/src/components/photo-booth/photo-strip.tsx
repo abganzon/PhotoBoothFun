@@ -4,6 +4,7 @@ import { Download, Image as ImageIcon, Share2, Save } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { ShareModal } from "./share-modal";
+import type { EffectType } from "./effect-picker";
 
 interface PhotoStripProps {
   photos: string[];
@@ -17,6 +18,7 @@ interface PhotoStripProps {
   hideButtons?: boolean;
   darkMode?: boolean;
   showShareButton?: boolean;
+  effect?: EffectType;
   onShare?: () => void;
   onSaveToGallery?: () => void;
   isSharing?: boolean;
@@ -34,6 +36,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
   hideButtons = false,
   darkMode = false,
   showShareButton = false,
+  effect = "none",
   onShare,
   onSaveToGallery,
   isSharing = false,
@@ -235,6 +238,76 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         }
       }
 
+      // Apply effect overlay after drawing photos
+      if (effect && effect !== "none") {
+        const effectCanvas = document.createElement("canvas");
+        effectCanvas.width = canvas.width;
+        effectCanvas.height = canvas.height;
+        const effectCtx = effectCanvas.getContext("2d");
+        if (effectCtx) {
+          effectCtx.drawImage(tempCanvas, 0, 0);
+          
+          if (effect === "sepia") {
+            const imageData = effectCtx.getImageData(0, 0, effectCanvas.width, effectCanvas.height);
+            const data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+              const r = data[i];
+              const g = data[i + 1];
+              const b = data[i + 2];
+              data[i] = Math.min(255, r * 1.1 + g * 0.4 + b * -0.1);
+              data[i + 1] = Math.min(255, r * 0.8 + g * 0.9 + b * 0.1);
+              data[i + 2] = Math.max(0, r * 0.4 + g * 0.7 + b * 0.3);
+            }
+            effectCtx.putImageData(imageData, 0, 0);
+          } else if (effect === "grayscale") {
+            const imageData = effectCtx.getImageData(0, 0, effectCanvas.width, effectCanvas.height);
+            const data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+              const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+              data[i] = gray;
+              data[i + 1] = gray;
+              data[i + 2] = gray;
+            }
+            effectCtx.putImageData(imageData, 0, 0);
+          } else if (effect === "vignette") {
+            const imageData = effectCtx.getImageData(0, 0, effectCanvas.width, effectCanvas.height);
+            const data = imageData.data;
+            const centerX = effectCanvas.width / 2;
+            const centerY = effectCanvas.height / 2;
+            const maxDistance = Math.sqrt(centerX * centerX + centerY * centerY);
+            for (let i = 0; i < data.length; i += 4) {
+              const pixelIndex = i / 4;
+              const x = pixelIndex % effectCanvas.width;
+              const y = Math.floor(pixelIndex / effectCanvas.width);
+              const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+              const vignette = 1 - (distance / maxDistance) * 0.6;
+              data[i] = data[i] * vignette;
+              data[i + 1] = data[i + 1] * vignette;
+              data[i + 2] = data[i + 2] * vignette;
+            }
+            effectCtx.putImageData(imageData, 0, 0);
+          } else if (effect === "cool") {
+            const imageData = effectCtx.getImageData(0, 0, effectCanvas.width, effectCanvas.height);
+            const data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+              data[i] = Math.max(0, data[i] - 20);
+              data[i + 2] = Math.min(255, data[i + 2] + 20);
+            }
+            effectCtx.putImageData(imageData, 0, 0);
+          } else if (effect === "warm") {
+            const imageData = effectCtx.getImageData(0, 0, effectCanvas.width, effectCanvas.height);
+            const data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+              data[i] = Math.min(255, data[i] + 20);
+              data[i + 2] = Math.max(0, data[i + 2] - 20);
+            }
+            effectCtx.putImageData(imageData, 0, 0);
+          }
+          
+          tempCtx.drawImage(effectCanvas, 0, 0);
+        }
+      }
+
       // Draw title and date at bottom after photos with enhanced styling
       if (showName) {
         const titleSize = layout === "strip" ? 28 : 32; // Increased font sizes for better visibility
@@ -289,7 +362,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     };
 
     drawAllPhotos();
-  }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout]);
+  }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout, effect]);
 
   const handleDownload = async () => {
     const canvas = canvasRef.current;
