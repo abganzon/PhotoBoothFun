@@ -1,5 +1,5 @@
 interface RoBoothLogoProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 }
 
 export function RoBoothLogo({ size = 'md' }: RoBoothLogoProps) {
@@ -8,6 +8,7 @@ export function RoBoothLogo({ size = 'md' }: RoBoothLogoProps) {
     md: { width: 48, height: 56, text: 'text-2xl', gap: 'gap-0' },
     lg: { width: 56, height: 64, text: 'text-3xl', gap: 'gap-1' },
     xl: { width: 72, height: 80, text: 'text-4xl', gap: 'gap-2' },
+    '2xl': { width: 96, height: 108, text: 'text-6xl', gap: 'gap-3' },
   };
 
   const config = sizeClasses[size];

@@ -47,7 +47,7 @@ export default function Landing() {
               <div className="space-y-4">
                 <div className="flex justify-center">
                   <div className="text-6xl md:text-7xl lg:text-8xl">
-                    <RoBoothLogo size="xl" />
+                    <RoBoothLogo size="2xl" />
                   </div>
                 </div>
                 <div className="mt-3 flex justify-center">
