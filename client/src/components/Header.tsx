@@ -95,13 +95,16 @@ export function Header() {
           <div className="flex items-center gap-2">
             {/* Logo and Title (simplified) */}
             <div
-              className="flex items-center gap-2 cursor-pointer hover-lift rounded-lg px-2 py-1"
+              className="flex items-center gap-1 md:gap-2 cursor-pointer hover-lift rounded-lg px-1 md:px-2 py-1"
               onClick={() => setLocation("/")}
+              data-testid="button-logo-home"
             >
-              <div className="w-9 h-9 bg-gradient-to-br from-sky-500 via-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/40 hover:shadow-blue-500/60 transition-all duration-300">
-                <Camera className="h-5 w-5 text-white" />
+              <div className="w-8 h-8 md:w-9 md:h-9 bg-gradient-to-br from-sky-500 via-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/40 hover:shadow-blue-500/60 transition-all duration-300">
+                <Camera className="h-4 w-4 md:h-5 md:w-5 text-white" />
               </div>
-              <RoBoothLogo />
+              <div className="hidden sm:flex">
+                <RoBoothLogo size="sm" />
+              </div>
             </div>
 
             {/* Desktop Navigation (closer to logo) */}

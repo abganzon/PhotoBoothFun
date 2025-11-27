@@ -1,14 +1,26 @@
-export function RoBoothLogo() {
+interface RoBoothLogoProps {
+  size?: 'sm' | 'md' | 'lg';
+}
+
+export function RoBoothLogo({ size = 'md' }: RoBoothLogoProps) {
+  const sizeClasses = {
+    sm: { width: 28, height: 32, text: 'text-sm', gap: 'gap-0.5' },
+    md: { width: 48, height: 56, text: 'text-2xl', gap: 'gap-0' },
+    lg: { width: 56, height: 64, text: 'text-3xl', gap: 'gap-1' },
+  };
+
+  const config = sizeClasses[size];
+
   return (
-    <div className="flex items-center gap-0 font-bold text-2xl">
+    <div className={`flex items-center ${config.gap} font-bold ${config.text}`}>
       <span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">Ro</span>
       
       {/* Robot integrated as the "B" */}
       <svg
         viewBox="0 0 60 70"
-        width="48"
-        height="56"
-        className="mx-1 drop-shadow-lg"
+        width={config.width}
+        height={config.height}
+        className="mx-px drop-shadow-lg"
       >
         {/* Robot Body - main torso (B shape suggestion) */}
         <g>
