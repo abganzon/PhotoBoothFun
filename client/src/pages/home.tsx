@@ -35,6 +35,8 @@ interface StoredPhotoStrip {
     showName: boolean;
     nameColor: string;
     dateColor: string;
+    fontName: FontType;
+    fontDate: FontType;
   };
 }
 
@@ -261,6 +263,8 @@ export default function Home() {
       showName,
       nameColor,
       dateColor,
+      fontName,
+      fontDate,
     };
 
     try {

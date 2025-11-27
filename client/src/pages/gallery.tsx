@@ -7,7 +7,7 @@ import QRCode from 'react-qr-code';
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { PhotoStrip } from "@/components/photo-booth/photo-strip";
+import { PhotoStrip, type FontType } from "@/components/photo-booth/photo-strip";
 import { useToast } from "@/hooks/use-toast";
 
 interface SavedStrip {
@@ -21,6 +21,8 @@ interface SavedStrip {
   showDate: boolean;
   showName: boolean;
   timestamp: number;
+  fontName?: FontType;
+  fontDate?: FontType;
 }
 
 export default function Gallery() {
@@ -172,6 +174,8 @@ export default function Gallery() {
           showName: strip.showName,
           nameColor: strip.nameColor,
           dateColor: strip.dateColor,
+          fontName: strip.fontName || "bebas",
+          fontDate: strip.fontDate || "oswald",
         }),
       });
 
@@ -253,6 +257,8 @@ export default function Gallery() {
                         dateColor={strip.dateColor || "#666666"}
                         showDate={strip.showDate !== false}
                         showName={strip.showName !== false}
+                        fontName={strip.fontName || "bebas"}
+                        fontDate={strip.fontDate || "oswald"}
                         hideButtons={true}
                         darkMode={false}
                       />
