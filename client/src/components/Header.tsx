@@ -148,7 +148,18 @@ export function Header() {
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
                     <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">GCash Number</p>
-                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">🇵🇭 09391935233</p>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                      <svg width="16" height="16" viewBox="0 0 12 8" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="12" height="4" fill="#4B7FBF" />
+                        <rect y="4" width="12" height="4" fill="white" />
+                        <polygon points="2,4 3.5,2 5,4 3.5,6" fill="#FFD700" />
+                        <circle cx="2" cy="3" r="0.4" fill="#FFD700" />
+                        <circle cx="2.8" cy="2.3" r="0.4" fill="#FFD700" />
+                        <circle cx="3.6" cy="2.8" r="0.4" fill="#FFD700" />
+                        <circle cx="3.2" cy="1.6" r="0.3" fill="#FFD700" />
+                      </svg>
+                      09391935233
+                    </p>
                   </div>
                 </div>
               </DialogContent>
@@ -205,7 +216,18 @@ export function Header() {
                           </div>
                           <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
                             <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">GCash Number</p>
-                            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">🇵🇭 09391935233</p>
+                            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                              <svg width="16" height="16" viewBox="0 0 12 8" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="12" height="4" fill="#4B7FBF" />
+                                <rect y="4" width="12" height="4" fill="white" />
+                                <polygon points="2,4 3.5,2 5,4 3.5,6" fill="#FFD700" />
+                                <circle cx="2" cy="3" r="0.4" fill="#FFD700" />
+                                <circle cx="2.8" cy="2.3" r="0.4" fill="#FFD700" />
+                                <circle cx="3.6" cy="2.8" r="0.4" fill="#FFD700" />
+                                <circle cx="3.2" cy="1.6" r="0.3" fill="#FFD700" />
+                              </svg>
+                              09391935233
+                            </p>
                           </div>
                         </div>
                       </DialogContent>
