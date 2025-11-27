@@ -1,6 +1,6 @@
 /// <reference types="react" />
 import * as React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Camera, Heart, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function Landing() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const [selectedTab, setSelectedTab] = useState<'features' | 'privacy'>('features');
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
@@ -130,19 +131,48 @@ export default function Landing() {
                   Privacy Policy
                 </button>
               </DialogTrigger>
-            <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto rounded-2xl">
-              <DialogHeader>
+            <DialogContent className="max-w-4xl max-h-[85vh] flex flex-col rounded-2xl p-0 gap-0">
+              <DialogHeader className="px-6 pt-6 pb-4 border-b border-sky-200 dark:border-indigo-700/50">
                 <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent text-center">
                   Features & Privacy Policy
                 </DialogTitle>
               </DialogHeader>
-              <div className="grid md:grid-cols-2 gap-8 py-6">
-                {/* Features Column */}
-                <div>
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent mb-6">
+              
+              <div className="flex flex-1 overflow-hidden">
+                {/* Left Sidebar Navigation */}
+                <div className="w-32 border-r border-sky-200 dark:border-indigo-700/50 px-3 py-4 bg-gradient-to-b from-sky-50/50 to-indigo-50/50 dark:from-slate-800/50 dark:to-slate-900/50 flex flex-col gap-2">
+                  <button
+                    onClick={() => setSelectedTab('features')}
+                    className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                      selectedTab === 'features'
+                        ? 'bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-md'
+                        : 'text-slate-700 dark:text-slate-300 hover:bg-sky-100 dark:hover:bg-slate-700'
+                    }`}
+                    data-testid="button-tab-features"
+                  >
                     Features
-                  </h2>
-                  <div className="space-y-4">
+                  </button>
+                  <button
+                    onClick={() => setSelectedTab('privacy')}
+                    className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                      selectedTab === 'privacy'
+                        ? 'bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-md'
+                        : 'text-slate-700 dark:text-slate-300 hover:bg-sky-100 dark:hover:bg-slate-700'
+                    }`}
+                    data-testid="button-tab-privacy"
+                  >
+                    Privacy
+                  </button>
+                </div>
+
+                {/* Right Content Area */}
+                <div className="flex-1 overflow-y-auto px-6 py-4">
+                  {selectedTab === 'features' && (
+                    <div>
+                      <h2 className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent mb-6">
+                        Features
+                      </h2>
+                      <div className="space-y-4">
                     <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
                       <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center">
                         <span className="inline-block w-3 h-3 bg-gradient-to-r from-sky-500 to-indigo-500 rounded-full mr-3 shadow-lg"></span>
@@ -200,20 +230,21 @@ export default function Landing() {
                       </ul>
                     </div>
                   </div>
-                </div>
+                    </div>
+                  )}
 
-                {/* Privacy Policy Column */}
-                <div>
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent mb-6">
-                    Privacy Policy
-                  </h2>
-                  <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl shadow-sm mb-6 border border-sky-100 dark:border-slate-600">
-                    <p className="text-base text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
-                      Your privacy is our priority. This policy explains how your images and personal data are handled.
-                    </p>
-                  </div>
+                  {selectedTab === 'privacy' && (
+                    <div>
+                      <h2 className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent mb-6">
+                        Privacy Policy
+                      </h2>
+                      <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl shadow-sm mb-6 border border-sky-100 dark:border-slate-600">
+                        <p className="text-base text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
+                          Your privacy is our priority. This policy explains how your images and personal data are handled.
+                        </p>
+                      </div>
 
-                  <div className="space-y-4">
+                      <div className="space-y-4">
                     <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-sky-100 dark:border-slate-600 hover-lift">
                       <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center">
                         <span className="inline-block w-3 h-3 bg-gradient-to-r from-sky-500 to-indigo-500 rounded-full mr-3 shadow-lg"></span>
@@ -274,6 +305,8 @@ export default function Landing() {
                       </p>
                     </div>
                   </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </DialogContent>
