@@ -62,11 +62,6 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Tagline */}
-            <p className="text-lg md:text-2xl text-slate-700 dark:text-slate-200 max-w-3xl mx-auto leading-relaxed font-medium animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              Experience the magic of instant photo memories. Modern design, intuitive controls, and instant sharing — all in one beautiful photobooth.
-            </p>
-
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center w-full animate-fade-in pt-4" style={{ animationDelay: "0.4s" }}>
               <Button 
