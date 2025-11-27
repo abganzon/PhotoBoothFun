@@ -6,6 +6,7 @@ import { useLocation } from "wouter";
 import { Camera, Home, Menu } from "lucide-react";
 import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerFooter, DrawerTitle } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
+import { RoBoothLogo } from "@/components/RoBoothLogo";
 
 export function Header() {
   const [, setLocation] = useLocation();
@@ -94,13 +95,13 @@ export function Header() {
           <div className="flex items-center gap-2">
             {/* Logo and Title (simplified) */}
             <div
-              className="flex items-center gap-3 cursor-pointer hover-lift rounded-lg px-2 py-1"
+              className="flex items-center gap-2 cursor-pointer hover-lift rounded-lg px-2 py-1"
               onClick={() => setLocation("/")}
             >
               <div className="w-9 h-9 bg-gradient-to-br from-sky-500 via-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/40 hover:shadow-blue-500/60 transition-all duration-300">
                 <Camera className="h-5 w-5 text-white" />
               </div>
-              <span className="text-lg font-bold bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">RoBooth</span>
+              <RoBoothLogo />
             </div>
 
             {/* Desktop Navigation (closer to logo) */}

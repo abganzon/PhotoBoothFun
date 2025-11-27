@@ -13,6 +13,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { RoBoothLogo } from "@/components/RoBoothLogo";
 
 export default function Landing() {
   const [, setLocation] = useLocation();
@@ -44,9 +45,11 @@ export default function Landing() {
               </div>
             
               <div className="space-y-4">
-                <h1 className="text-6xl md:text-7xl lg:text-8xl font-black bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent animate-gradient" style={{ backgroundSize: "200% 200%" }}>
-                  RoBooth
-                </h1>
+                <div className="flex justify-center">
+                  <div className="text-6xl md:text-7xl lg:text-8xl">
+                    <RoBoothLogo />
+                  </div>
+                </div>
                 <div className="mt-3 flex justify-center">
                   <div className="h-1 w-48 rounded-full bg-gradient-to-r from-sky-500 to-indigo-600 opacity-80 animate-shimmer" />
                 </div>
