@@ -58,8 +58,12 @@ const ensureFontsLoaded = async (fonts: string[]): Promise<void> => {
       document.fonts.load(`12px "${fontName}"`)
     );
     await Promise.all(fontPromises);
+    // Additional wait to ensure fonts are ready for canvas rendering
+    await new Promise(resolve => setTimeout(resolve, 100));
   } catch (e) {
     console.warn("Font loading error:", e);
+    // Wait even if there's an error
+    await new Promise(resolve => setTimeout(resolve, 150));
   }
 };
 
@@ -338,11 +342,23 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
     // Preload fonts before rendering
     const fontsToLoad = [fontFamilyMap[fontName], fontFamilyMap[fontDate]];
-    ensureFontsLoaded(fontsToLoad).then(() => {
+    
+    // Use a small timeout to ensure document.fonts is ready
+    const loadFontsAndDraw = async () => {
+      try {
+        await ensureFontsLoaded(fontsToLoad);
+      } catch (e) {
+        console.warn("Failed to preload fonts:", e);
+      }
       drawContent();
-    }).catch(() => {
-      drawContent();
-    });
+    };
+    
+    // Start the process, with a small initial delay to ensure CSS is loaded
+    const timeoutId = setTimeout(() => {
+      loadFontsAndDraw();
+    }, 50);
+    
+    return () => clearTimeout(timeoutId);
   }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout, fontName, fontDate]);
 
   const handleDownload = async () => {
