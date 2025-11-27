@@ -137,13 +137,13 @@ export function Header() {
                   <span className="text-sm font-medium">Support</span>
                 </button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-sm">
+              <DialogContent className="sm:max-w-sm bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800 border border-sky-200 dark:border-indigo-700/50">
                 <DialogHeader>
-                  <DialogTitle className="text-lg font-semibold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">Support RoBooth</DialogTitle>
+                  <DialogTitle className="text-lg font-semibold bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">Support RoBooth</DialogTitle>
                 </DialogHeader>
                 <div className="py-4 space-y-4">
-                  <p className="text-sm text-slate-600 dark:text-slate-300">Thank you for supporting RoBooth. You can scan the QR code below or call us to donate.</p>
-                  <div className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-slate-800 dark:to-slate-700 rounded-xl p-4 flex items-center justify-center border border-pink-100 dark:border-slate-600">
+                  <p className="text-sm text-slate-600 dark:text-slate-300">Thank you for supporting RoBooth. You can scan the QR code below to donate.</p>
+                  <div className="bg-white/80 dark:bg-slate-800/80 rounded-xl p-4 flex items-center justify-center border border-sky-100 dark:border-indigo-700/30 backdrop-blur-sm">
                     <img src="/IMG_9239.jpeg" alt="Support QR" className="w-48 h-48 object-contain" />
                   </div>
                 </div>
@@ -190,13 +190,13 @@ export function Header() {
                           <span className="mr-2">💖</span> Support
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="sm:max-w-sm">
+                      <DialogContent className="sm:max-w-sm bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800 border border-sky-200 dark:border-indigo-700/50">
                         <DialogHeader>
-                          <DialogTitle className="text-lg font-semibold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">Support RoBooth</DialogTitle>
+                          <DialogTitle className="text-lg font-semibold bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">Support RoBooth</DialogTitle>
                         </DialogHeader>
                         <div className="py-4 space-y-4">
-                          <p className="text-sm text-slate-600 dark:text-slate-300">Thank you for supporting RoBooth. You can scan the QR code below or call us to donate.</p>
-                          <div className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-slate-800 dark:to-slate-700 rounded-xl p-4 flex items-center justify-center border border-pink-100 dark:border-slate-600">
+                          <p className="text-sm text-slate-600 dark:text-slate-300">Thank you for supporting RoBooth. You can scan the QR code below to donate.</p>
+                          <div className="bg-white/80 dark:bg-slate-800/80 rounded-xl p-4 flex items-center justify-center border border-sky-100 dark:border-indigo-700/30 backdrop-blur-sm">
                             <img src="/IMG_9239.jpeg" alt="Support QR" className="w-48 h-48 object-contain" />
                           </div>
                         </div>
