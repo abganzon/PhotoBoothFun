@@ -142,9 +142,13 @@ export function Header() {
                   <DialogTitle className="text-lg font-semibold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">Support RoBooth</DialogTitle>
                 </DialogHeader>
                 <div className="py-4 space-y-4">
-                  <p className="text-sm text-slate-600 dark:text-slate-300">Thank you for supporting RoBooth. You can scan the QR code below or use the account number to donate.</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-300">Thank you for supporting RoBooth. You can scan the QR code below or call us to donate.</p>
                   <div className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-slate-800 dark:to-slate-700 rounded-xl p-4 flex items-center justify-center border border-pink-100 dark:border-slate-600">
                     <img src="/IMG_9239.jpeg" alt="Support QR" className="w-48 h-48 object-contain" />
+                  </div>
+                  <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Call Us</p>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">+1 (555) 123-4567</p>
                   </div>
                 </div>
               </DialogContent>
@@ -195,9 +199,13 @@ export function Header() {
                           <DialogTitle className="text-lg font-semibold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">Support RoBooth</DialogTitle>
                         </DialogHeader>
                         <div className="py-4 space-y-4">
-                          <p className="text-sm text-slate-600 dark:text-slate-300">Thank you for supporting RoBooth. You can scan the QR code below or use the account number to donate.</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300">Thank you for supporting RoBooth. You can scan the QR code below or call us to donate.</p>
                           <div className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-slate-800 dark:to-slate-700 rounded-xl p-4 flex items-center justify-center border border-pink-100 dark:border-slate-600">
                             <img src="/IMG_9239.jpeg" alt="Support QR" className="w-48 h-48 object-contain" />
+                          </div>
+                          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Call Us</p>
+                            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">+1 (555) 123-4567</p>
                           </div>
                         </div>
                       </DialogContent>
