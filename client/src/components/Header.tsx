@@ -147,8 +147,8 @@ export function Header() {
                     <img src="/IMG_9239.jpeg" alt="Support QR" className="w-48 h-48 object-contain" />
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Call Us</p>
-                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">+1 (555) 123-4567</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">GCash Number</p>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">🇵🇭 09391935233</p>
                   </div>
                 </div>
               </DialogContent>
@@ -204,8 +204,8 @@ export function Header() {
                             <img src="/IMG_9239.jpeg" alt="Support QR" className="w-48 h-48 object-contain" />
                           </div>
                           <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Call Us</p>
-                            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">+1 (555) 123-4567</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">GCash Number</p>
+                            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">🇵🇭 09391935233</p>
                           </div>
                         </div>
                       </DialogContent>
