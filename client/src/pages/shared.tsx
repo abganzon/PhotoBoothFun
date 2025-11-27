@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRoute } from "wouter";
-import { PhotoStrip } from "@/components/photo-booth/photo-strip";
+import { PhotoStrip, type FontType } from "@/components/photo-booth/photo-strip";
 import { Button } from "@/components/ui/button";
 import { Clock, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -16,6 +16,8 @@ interface SharedPhotoStrip {
   showName: boolean;
   nameColor: string | null;
   dateColor: string | null;
+  fontName?: FontType;
+  fontDate?: FontType;
   createdAt: string;
 }
 
@@ -157,6 +159,8 @@ export default function SharedPage() {
               backgroundColor={photoStrip.backgroundColor}
               nameColor={photoStrip.nameColor || "#000000"}
               dateColor={photoStrip.dateColor || "#666666"}
+              fontName={photoStrip.fontName || "bebas"}
+              fontDate={photoStrip.fontDate || "oswald"}
               hideButtons={false}
               darkMode={false}
               showShareButton={false}

@@ -63,6 +63,8 @@ export class MemStorage implements IStorage {
       nameColor: insertPhotoStrip.nameColor || null,
       dateColor: insertPhotoStrip.dateColor || null,
       stripName: insertPhotoStrip.stripName || null,
+      fontName: insertPhotoStrip.fontName || "bebas",
+      fontDate: insertPhotoStrip.fontDate || "oswald",
     };
     this.photoStrips.set(id, photoStrip);
     return photoStrip;

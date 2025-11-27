@@ -14,6 +14,8 @@ export const photoStrips = pgTable("photo_strips", {
   showName: boolean("show_name").notNull(),
   nameColor: text("name_color"),
   dateColor: text("date_color"),
+  fontName: text("font_name").default("bebas"),
+  fontDate: text("font_date").default("oswald"),
 });
 
 export const insertPhotoStripSchema = createInsertSchema(photoStrips).pick({
@@ -26,6 +28,8 @@ export const insertPhotoStripSchema = createInsertSchema(photoStrips).pick({
   showName: true,
   nameColor: true,
   dateColor: true,
+  fontName: true,
+  fontDate: true,
 });
 
 export type InsertPhotoStrip = z.infer<typeof insertPhotoStripSchema>;
