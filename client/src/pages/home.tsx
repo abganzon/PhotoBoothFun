@@ -191,6 +191,8 @@ export default function Home() {
           showName,
           nameColor,
           dateColor,
+          fontName,
+          fontDate,
         }),
       });
 
