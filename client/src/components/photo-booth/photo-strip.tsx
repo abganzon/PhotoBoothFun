@@ -296,7 +296,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       if (showName) {
         const titleSize = layout === "strip" ? 28 : 32; // Increased font sizes for better visibility
         const fontFamily = fontFamilyMap[fontName];
-        tempCtx.font = `bold ${titleSize}px "${fontFamily}"`;
+        tempCtx.font = `bold ${titleSize}px '${fontFamily}'`;
         tempCtx.textAlign = "center";
 
         // Add text shadow for depth
@@ -319,7 +319,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       if (showDate) {
         const dateSize = layout === "strip" ? 18 : 20; // Increased font sizes
         const fontFamily = fontFamilyMap[fontDate];
-        tempCtx.font = `${dateSize}px "${fontFamily}"`;
+        tempCtx.font = `${dateSize}px '${fontFamily}'`;
         tempCtx.textAlign = "center";
 
         // Add subtle text shadow
