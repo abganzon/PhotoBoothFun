@@ -54,16 +54,26 @@ const fontFamilyMap: { [key in FontType]: string } = {
 const ensureFontsLoaded = async (fonts: string[]): Promise<void> => {
   if (!document.fonts) return;
   try {
-    const fontPromises = fonts.map((fontName) =>
-      document.fonts.load(`12px "${fontName}"`)
-    );
+    // First wait for document.fonts.ready to ensure all fonts in the page are loaded
+    await document.fonts.ready;
+    
+    // Load specific fonts with various sizes to ensure they're properly cached for canvas
+    const fontPromises = fonts.map((fontName) => {
+      const promises = [];
+      // Try loading at different sizes to ensure full coverage
+      promises.push(document.fonts.load(`12px "${fontName}"`));
+      promises.push(document.fonts.load(`18px "${fontName}"`));
+      promises.push(document.fonts.load(`28px "${fontName}"`));
+      promises.push(document.fonts.load(`32px "${fontName}"`));
+      return Promise.all(promises);
+    });
     await Promise.all(fontPromises);
-    // Additional wait to ensure fonts are ready for canvas rendering
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Wait extra time to ensure all fonts are rendered in the font table
+    await new Promise(resolve => setTimeout(resolve, 500));
   } catch (e) {
     console.warn("Font loading error:", e);
-    // Wait even if there's an error
-    await new Promise(resolve => setTimeout(resolve, 150));
+    // Wait even if there's an error to allow fonts to load via fallback
+    await new Promise(resolve => setTimeout(resolve, 500));
   }
 };
 
@@ -343,7 +353,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     // Preload fonts before rendering
     const fontsToLoad = [fontFamilyMap[fontName], fontFamilyMap[fontDate]];
     
-    // Use a small timeout to ensure document.fonts is ready
+    // Use a delay to ensure document.fonts is ready
     const loadFontsAndDraw = async () => {
       try {
         await ensureFontsLoaded(fontsToLoad);
@@ -353,10 +363,10 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       drawContent();
     };
     
-    // Start the process, with a small initial delay to ensure CSS is loaded
+    // Start the process, with initial delay to ensure CSS is loaded and document.fonts is available
     const timeoutId = setTimeout(() => {
       loadFontsAndDraw();
-    }, 50);
+    }, 100);
     
     return () => clearTimeout(timeoutId);
   }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout, fontName, fontDate]);
