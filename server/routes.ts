@@ -1,11 +1,13 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { resolveUserId } from "./resolve-user-id";import {
+import { resolveUserId } from "./resolve-user-id";
+import {
   createPhotoStripHandler,
   createSharedLinkHandler,
   getSharedLinkHandler,
 } from "./share-handlers";
+import { getVisitorCount, incrementVisitorCount } from "./visitor-count";
 
 // Extend Express Request to include userId
 declare global {
@@ -40,7 +42,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Visitor counter - public endpoints
   app.get("/api/visitors", async (req, res) => {
     try {
-      const count = await storage.getVisitorCount();
+      const count = await getVisitorCount();
       res.setHeader('Content-Type', 'application/json');
       res.json({ count });
     } catch (error) {
@@ -50,7 +52,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/visitors/increment", async (req, res) => {
     try {
-      const count = await storage.incrementVisitorCount();
+      const count = await incrementVisitorCount();
       // Broadcast to SSE clients
       sseClients.forEach((client) => {
         try {
@@ -73,7 +75,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
       // send initial value
-      const count = await storage.getVisitorCount();
+      const count = await getVisitorCount();
       res.write(`data: ${JSON.stringify({ count })}\n\n`);
 
       // add to client set

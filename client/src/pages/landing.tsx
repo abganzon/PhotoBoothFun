@@ -11,33 +11,33 @@ export default function Landing() {
   useEffect(() => {
     let mounted = true;
 
-    const incrementVisitorCount = async () => {
+    const syncVisitors = async () => {
       try {
-        const res = await fetch("/api/visitors/increment", { method: "POST" });
+        const res = await fetch("/api/visitors");
         if (!res.ok) return;
         const data = await res.json();
-        if (!mounted) return;
-        if (typeof window !== "undefined" && typeof data?.count === "number") {
-          window.dispatchEvent(new CustomEvent("visitor-count-updated", { detail: { count: data.count } }));
-        }
-      } catch (error) {
-        console.error("Failed to update visitor count", error);
-      }
-    };
-
-    incrementVisitorCount();
-
-    fetch("/api/visitors")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
         if (mounted && typeof data?.count === "number") {
           setVisitors(data.count);
         }
-      })
-      .catch(() => {});
+      } catch {
+        // Ignore fetch errors; header polling will retry.
+      }
+    };
+
+    syncVisitors();
+
+    const handleVisitorEvent = (event: Event) => {
+      const detail = (event as CustomEvent<{ count?: number }>).detail;
+      if (detail && typeof detail.count === "number") {
+        setVisitors(detail.count);
+      }
+    };
+
+    window.addEventListener("visitor-count-updated", handleVisitorEvent);
 
     return () => {
       mounted = false;
+      window.removeEventListener("visitor-count-updated", handleVisitorEvent);
     };
   }, []);
 

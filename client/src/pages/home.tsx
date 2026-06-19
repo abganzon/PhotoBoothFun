@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Camera, Settings, Repeat, ChevronLeft, ChevronRight } from "lucide-react";
+import { Camera, Settings, Repeat, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { StepProgress } from "@/components/photo-booth/step-progress";
@@ -545,17 +545,6 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
             <div className={`space-y-6 ${darkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-slate-100'} rounded-2xl shadow-lg p-4 sm:p-6`}>
-              <div className="flex items-center mb-4">
-                <Button
-                  onClick={handlePrevious}
-                  variant="outline"
-                  className="flex items-center gap-2 text-sm sm:text-base hover-lift transition-all duration-200"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                  <span className="hidden sm:inline">Previous</span>
-                  <span className="sm:hidden">Back</span>
-                </Button>
-              </div>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="strip-name" className={`text-sm sm:text-base font-semibold ${darkMode ? 'text-slate-100' : ''}`}>Strip Name</Label>

@@ -1,7 +1,5 @@
 import { photoStrips, type PhotoStrip, type InsertPhotoStrip } from "@shared/schema";
 import { sharedLinks, type SharedLink, type InsertSharedLink } from "@shared/schema";
-import fs from "fs/promises";
-import path from "path";
 import {
   getSharedLinkFromBlob,
   persistSharedLinkToBlob,
@@ -21,48 +19,11 @@ export class MemStorage implements IStorage {
   private photoStrips: Map<number, PhotoStrip>;
   private sharedLinks: Map<string, StoredSharedLink>;
   currentId: number;
-  visitorCount: number;
-  visitorFilePath: string;
 
   constructor() {
     this.photoStrips = new Map();
     this.sharedLinks = new Map();
     this.currentId = 1;
-    this.visitorCount = 300000;
-    this.visitorFilePath = path.resolve(process.cwd(), "visitor-count.json");
-    // initialize visitor count from file if present
-    void this.loadVisitorCount();
-  }
-
-  async loadVisitorCount(): Promise<void> {
-    try {
-      const data = await fs.readFile(this.visitorFilePath, "utf-8");
-      const parsed = JSON.parse(data);
-      if (typeof parsed?.count === "number") {
-        this.visitorCount = parsed.count;
-      }
-    } catch (e) {
-      this.visitorCount = 300000;
-      await this.persistVisitorCount();
-    }
-  }
-
-  private async persistVisitorCount(): Promise<void> {
-    try {
-      await fs.writeFile(this.visitorFilePath, JSON.stringify({ count: this.visitorCount }), "utf-8");
-    } catch (error) {
-      console.error("Failed to persist visitor count:", error);
-    }
-  }
-
-  async getVisitorCount(): Promise<number> {
-    return this.visitorCount || 0;
-  }
-
-  async incrementVisitorCount(): Promise<number> {
-    this.visitorCount = (this.visitorCount || 0) + 1;
-    await this.persistVisitorCount();
-    return this.visitorCount;
   }
 
   async createPhotoStrip(insertPhotoStrip: InsertPhotoStrip): Promise<PhotoStrip> {
@@ -136,6 +97,6 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Prototype extensions removed; class provides visitor count methods and persistence.
+// Prototype extensions removed; visitor count lives in visitor-count.ts.
 
 export const storage = new MemStorage();

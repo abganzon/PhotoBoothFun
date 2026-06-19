@@ -1,12 +1,12 @@
 import express from "express";
 import serverless from "serverless-http";
-import { storage } from "../../server/storage";
 import { resolveUserId } from "../../server/resolve-user-id";
 import {
   createPhotoStripHandler,
   createSharedLinkHandler,
   getSharedLinkHandler,
 } from "../../server/share-handlers";
+import { getVisitorCount, incrementVisitorCount } from "../../server/visitor-count";
 
 const app = express();
 
@@ -19,7 +19,7 @@ app.get("/api/shared-links/:id", getSharedLinkHandler);
 
 app.get("/api/visitors", async (_req, res) => {
   try {
-    const count = await storage.getVisitorCount();
+    const count = await getVisitorCount();
     res.setHeader("Content-Type", "application/json");
     res.json({ count });
   } catch {
@@ -29,7 +29,7 @@ app.get("/api/visitors", async (_req, res) => {
 
 app.post("/api/visitors/increment", async (_req, res) => {
   try {
-    const count = await storage.incrementVisitorCount();
+    const count = await incrementVisitorCount();
     res.setHeader("Content-Type", "application/json");
     res.json({ count });
   } catch {
