@@ -188,7 +188,7 @@ export default function Home() {
     setIsShareGenerating(true);
 
     try {
-      const response = await apiFetch("/api/photo-strips", {
+      const shareResponse = await apiFetch("/api/shared-links", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -203,21 +203,6 @@ export default function Home() {
           nameColor,
           dateColor,
         }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save photo strip");
-      }
-
-      const savedPhotoStrip = await response.json();
-
-      // Then create a share link
-      const shareResponse = await apiFetch("/api/shared-links", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ photoStripId: savedPhotoStrip.id }),
       });
 
       if (!shareResponse.ok) {

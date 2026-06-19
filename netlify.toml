@@ -5,7 +5,7 @@
 
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["express", "@neondatabase/serverless"]
+  external_node_modules = ["express", "@neondatabase/serverless", "@netlify/blobs"]
 
 [[redirects]]
   from = "/api/*"

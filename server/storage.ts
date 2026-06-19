@@ -2,18 +2,24 @@ import { photoStrips, type PhotoStrip, type InsertPhotoStrip } from "@shared/sch
 import { sharedLinks, type SharedLink, type InsertSharedLink } from "@shared/schema";
 import fs from "fs/promises";
 import path from "path";
-
+import {
+  getSharedLinkFromBlob,
+  persistSharedLinkToBlob,
+} from "./shared-link-blob";
 export interface IStorage {
   createPhotoStrip(photoStrip: InsertPhotoStrip): Promise<PhotoStrip>;
-  createSharedLink(sharedLink: InsertSharedLink): Promise<SharedLink>;
-  getSharedLink(id: string): Promise<SharedLink | null>;
+  createSharedLink(sharedLink: InsertSharedLink, photoStripData?: PhotoStrip): Promise<SharedLink>;
+  getSharedLink(id: string): Promise<(SharedLink & { photoStripData?: PhotoStrip }) | null>;
+  getPhotoStripForSharedLink(link: SharedLink & { photoStripData?: PhotoStrip }): Promise<PhotoStrip | null>;
   getPhotoStrip(id: number): Promise<PhotoStrip | null>;
   getPhotoStripsByUserId(userId: string): Promise<PhotoStrip[]>;
 }
 
+type StoredSharedLink = SharedLink & { photoStripData?: PhotoStrip };
+
 export class MemStorage implements IStorage {
   private photoStrips: Map<number, PhotoStrip>;
-  private sharedLinks: Map<string, SharedLink>;
+  private sharedLinks: Map<string, StoredSharedLink>;
   currentId: number;
   visitorCount: number;
   visitorFilePath: string;
@@ -73,27 +79,44 @@ export class MemStorage implements IStorage {
     return photoStrip;
   }
 
-  async createSharedLink(insertSharedLink: InsertSharedLink): Promise<SharedLink> {
-    const sharedLink: SharedLink = { 
+  async createSharedLink(
+    insertSharedLink: InsertSharedLink,
+    photoStripData?: PhotoStrip
+  ): Promise<SharedLink> {
+    const sharedLink: StoredSharedLink = {
       ...insertSharedLink,
       photoStripId: insertSharedLink.photoStripId || 0,
       createdAt: new Date(),
-      isActive: true 
+      isActive: true,
+      photoStripData,
     };
     this.sharedLinks.set(sharedLink.id, sharedLink);
+    await persistSharedLinkToBlob(sharedLink);
     return sharedLink;
   }
 
-  async getSharedLink(id: string): Promise<SharedLink | null> {
-    const link = this.sharedLinks.get(id);
-    if (!link) return null;
-    
-    // Check if link is expired
-    if (new Date() > new Date(link.expiresAt) || !link.isActive) {
-      return null;
+  async getSharedLink(id: string): Promise<StoredSharedLink | null> {
+    const inMemory = this.sharedLinks.get(id);
+    if (inMemory) {
+      if (new Date() > new Date(inMemory.expiresAt) || !inMemory.isActive) {
+        return null;
+      }
+      return inMemory;
     }
-    
-    return link;
+
+    const fromBlob = await getSharedLinkFromBlob(id);
+    if (fromBlob) {
+      this.sharedLinks.set(fromBlob.id, fromBlob);
+      return fromBlob;
+    }
+
+    return null;
+  }
+  async getPhotoStripForSharedLink(link: StoredSharedLink): Promise<PhotoStrip | null> {
+    if (link.photoStripData) {
+      return link.photoStripData;
+    }
+    return this.getPhotoStrip(link.photoStripId);
   }
 
   async getPhotoStrip(id: number): Promise<PhotoStrip | null> {
