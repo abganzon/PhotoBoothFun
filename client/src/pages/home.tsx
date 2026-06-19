@@ -13,8 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { StepProgress } from "@/components/photo-booth/step-progress";
 import { LayoutPicker } from "@/components/photo-booth/layout-picker";
+import { ShareQrCode } from "@/components/share-qr-code";
 import { useLocation } from 'wouter';
-import QRCode from 'react-qr-code';
 
 // Define an interface for the stored photo strip data
 interface StoredPhotoStrip {
@@ -651,14 +651,12 @@ export default function Home() {
       </div>
 
       <Dialog open={shareModalOpen} onOpenChange={setShareModalOpen}>
-        <DialogContent className="sm:max-w-[425px] mx-4">
+        <DialogContent className="w-[calc(100%-2rem)] max-w-[425px]">
           <DialogHeader>
             <DialogTitle className="text-lg sm:text-xl font-bold bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">Share Your Photo Strip</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="text-center overflow-auto max-h-80">
-              {shareUrl && <QRCode value={shareUrl} size={Math.min(256, window.innerWidth - 60)} />}
-            </div>
+            {shareUrl && <ShareQrCode value={shareUrl} />}
             <div className="flex flex-col sm:flex-row items-center gap-2">
               <Input id="share-url" value={shareUrl} readOnly className="flex-1 text-xs sm:text-base rounded-lg" />
               <Button onClick={handleCopyLink} className="w-full sm:w-auto text-xs sm:text-base bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200">Copy Link</Button>

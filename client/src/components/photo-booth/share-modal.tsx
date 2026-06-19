@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Share2, Copy, Clock, QrCode } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import QRCode from "react-qr-code";
+import { ShareQrCode } from "@/components/share-qr-code";
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -89,7 +89,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`max-w-md ${darkMode ? 'bg-gray-800 text-white' : 'bg-white'}`}>
+      <DialogContent className={`w-[calc(100%-2rem)] max-w-md ${darkMode ? 'bg-gray-800 text-white' : 'bg-white'}`}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Share2 className="h-5 w-5" />
@@ -113,13 +113,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="text-center p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                <QRCode
-                  value={shareData.url}
-                  size={200}
-                  style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-                  viewBox={`0 0 200 200`}
-                />
+              <div className="rounded-lg bg-gray-100 p-4 dark:bg-gray-700">
+                <ShareQrCode value={shareData.url} />
               </div>
               
               <div className="space-y-2">
