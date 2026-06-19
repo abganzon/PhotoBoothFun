@@ -5,8 +5,6 @@ import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { ShareModal } from "./share-modal";
 
-export type FontType = "bebas" | "oswald" | "anton" | "righteous" | "poppins" | "montserrat" | "raleway" | "playfair" | "greatvibes" | "cormorant" | "lora" | "garamond" | "pacifico" | "caveat" | "quicksand" | "ubuntu" | "nunito" | "roboto" | "opensans" | "lato" | "inter" | "worksans";
-
 interface PhotoStripProps {
   photos: string[];
   layout: "strip" | "collage";
@@ -16,66 +14,13 @@ interface PhotoStripProps {
   backgroundColor?: string;
   nameColor?: string;
   dateColor?: string;
-  fontName?: FontType;
-  fontDate?: FontType;
   hideButtons?: boolean;
   darkMode?: boolean;
   showShareButton?: boolean;
   onShare?: () => void;
   onSaveToGallery?: () => void;
-  isSharing?: boolean;
+  isShareLoading?: boolean;
 }
-
-const fontFamilyMap: { [key in FontType]: string } = {
-  bebas: "Bebas Neue",
-  oswald: "Oswald",
-  anton: "Anton",
-  righteous: "Righteous",
-  poppins: "Poppins",
-  montserrat: "Montserrat",
-  raleway: "Raleway",
-  playfair: "Playfair Display",
-  greatvibes: "Great Vibes",
-  cormorant: "Cormorant Garamond",
-  lora: "Lora",
-  garamond: "EB Garamond",
-  pacifico: "Pacifico",
-  caveat: "Caveat",
-  quicksand: "Quicksand",
-  ubuntu: "Ubuntu",
-  nunito: "Nunito",
-  roboto: "Roboto",
-  opensans: "Open Sans",
-  lato: "Lato",
-  inter: "Inter",
-  worksans: "Work Sans",
-};
-
-const ensureFontsLoaded = async (fonts: string[]): Promise<void> => {
-  if (!document.fonts) return;
-  try {
-    // First wait for document.fonts.ready to ensure all fonts in the page are loaded
-    await document.fonts.ready;
-    
-    // Load specific fonts with various sizes to ensure they're properly cached for canvas
-    const fontPromises = fonts.map((fontName) => {
-      const promises = [];
-      // Try loading at different sizes to ensure full coverage
-      promises.push(document.fonts.load(`12px "${fontName}"`));
-      promises.push(document.fonts.load(`18px "${fontName}"`));
-      promises.push(document.fonts.load(`28px "${fontName}"`));
-      promises.push(document.fonts.load(`32px "${fontName}"`));
-      return Promise.all(promises);
-    });
-    await Promise.all(fontPromises);
-    // Wait extra time to ensure all fonts are rendered in the font table
-    await new Promise(resolve => setTimeout(resolve, 500));
-  } catch (e) {
-    console.warn("Font loading error:", e);
-    // Wait even if there's an error to allow fonts to load via fallback
-    await new Promise(resolve => setTimeout(resolve, 500));
-  }
-};
 
 export const PhotoStrip: React.FC<PhotoStripProps> = ({
   photos,
@@ -86,14 +31,12 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
   backgroundColor = "#ffffff",
   nameColor = "#000000",
   dateColor = "#666666",
-  fontName = "bebas",
-  fontDate = "oswald",
   hideButtons = false,
   darkMode = false,
   showShareButton = false,
   onShare,
   onSaveToGallery,
-  isSharing = false,
+  isShareLoading = false,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
@@ -108,11 +51,11 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const drawContent = async () => {
-      if (!Array.isArray(photos)) {
-        console.error("Photos prop is not an array:", photos);
-        return;
-      }
+    // Ensure photos is an array
+    if (!Array.isArray(photos)) {
+      console.error("Photos prop is not an array:", photos);
+      return;
+    }
 
     // Create a new canvas for photo composition
     const tempCanvas = document.createElement("canvas");
@@ -295,8 +238,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       // Draw title and date at bottom after photos with enhanced styling
       if (showName) {
         const titleSize = layout === "strip" ? 28 : 32; // Increased font sizes for better visibility
-        const fontFamily = fontFamilyMap[fontName];
-        tempCtx.font = `bold ${titleSize}px '${fontFamily}'`;
+        tempCtx.font = `bold ${titleSize}px "Georgia", serif`; // Use serif font for elegance
         tempCtx.textAlign = "center";
 
         // Add text shadow for depth
@@ -318,8 +260,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       // Draw date if enabled with enhanced styling
       if (showDate) {
         const dateSize = layout === "strip" ? 18 : 20; // Increased font sizes
-        const fontFamily = fontFamilyMap[fontDate];
-        tempCtx.font = `${dateSize}px '${fontFamily}'`;
+        tempCtx.font = `${dateSize}px "Arial", sans-serif`; // Clean sans-serif for date
         tempCtx.textAlign = "center";
 
         // Add subtle text shadow
@@ -348,28 +289,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     };
 
     drawAllPhotos();
-    };
-
-    // Preload fonts before rendering
-    const fontsToLoad = [fontFamilyMap[fontName], fontFamilyMap[fontDate]];
-    
-    // Use a delay to ensure document.fonts is ready
-    const loadFontsAndDraw = async () => {
-      try {
-        await ensureFontsLoaded(fontsToLoad);
-      } catch (e) {
-        console.warn("Failed to preload fonts:", e);
-      }
-      drawContent();
-    };
-    
-    // Start the process, with initial delay to ensure CSS is loaded and document.fonts is available
-    const timeoutId = setTimeout(() => {
-      loadFontsAndDraw();
-    }, 100);
-    
-    return () => clearTimeout(timeoutId);
-  }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout, fontName, fontDate]);
+  }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout]);
 
   const handleDownload = async () => {
     const canvas = canvasRef.current;
@@ -458,14 +378,12 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
   return (
     <div className="flex flex-col items-center gap-4 w-full px-2 sm:px-0">
-      <div className="w-full max-w-[280px] relative">
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-100 dark:border-slate-700 p-3 sm:p-4">
-          <canvas
-            ref={canvasRef}
-            className="w-full rounded-md shadow-sm"
-            style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
-          />
-        </div>
+      <div className="w-full max-w-[280px] bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-4 border border-slate-100 dark:border-slate-700">
+        <canvas
+          ref={canvasRef}
+          className="w-full rounded-lg shadow-sm"
+          style={{ maxWidth: '100%', height: 'auto' }}
+        />
       </div>
 
       {!hideButtons && (
@@ -483,15 +401,14 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
           )}
 
           {showShareButton && photos.length > 0 && (
-            <Button 
-              onClick={handleShare} 
-              variant="outline" 
+            <Button
+              onClick={handleShare}
+              variant="outline"
               className="px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isSharing}
-              data-testid="button-share-photostrip"
+              disabled={isShareLoading}
             >
               <Share2 className="h-4 w-4" />
-              <span className="ml-2">{isSharing ? 'Sharing...' : 'Share'}</span>
+              <span className="ml-2">{isShareLoading ? 'Generating...' : 'Share'}</span>
             </Button>
           )}
         </div>

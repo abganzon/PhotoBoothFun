@@ -1,24 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { useAuth } from "@clerk/clerk-react";
+import React, { useState, useEffect, useRef } from "react";
+import { apiFetch } from "@/lib/api";
 import { PhotoBoothCamera } from "@/components/photo-booth/camera";
 import { Countdown } from "@/components/photo-booth/countdown";
 import { ColorPicker } from "@/components/photo-booth/color-picker";
-import { PhotoStrip, type FontType } from "@/components/photo-booth/photo-strip";
+import { PhotoStrip } from "@/components/photo-booth/photo-strip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Camera, Trash2, Settings, Repeat, Download, ChevronLeft, ChevronRight, Share2, ImageIcon } from "lucide-react";
+import { Camera, Settings, Repeat, ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { StepProgress } from "@/components/photo-booth/step-progress";
+import { LayoutPicker } from "@/components/photo-booth/layout-picker";
 import { useLocation } from 'wouter';
 import QRCode from 'react-qr-code';
 
@@ -35,13 +29,10 @@ interface StoredPhotoStrip {
     showName: boolean;
     nameColor: string;
     dateColor: string;
-    fontName: FontType;
-    fontDate: FontType;
   };
 }
 
 export default function Home() {
-  const { userId } = useAuth();
   const [photos, setPhotos] = useState<string[]>([]);
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState("#E1D9D1");
@@ -50,8 +41,6 @@ export default function Home() {
   const [showName, setShowName] = useState(true);
   const [nameColor, setNameColor] = useState("#000000");
   const [dateColor, setDateColor] = useState("#666666");
-  const [fontName, setFontName] = useState<FontType>("bebas");
-  const [fontDate, setFontDate] = useState<FontType>("oswald");
   const [layout, setLayout] = useState<"strip" | "collage">("strip");
   const [timerDuration, setTimerDuration] = useState(5);
   const [darkMode, setDarkMode] = useState(() => {
@@ -67,8 +56,15 @@ export default function Home() {
   const [currentStep, setCurrentStep] = useState(0);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
-  const [isSharing, setIsSharing] = useState(false);
-  const [isSequenceInProgress, setIsSequenceInProgress] = useState(false);
+  const autoCaptureTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isAutoCapturing, setIsAutoCapturing] = useState(false);
+  const [isShareGenerating, setIsShareGenerating] = useState(false);
+  const clearAutoCaptureTimer = () => {
+    if (autoCaptureTimer.current) {
+      clearTimeout(autoCaptureTimer.current);
+      autoCaptureTimer.current = null;
+    }
+  };
 
   // Persist dark mode preference
   useEffect(() => {
@@ -80,6 +76,21 @@ export default function Home() {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  useEffect(() => {
+    const preselected = sessionStorage.getItem("robooth_layout");
+    if (preselected === "strip" || preselected === "collage") {
+      setLayout(preselected);
+      setCurrentStep(1);
+      sessionStorage.removeItem("robooth_layout");
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      clearAutoCaptureTimer();
+    };
+  }, []);
 
   const handleCapture = (photo: string) => {
     if (recaptureIndex !== null) {
@@ -97,47 +108,48 @@ export default function Home() {
         duration: 2000,
       });
     } else {
-      // Add new photo
-      const newPhotosLength = photos.length + 1;
+      const nextPhotoCount = photos.length + 1;
       setPhotos((prev) => [...prev, photo]);
       setIsCountingDown(false);
+      clearAutoCaptureTimer();
 
-      // If auto capture is in progress and we haven't reached 4 photos yet
-      if (isSequenceInProgress && newPhotosLength < 4) {
-        // Wait a moment before starting the next countdown
-        setTimeout(() => {
-          setIsCountingDown(true);
-        }, 1500);
-      } else if (newPhotosLength >= 4) {
-        // End the sequence when we have 4 photos
-        setIsSequenceInProgress(false);
+      if (isAutoCapturing) {
+        if (nextPhotoCount < 4) {
+          autoCaptureTimer.current = setTimeout(() => {
+            setIsCountingDown(true);
+          }, 1500);
+        } else {
+          setIsAutoCapturing(false);
+        }
       }
     }
   };
 
   const handleStartPhotoSequence = () => {
-    if (photos.length >= 4 || isSequenceInProgress) {
-      if (photos.length >= 4) {
-        toast({
-          title: "Maximum photos reached",
-          description: "Please clear the photos to start over.",
-          variant: "destructive",
-          duration: 3000,
-        });
-      }
+    if (photos.length >= 4) {
+      toast({
+        title: "Maximum photos reached",
+        description: "Please clear the photos to start over.",
+        variant: "destructive",
+        duration: 3000,
+      });
       return;
     }
     // Clear existing photos when starting a new sequence
+    clearAutoCaptureTimer();
     setPhotos([]);
-    // Mark sequence as in progress and start the countdown
-    setIsSequenceInProgress(true);
+    setRecaptureIndex(null);
+    setIsAutoCapturing(true);
+    // Start the countdown for the first photo
     setIsCountingDown(true);
   };
 
   const handleClear = () => {
     setPhotos([]);
-    setIsSequenceInProgress(false);
+    setRecaptureIndex(null);
     setIsCountingDown(false);
+    setIsAutoCapturing(false);
+    clearAutoCaptureTimer();
   };
 
   const [recaptureIndex, setRecaptureIndex] = useState<number | null>(null);
@@ -153,36 +165,35 @@ export default function Home() {
     });
   };
 
+  useEffect(() => {
+    return () => {
+      clearAutoCaptureTimer();
+    };
+  }, []);
+
   const handleNext = () => {
-    setCurrentStep((prev) => Math.min(prev + 1, 1));
+    setCurrentStep((prev) => Math.min(prev + 1, 2));
   };
 
   const handlePrevious = () => {
+    if (currentStep === 1 && photos.length > 0) {
+      if (!window.confirm("Going back will clear your photos. Continue?")) return;
+      handleClear();
+    }
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
   const handleShare = async () => {
-    if (!userId) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to create a shareable link",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (isSharing) return;
-    setIsSharing(true);
+    if (isShareGenerating) return;
+    setIsShareGenerating(true);
 
     try {
-      // First, save the photo strip
-      const response = await fetch("/api/photo-strips", {
+      const response = await apiFetch("/api/photo-strips", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId,
           photos,
           layout,
           backgroundColor,
@@ -191,8 +202,6 @@ export default function Home() {
           showName,
           nameColor,
           dateColor,
-          fontName,
-          fontDate,
         }),
       });
 
@@ -203,7 +212,7 @@ export default function Home() {
       const savedPhotoStrip = await response.json();
 
       // Then create a share link
-      const shareResponse = await fetch("/api/shared-links", {
+      const shareResponse = await apiFetch("/api/shared-links", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -227,7 +236,7 @@ export default function Home() {
         variant: "destructive",
       });
     } finally {
-      setIsSharing(false);
+      setIsShareGenerating(false);
     }
   };
 
@@ -241,113 +250,97 @@ export default function Home() {
     });
   };
 
-  // Function to save photo strip to local storage
-  const saveToGallery = () => {
-    // Guard: Require exactly 4 photos to save
-    if (photos.length < 4) {
-      toast({
-        title: "Not enough photos",
-        description: `Capture ${4 - photos.length} more photo${4 - photos.length > 1 ? 's' : ''} before saving.`,
-        variant: "destructive",
-        duration: 3000,
-      });
-      return;
-    }
-
-    const newStrip = {
-      id: Date.now().toString(),
-      timestamp: Date.now(),
-      photos,
-      layout,
-      backgroundColor,
-      stripName,
-      showDate,
-      showName,
-      nameColor,
-      dateColor,
-      fontName,
-      fontDate,
-    };
-
-    try {
-      // Calculate approximate size of the data
-      const stripJson = JSON.stringify(newStrip);
-      const stripSizeInBytes = new Blob([stripJson]).size;
-      const stripSizeInMB = stripSizeInBytes / (1024 * 1024);
-
-      // Warn if strip is larger than 2MB
-      if (stripSizeInMB > 2) {
-        toast({
-          title: "Warning",
-          description: `This photo strip is ${stripSizeInMB.toFixed(2)}MB. It may take up significant storage space.`,
-          variant: "default",
-        });
-      }
-
-      // Check localStorage space before saving
-      const testKey = `__test_size_${Date.now()}__`;
-      
-      try {
-        localStorage.setItem(testKey, stripJson);
-        localStorage.removeItem(testKey);
-      } catch (e) {
-        if (e instanceof Error && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
-          toast({
-            title: "Storage Full",
-            description: "Local storage is full. Please clear some old photo strips from your gallery or browser storage to save new ones.",
-            variant: "destructive",
-          });
-          return;
-        }
-        throw e;
-      }
-
-      const existingStripsJson = localStorage.getItem("photoStrips");
-      const existingStrips = existingStripsJson
-        ? JSON.parse(existingStripsJson)
-        : [];
-
-      const updatedStrips = [...existingStrips, newStrip];
-      
-      try {
-        localStorage.setItem("photoStrips", JSON.stringify(updatedStrips));
-      } catch (e) {
-        if (e instanceof Error && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
-          toast({
-            title: "Storage Full",
-            description: "Local storage is full. Cannot save this photo strip. Please delete some strips from your gallery.",
-            variant: "destructive",
-          });
-          return;
-        }
-        throw e;
-      }
-
-      toast({
-        title: "Saved to Gallery",
-        description: "Your photo strip has been saved locally.",
-        variant: "default",
-        duration: 2000,
-      });
-    } catch (error) {
-      console.error("Error saving to gallery:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save to gallery. Please check your browser storage or clear space.",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <div className={`min-h-screen pt-20 pb-8 px-4 sm:px-6 transition-all duration-300 ${darkMode ? 'dark bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'}`}>
-      <div className="mt-6">
+      <div className="mt-6 max-w-6xl mx-auto">
+        <StepProgress
+          currentStep={currentStep}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+          hideNavigation={currentStep === 0}
+          disableNext={currentStep === 1 && photos.length < 4}
+        />
+
         {currentStep === 0 ? (
-          <div className={`space-y-6 rounded-2xl shadow-lg p-6 sm:p-8 max-w-6xl mx-auto ${darkMode ? 'dark:bg-slate-800 dark:border-slate-700 border border-slate-700 dark:shadow-2xl' : 'bg-white border border-slate-100 shadow-xl'}`}>
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr,320px] gap-6 sm:gap-8">
-              {/* Camera Section */}
-              <div className="space-y-4 order-2 lg:order-1">
-                <div className="relative w-full rounded-xl overflow-hidden shadow-lg hover-lift">
+          <div
+            className={`rounded-3xl shadow-xl p-6 sm:p-10 max-w-3xl mx-auto ${
+              darkMode
+                ? "bg-slate-800/90 border border-slate-700 backdrop-blur-sm"
+                : "bg-white/90 border border-slate-100 backdrop-blur-sm"
+            }`}
+          >
+            <div className="text-center mb-8 space-y-2">
+              <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">
+                Choose Your Layout
+              </h2>
+              <p className={`text-sm sm:text-base max-w-md mx-auto ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
+                Pick how your four photos will be arranged before you start capturing.
+              </p>
+            </div>
+
+            <LayoutPicker
+              layout={layout}
+              onLayoutChange={setLayout}
+              darkMode={darkMode}
+            />
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-8">
+              <Button
+                onClick={handleNext}
+                size="lg"
+                className="w-full sm:w-auto px-10 py-6 text-base font-semibold rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white shadow-lg shadow-sky-500/20 hover:shadow-xl transition-all disabled:opacity-40"
+              >
+                Continue to Camera
+                <ChevronRight className="h-5 w-5 ml-2" />
+              </Button>
+            </div>
+          </div>
+        ) : currentStep === 1 ? (
+          <div
+            className={`rounded-3xl shadow-xl p-5 sm:p-8 max-w-6xl mx-auto ${
+              darkMode
+                ? "bg-slate-800/90 border border-slate-700"
+                : "bg-white/90 border border-slate-100"
+            }`}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6 pb-4 border-b border-slate-100 dark:border-slate-700">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">
+                  Capture Your Photos
+                </h2>
+                <p className={`text-sm mt-1 ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
+                  {layout === "strip" ? "Photo strip" : "Collage"} layout ·{" "}
+                  {photos.length < 4
+                    ? `Photo ${photos.length + 1} of 4`
+                    : "All 4 photos captured"}
+                </p>
+              </div>
+              <div className="flex gap-1">
+                {[0, 1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className={`h-1.5 w-8 sm:w-10 rounded-full transition-colors duration-300 ${
+                      i < photos.length
+                        ? "bg-gradient-to-r from-sky-500 to-indigo-500"
+                        : i === photos.length
+                          ? "bg-sky-300 dark:bg-sky-700 animate-pulse"
+                          : "bg-slate-200 dark:bg-slate-700"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div
+              className={`grid grid-cols-1 gap-6 lg:gap-8 ${
+                layout === "collage"
+                  ? "lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px]"
+                  : "lg:grid-cols-[1fr_280px] xl:grid-cols-[1fr_300px]"
+              }`}
+            >
+              {/* Camera — primary column */}
+              <div className="space-y-5">
+                <div className="relative">
                   <PhotoBoothCamera
                     onCapture={handleCapture}
                     isCountingDown={isCountingDown}
@@ -369,57 +362,55 @@ export default function Home() {
                   />
                 </div>
 
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
-                  <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                    {photos.length < 4 || recaptureIndex !== null ? (
-                      <Button
-                        onClick={() => {
-                          if (recaptureIndex !== null) {
-                            setIsCountingDown(true);
-                          } else {
-                            handleStartPhotoSequence();
-                          }
-                        }}
-                        disabled={isCountingDown || isSequenceInProgress}
-                        className="flex items-center gap-2 flex-1 sm:flex-none text-sm sm:text-base bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                        data-testid="button-auto-capture"
-                      >
-                        <Camera className="h-4 w-4" />
-                        <span>{recaptureIndex !== null ? `Recapture Photo ${recaptureIndex + 1}` : isSequenceInProgress ? 'Capturing...' : 'Auto'}</span>
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={handleNext}
-                        className="flex items-center gap-2 flex-1 sm:flex-none text-sm sm:text-base bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
-                      >
-                        Next
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    )}
+                <div
+                  className={`flex flex-wrap items-center gap-2 p-3 rounded-2xl ${
+                    darkMode ? "bg-slate-900/50 border border-slate-700" : "bg-slate-50 border border-slate-100"
+                  }`}
+                >
+                  {photos.length < 4 || recaptureIndex !== null ? (
                     <Button
-                      variant="outline"
                       onClick={() => {
-                        setPhotos([]);
-                        setRecaptureIndex(null);
-                        setIsSequenceInProgress(false);
-                        setIsCountingDown(false);
+                        if (recaptureIndex !== null) {
+                          setIsCountingDown(true);
+                        } else {
+                          handleStartPhotoSequence();
+                        }
                       }}
-                      disabled={photos.length === 0 && !isSequenceInProgress}
-                      className="flex items-center gap-2 flex-1 sm:flex-none text-xs sm:text-sm hover-lift transition-all duration-200"
-                      data-testid="button-retake-all"
+                      disabled={isCountingDown || isAutoCapturing}
+                      className="flex-1 sm:flex-none rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white shadow-md disabled:opacity-50"
                     >
-                      <Repeat className="h-4 w-4" />
-                      <span>Retake</span>
+                      <Camera className="h-4 w-4 mr-2" />
+                      {recaptureIndex !== null
+                        ? `Recapture #${recaptureIndex + 1}`
+                        : "Auto Capture"}
                     </Button>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="flex items-center justify-center w-10 h-10 p-0 hover-lift transition-all duration-200"
-                        >
-                          <Settings className="h-4 w-4" />
-                        </Button>
-                      </DialogTrigger>
+                  ) : (
+                    <Button
+                      onClick={handleNext}
+                      className="flex-1 sm:flex-none rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white shadow-md"
+                    >
+                      Continue to Customize
+                      <ChevronRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setPhotos([]);
+                      setRecaptureIndex(null);
+                    }}
+                    disabled={photos.length === 0}
+                    className="rounded-xl border-slate-200 dark:border-slate-600"
+                  >
+                    <Repeat className="h-4 w-4 mr-2" />
+                    Retake All
+                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="icon" className="rounded-xl shrink-0">
+                        <Settings className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
                       <DialogContent className="max-w-md">
                         <DialogHeader>
                           <DialogTitle className="text-2xl font-bold text-left bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">RoBooth Settings</DialogTitle>
@@ -453,98 +444,117 @@ export default function Home() {
                                 onCheckedChange={setDarkMode}
                               />
                             </div>
-
-                            <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
-                              <Button
-                                onClick={saveToGallery}
-                                disabled={photos.length < 4}
-                                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
-                                data-testid="button-save-to-gallery-settings"
-                              >
-                                <ImageIcon className="h-4 w-4" />
-                                Save to Gallery
-                              </Button>
-                              <p className="text-xs text-slate-500 text-center mt-2">
-                                {photos.length < 4 ? `Capture ${4 - photos.length} more photo${4 - photos.length > 1 ? 's' : ''} to save` : 'Save your photo strip to the gallery'}
-                              </p>
-                            </div>
                           </div>
                         </div>
                       </DialogContent>
                     </Dialog>
-                  </div>
                 </div>
               </div>
 
-              {/* Preview Grid */}
-
-              <div className="space-y-3">
-                  <h3 className={`text-lg font-bold bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent`}>
-                    Photo Preview
+              {/* Preview strip — sidebar */}
+              <div
+                className={`rounded-2xl p-4 sm:p-5 lg:sticky lg:top-24 lg:self-start ${
+                  darkMode ? "bg-slate-900/60 border border-slate-700" : "bg-slate-50 border border-slate-100"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    Your Strip
                   </h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    {Array.from({ length: 4 }).map((_, index) => (
-                        <div
-                        key={index}
-                        className={`aspect-[4/3] rounded-lg border transition-all duration-300 hover-lift ${
-                          photos[index]
-                            ? 'border-green-400 bg-green-50 shadow-md'
-                            : index === photos.length
-                            ? 'border-sky-400 bg-gradient-to-br from-sky-50 to-indigo-50 shadow-md'
-                            : darkMode ? 'border-slate-600 bg-slate-700' : 'border-slate-200 bg-white'
-                        }
-                        flex items-center justify-center relative overflow-hidden group cursor-pointer`}
-                        onClick={() => {
-                          if (photos[index]) {
-                            handleRetakePhoto(index);
-                          }
-                        }}
-                      >
-                        {photos[index] ? (
-                          <>
-                            <img
-                              src={photos[index]}
-                              alt={`Captured ${index + 1}`}
-                              className="w-full h-full object-cover rounded-lg"
-                            />
-                            <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-lg">
-                              ✓
-                            </div>
-                            {/* Hover overlay for retake */}
-                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center rounded-lg">
-                              <div className="text-white text-center animate-fade-in">
-                                <Trash2 className="h-6 w-6 mx-auto mb-1" />
-                                <span className="text-xs font-medium">Retake</span>
-                              </div>
-                            </div>
-                          </>
-                        ) : (
-                          <div className="text-center">
-                            <div className={`w-10 h-10 rounded-full ${
-                              index === photos.length
-                                ? 'bg-gradient-to-br from-sky-200 to-indigo-200 border-2 border-sky-400 shadow-md'
-                                : darkMode ? 'bg-slate-600 border-2 border-slate-500' : 'bg-slate-100 border-2 border-slate-300'
-                            } flex items-center justify-center mb-2 transition-all duration-300`}>
-                              <Camera className={`h-5 w-5 ${
-                                index === photos.length ? 'text-sky-600' : darkMode ? 'text-slate-400' : 'text-slate-400'
-                              }`} />
-                            </div>
-                            <span className={`text-xs font-medium ${
-                              index === photos.length ? 'text-sky-600 font-semibold' : darkMode ? 'text-slate-400' : 'text-slate-500'
-                            }`}>
-                              {index === photos.length ? 'Next' : `Photo ${index + 1}`}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  {photos.length > 0 && (
-                    <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'} text-center animate-fade-in`}>
-                      Click on any photo to retake it
-                    </p>
-                  )}
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300">
+                    {layout === "strip" ? "1×4" : "2×2"}
+                  </span>
                 </div>
+
+                <div
+                  className={`mx-auto w-full ${
+                    layout === "strip" ? "max-w-[140px]" : "max-w-[320px]"
+                  }`}
+                >
+                  <div
+                    className={`rounded-xl shadow-inner ${
+                      darkMode ? "bg-slate-800" : "bg-white"
+                    } ring-1 ring-slate-200/80 dark:ring-slate-600 ${
+                      layout === "strip" ? "p-2" : "p-3"
+                    }`}
+                  >
+                    <div
+                      className={
+                        layout === "strip"
+                          ? "flex flex-col gap-1.5"
+                          : "grid grid-cols-2 gap-2"
+                      }
+                    >
+                      {Array.from({ length: 4 }).map((_, index) => (
+                        <div
+                          key={index}
+                          className={`relative overflow-hidden rounded-md transition-all duration-300 group cursor-pointer ${
+                            layout === "strip" ? "aspect-[4/3]" : "aspect-square"
+                          } ${
+                            photos[index]
+                              ? "ring-2 ring-emerald-400 shadow-sm"
+                              : index === photos.length
+                                ? "ring-2 ring-sky-400 ring-offset-1 ring-offset-transparent"
+                                : darkMode
+                                  ? "bg-slate-700/80 border border-dashed border-slate-600"
+                                  : "bg-slate-100 border border-dashed border-slate-300"
+                          }`}
+                          onClick={() => {
+                            if (photos[index]) handleRetakePhoto(index);
+                          }}
+                        >
+                          {photos[index] ? (
+                            <>
+                              <img
+                                src={photos[index]}
+                                alt={`Photo ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <span className="text-white text-[10px] font-semibold uppercase tracking-wide">
+                                  Retake
+                                </span>
+                              </div>
+                              <div className="absolute top-1 right-1 w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center">
+                                <span className="text-white text-[8px] font-bold">✓</span>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center gap-1.5">
+                              <Camera
+                                className={`${
+                                  layout === "collage" ? "h-6 w-6" : "h-4 w-4"
+                                } ${
+                                  index === photos.length
+                                    ? "text-sky-500"
+                                    : "text-slate-300 dark:text-slate-600"
+                                }`}
+                              />
+                              <span
+                                className={`font-medium ${
+                                  layout === "collage" ? "text-xs" : "text-[10px]"
+                                } ${
+                                  index === photos.length
+                                    ? "text-sky-600 dark:text-sky-400"
+                                    : "text-slate-400"
+                                }`}
+                              >
+                                {index === photos.length ? "Next" : index + 1}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {photos.length > 0 && (
+                  <p className="text-[11px] text-center text-slate-400 dark:text-slate-500 mt-3">
+                    Tap a photo to retake it
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         ) : (
@@ -573,56 +583,6 @@ export default function Home() {
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label className={`text-sm sm:text-base font-semibold ${darkMode ? 'text-slate-100' : ''}`}>Layout Style</Label>
-                  <div className="flex gap-1 sm:gap-2 flex-row">
-                    <div
-                      className={`flex-1 p-2 sm:p-3 border rounded-lg cursor-pointer transition-all duration-300 hover-lift ${
-                        layout === "strip"
-                          ? darkMode
-                            ? "border-sky-500 bg-sky-500/10 shadow-md"
-                            : "border-sky-500 bg-sky-50 shadow-md"
-                          : darkMode
-                            ? "border-slate-600 hover:border-sky-500/50 bg-slate-700"
-                            : "border-slate-200 hover:border-sky-500/50 hover:bg-slate-50"
-                      }`}
-                      onClick={() => setLayout("strip")}
-                    >
-                      <div className="flex flex-col items-center gap-0.5">
-                        <div className={`w-10 h-14 sm:w-12 sm:h-16 ${darkMode ? 'bg-slate-600' : 'bg-slate-200'} rounded flex flex-col gap-0.5 p-0.5`}>
-                          {[...Array(4)].map((_, i) => (
-                            <div key={i} className={`flex-1 ${darkMode ? 'bg-slate-700' : 'bg-white'} rounded`} />
-                          ))}
-                        </div>
-                        <span className={`text-xs font-bold ${darkMode ? 'text-slate-100' : ''}`}>Strip</span>
-                        <span className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>1x4</span>
-                      </div>
-                    </div>
-                    <div
-                      className={`flex-1 p-2 sm:p-3 border rounded-lg cursor-pointer transition-all duration-300 hover-lift ${
-                        layout === "collage"
-                          ? darkMode
-                            ? "border-sky-500 bg-sky-500/10 shadow-md"
-                            : "border-sky-500 bg-sky-50 shadow-md"
-                          : darkMode
-                            ? "border-slate-600 hover:border-sky-500/50 bg-slate-700"
-                            : "border-slate-200 hover:border-sky-500/50 hover:bg-slate-50"
-                      }`}
-                      onClick={() => setLayout("collage")}
-                    >
-                      <div className="flex flex-col items-center gap-0.5">
-                        <div className={`w-12 h-12 sm:w-14 sm:h-14 ${darkMode ? 'bg-slate-600' : 'bg-slate-200'} rounded grid grid-cols-2 gap-0.5 p-0.5`}>
-                          {[...Array(4)].map((_, i) => (
-                            <div key={i} className={`aspect-square ${darkMode ? 'bg-slate-700' : 'bg-white'} rounded`} />
-                          ))}
-                        </div>
-                        <span className={`text-xs font-bold ${darkMode ? 'text-slate-100' : ''}`}>Collage</span>
-                        <span className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>2x2</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
                 <div className="space-y-4">
                   <Label className={`text-sm sm:text-base font-semibold ${darkMode ? 'text-slate-100' : ''}`}>Display Options</Label>
                   <div className={`${darkMode ? 'bg-slate-700 border border-slate-600' : 'bg-slate-50 border border-slate-200'} rounded-xl p-3 sm:p-4 space-y-4`}>
@@ -637,35 +597,6 @@ export default function Home() {
                         onCheckedChange={setShowName}
                       />
                     </div>
-                    <Select value={fontName} onValueChange={(value) => setFontName(value as FontType)}>
-                      <SelectTrigger id="font-name-select" className={darkMode ? 'bg-slate-600 border-slate-500' : ''}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="bebas">Bebas Neue</SelectItem>
-                        <SelectItem value="oswald">Oswald</SelectItem>
-                        <SelectItem value="anton">Anton</SelectItem>
-                        <SelectItem value="righteous">Righteous</SelectItem>
-                        <SelectItem value="poppins">Poppins</SelectItem>
-                        <SelectItem value="montserrat">Montserrat</SelectItem>
-                        <SelectItem value="raleway">Raleway</SelectItem>
-                        <SelectItem value="playfair">Playfair Display</SelectItem>
-                        <SelectItem value="greatvibes">Great Vibes</SelectItem>
-                        <SelectItem value="cormorant">Cormorant Garamond</SelectItem>
-                        <SelectItem value="lora">Lora</SelectItem>
-                        <SelectItem value="garamond">EB Garamond</SelectItem>
-                        <SelectItem value="pacifico">Pacifico</SelectItem>
-                        <SelectItem value="caveat">Caveat</SelectItem>
-                        <SelectItem value="quicksand">Quicksand</SelectItem>
-                        <SelectItem value="ubuntu">Ubuntu</SelectItem>
-                        <SelectItem value="nunito">Nunito</SelectItem>
-                        <SelectItem value="roboto">Roboto</SelectItem>
-                        <SelectItem value="opensans">Open Sans</SelectItem>
-                        <SelectItem value="lato">Lato</SelectItem>
-                        <SelectItem value="inter">Inter</SelectItem>
-                        <SelectItem value="worksans">Work Sans</SelectItem>
-                      </SelectContent>
-                    </Select>
                     <div className="flex items-center justify-between gap-4">
                       <div className="space-y-0.5 flex-1">
                         <Label htmlFor="show-date" className={`text-xs sm:text-sm ${darkMode ? 'text-slate-100' : ''}`}>Show Date</Label>
@@ -677,35 +608,6 @@ export default function Home() {
                         onCheckedChange={setShowDate}
                       />
                     </div>
-                    <Select value={fontDate} onValueChange={(value) => setFontDate(value as FontType)}>
-                      <SelectTrigger id="font-date-select" className={darkMode ? 'bg-slate-600 border-slate-500' : ''}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="bebas">Bebas Neue</SelectItem>
-                        <SelectItem value="oswald">Oswald</SelectItem>
-                        <SelectItem value="anton">Anton</SelectItem>
-                        <SelectItem value="righteous">Righteous</SelectItem>
-                        <SelectItem value="poppins">Poppins</SelectItem>
-                        <SelectItem value="montserrat">Montserrat</SelectItem>
-                        <SelectItem value="raleway">Raleway</SelectItem>
-                        <SelectItem value="playfair">Playfair Display</SelectItem>
-                        <SelectItem value="greatvibes">Great Vibes</SelectItem>
-                        <SelectItem value="cormorant">Cormorant Garamond</SelectItem>
-                        <SelectItem value="lora">Lora</SelectItem>
-                        <SelectItem value="garamond">EB Garamond</SelectItem>
-                        <SelectItem value="pacifico">Pacifico</SelectItem>
-                        <SelectItem value="caveat">Caveat</SelectItem>
-                        <SelectItem value="quicksand">Quicksand</SelectItem>
-                        <SelectItem value="ubuntu">Ubuntu</SelectItem>
-                        <SelectItem value="nunito">Nunito</SelectItem>
-                        <SelectItem value="roboto">Roboto</SelectItem>
-                        <SelectItem value="opensans">Open Sans</SelectItem>
-                        <SelectItem value="lato">Lato</SelectItem>
-                        <SelectItem value="inter">Inter</SelectItem>
-                        <SelectItem value="worksans">Work Sans</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </div>
                 </div>
 
@@ -762,13 +664,10 @@ export default function Home() {
                     backgroundColor={backgroundColor}
                     nameColor={nameColor}
                     dateColor={dateColor}
-                    fontName={fontName}
-                    fontDate={fontDate}
                     darkMode={darkMode}
                     showShareButton={true}
+                    isShareLoading={isShareGenerating}
                     onShare={handleShare}
-                    onSaveToGallery={saveToGallery}
-                    isSharing={isSharing}
                   />
                 </div>
               </div>

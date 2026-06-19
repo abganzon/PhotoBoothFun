@@ -1,35 +1,10 @@
 
 import React, { useState, useEffect } from "react";
 import { useRoute } from "wouter";
-import { PhotoStrip, type FontType } from "@/components/photo-booth/photo-strip";
+import { PhotoStrip } from "@/components/photo-booth/photo-strip";
 import { Button } from "@/components/ui/button";
 import { Clock, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-const fontFamilyMap: { [key: string]: string } = {
-  bebas: "Bebas Neue",
-  oswald: "Oswald",
-  anton: "Anton",
-  righteous: "Righteous",
-  poppins: "Poppins",
-  montserrat: "Montserrat",
-  raleway: "Raleway",
-  playfair: "Playfair Display",
-  greatvibes: "Great Vibes",
-  cormorant: "Cormorant Garamond",
-  lora: "Lora",
-  garamond: "EB Garamond",
-  pacifico: "Pacifico",
-  caveat: "Caveat",
-  quicksand: "Quicksand",
-  ubuntu: "Ubuntu",
-  nunito: "Nunito",
-  roboto: "Roboto",
-  opensans: "Open Sans",
-  lato: "Lato",
-  inter: "Inter",
-  worksans: "Work Sans",
-};
 
 interface SharedPhotoStrip {
   id: number;
@@ -41,8 +16,6 @@ interface SharedPhotoStrip {
   showName: boolean;
   nameColor: string | null;
   dateColor: string | null;
-  fontName?: FontType;
-  fontDate?: FontType;
   createdAt: string;
 }
 
@@ -52,62 +25,7 @@ export default function SharedPage() {
   const [photoStrip, setPhotoStrip] = useState<SharedPhotoStrip | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [fontsReady, setFontsReady] = useState(false);
   const { toast } = useToast();
-
-  // Preload fonts for rendering on shared page
-  useEffect(() => {
-    const preloadFonts = async () => {
-      if (!document.fonts) {
-        setFontsReady(true);
-        return;
-      }
-
-      try {
-        // Wait for all fonts to be ready
-        await document.fonts.ready;
-
-        // Create a temporary div to force render fonts
-        const tempDiv = document.createElement("div");
-        tempDiv.style.visibility = "hidden";
-        tempDiv.style.position = "absolute";
-        tempDiv.style.top = "-9999px";
-
-        // Render all fonts in the DOM to ensure they're cached
-        const allFonts = Object.values(fontFamilyMap);
-        tempDiv.innerHTML = allFonts
-          .map((font) => `<div style="font-family: '${font}'; font-size: 28px; font-weight: bold;">Test</div>`)
-          .join("");
-        document.body.appendChild(tempDiv);
-
-        // Give browser time to render
-        await new Promise((resolve) => setTimeout(resolve, 800));
-
-        // Load each font at specific sizes used in canvas
-        const fontLoadPromises = allFonts.map((fontName) =>
-          Promise.all([
-            document.fonts.load(`18px "${fontName}"`),
-            document.fonts.load(`20px "${fontName}"`),
-            document.fonts.load(`28px "${fontName}"`),
-            document.fonts.load(`32px "${fontName}"`),
-            document.fonts.load(`bold 28px "${fontName}"`),
-            document.fonts.load(`bold 32px "${fontName}"`),
-          ])
-        );
-
-        await Promise.all(fontLoadPromises);
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        document.body.removeChild(tempDiv);
-        setFontsReady(true);
-      } catch (e) {
-        console.warn("Font preload error:", e);
-        setFontsReady(true);
-      }
-    };
-
-    preloadFonts();
-  }, []);
 
   useEffect(() => {
     if (!match || !id) {
@@ -215,17 +133,6 @@ export default function SharedPage() {
     );
   }
 
-  if (!fontsReady) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Preparing photo strip...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-4xl mx-auto px-4">
@@ -250,8 +157,6 @@ export default function SharedPage() {
               backgroundColor={photoStrip.backgroundColor}
               nameColor={photoStrip.nameColor || "#000000"}
               dateColor={photoStrip.dateColor || "#666666"}
-              fontName={photoStrip.fontName || "bebas"}
-              fontDate={photoStrip.fontDate || "oswald"}
               hideButtons={false}
               darkMode={false}
               showShareButton={false}

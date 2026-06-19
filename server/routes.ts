@@ -30,20 +30,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   }, 25000);
 
-  // Middleware to require authentication on API routes
-  const requireAuth = (req: Request, res: any, next: any) => {
-    // Try to get userId from Clerk if available, otherwise check req.userId
+  const ANON_ID_PATTERN = /^anon_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  const resolveUserId = (req: Request, res: any, next: any) => {
     let userId = req.userId;
-    
+
     if (!userId) {
       try {
         const auth = getAuth(req);
         userId = auth.userId || undefined;
-      } catch (e) {
-        // Clerk not available, userId remains undefined
+      } catch {
+        // Clerk unavailable
       }
     }
-    
+
+    if (!userId) {
+      const anonHeader = req.header("X-Anonymous-User-Id");
+      if (anonHeader && ANON_ID_PATTERN.test(anonHeader)) {
+        userId = anonHeader;
+      }
+    }
+
     if (!userId) {
       res.status(401).json({ error: "Unauthorized" });
       return;
@@ -52,7 +59,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   };
 
-  app.post("/api/photo-strips", requireAuth, async (req, res) => {
+  app.post("/api/photo-strips", resolveUserId, async (req, res) => {
     try {
       const userId = req.userId!;
       const data = insertPhotoStripSchema.parse({
@@ -68,7 +75,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/shared-links", requireAuth, async (req, res) => {
+  app.post("/api/shared-links", resolveUserId, async (req, res) => {
     try {
       const userId = req.userId!;
       const { photoStripId } = req.body;
@@ -183,7 +190,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User's gallery - requires authentication
-  app.get("/api/photo-strips", requireAuth, async (req, res) => {
+  app.get("/api/photo-strips", resolveUserId, async (req, res) => {
     try {
       const userId = req.userId!;
       const photoStrips = await storage.getPhotoStripsByUserId(userId);

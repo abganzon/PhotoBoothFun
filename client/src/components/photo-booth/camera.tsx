@@ -12,7 +12,13 @@ interface CameraProps {
   onMaxPhotos: () => void;
 }
 
-export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, recaptureIndex, onMaxPhotos }: CameraProps) {
+export function PhotoBoothCamera({
+  onCapture,
+  isCountingDown,
+  photosLength,
+  recaptureIndex,
+  onMaxPhotos,
+}: CameraProps) {
   const webcamRef = useRef<Webcam>(null);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
   const [mirrored, setMirrored] = useState(true);
@@ -28,13 +34,19 @@ export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, reca
     }
   }, [onCapture]);
 
-  const toggleCamera = () => {
-    setFacingMode(prev => prev === "user" ? "environment" : "user");
+  const handleShutter = () => {
+    if (recaptureIndex !== null) {
+      capture();
+    } else if (photosLength >= 4) {
+      onMaxPhotos();
+    } else {
+      capture();
+    }
   };
 
   return (
-    <div className="relative w-full max-w-[800px] mx-auto">
-      <div className="aspect-[4/3] bg-black rounded-xl overflow-hidden shadow-2xl border-4 border-white/10">
+    <div className="relative w-full rounded-2xl overflow-hidden shadow-xl ring-1 ring-slate-200/80 dark:ring-slate-700 bg-slate-900">
+      <div className="aspect-[4/3] relative bg-slate-950">
         <Webcam
           audio={false}
           ref={webcamRef}
@@ -42,51 +54,52 @@ export function PhotoBoothCamera({ onCapture, isCountingDown, photosLength, reca
           videoConstraints={{
             width: 1920,
             height: 1080,
-            facingMode: facingMode,
+            facingMode,
           }}
           mirrored={mirrored}
-          className="w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover"
         />
-      </div>
-      
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center gap-4">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setMirrored(!mirrored)}
-          className="h-16 w-16 rounded-full bg-white/95 hover:bg-white shadow-xl border-2 border-gray-200 hover:border-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-600 transition-all duration-300"
-          title="Mirror camera"
-        >
-          <FlipHorizontal className="h-6 w-6 dark:text-white" />
-        </Button>
-        
-        <Button
-          size="icon"
-          onClick={() => {
-            if (recaptureIndex !== null) {
-              capture();
-            } else if (photosLength >= 4) {
-              onMaxPhotos();
-            } else {
-              capture();
-            }
-          }}
-          disabled={isCountingDown}
-          className="h-16 w-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 transition-all duration-300"
-        >
-          <CameraIcon className="h-8 w-8 text-white" />
-        </Button>
-        
-        {isMobile && (
+
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none" />
+
+        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-4 z-10">
           <Button
             variant="outline"
             size="icon"
-            onClick={toggleCamera}
-            className="h-16 w-16 rounded-full bg-white/95 hover:bg-white shadow-xl border-2 border-gray-200 hover:border-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-600 transition-all duration-300"
-            title="Switch camera"
+            onClick={() => setMirrored(!mirrored)}
+            disabled={isCountingDown}
+            className="h-12 w-12 rounded-full bg-white/95 hover:bg-white border-0 shadow-lg backdrop-blur-sm transition-all"
+            title="Mirror camera"
           >
-            <Repeat className="h-6 w-6 dark:text-white" />
+            <FlipHorizontal className="h-5 w-5 text-slate-700" />
           </Button>
+
+          <Button
+            size="icon"
+            onClick={handleShutter}
+            disabled={isCountingDown}
+            className="h-12 w-12 rounded-full bg-gradient-to-br from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 border-2 border-white/30 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:scale-100 transition-all duration-200"
+            title="Take photo"
+          >
+            <CameraIcon className="h-5 w-5 text-white" />
+          </Button>
+
+          {isMobile && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setFacingMode((prev) => (prev === "user" ? "environment" : "user"))}
+              disabled={isCountingDown}
+              className="h-12 w-12 rounded-full bg-white/95 hover:bg-white border-0 shadow-lg backdrop-blur-sm transition-all"
+              title="Switch camera"
+            >
+              <Repeat className="h-5 w-5 text-slate-700" />
+            </Button>
+          )}
+        </div>
+
+        {isCountingDown && (
+          <div className="absolute inset-0 bg-black/25 pointer-events-none z-[5]" />
         )}
       </div>
     </div>

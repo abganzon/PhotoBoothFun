@@ -46,7 +46,7 @@ export function Countdown({ isActive, onComplete, duration = 5 }: CountdownProps
   if (!isActive) return null;
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
+    <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-2xl z-20">
       <span className="text-9xl font-bold text-white">{count}</span>
     </div>
   );
