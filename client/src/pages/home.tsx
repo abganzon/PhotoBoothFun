@@ -704,39 +704,27 @@ export default function Home() {
                 <div className="space-y-4">
                   <Label className={`text-sm sm:text-base font-semibold ${darkMode ? 'text-slate-100' : ''}`}>Colors</Label>
                   <div className={`${darkMode ? 'bg-slate-700 border border-slate-600' : 'bg-slate-50 border border-slate-200'} rounded-xl p-3 sm:p-4 space-y-3`}>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between gap-2">
-                        <Label htmlFor="background-color" className={`text-xs sm:text-sm ${darkMode ? 'text-slate-100' : ''}`}>Background</Label>
-                        <input
-                          type="color"
-                          value={backgroundColor}
-                          onChange={(e) => setBackgroundColor(e.target.value)}
-                          className="h-8 w-12 sm:w-16 rounded-lg cursor-pointer hover-lift transition-all duration-200 border border-slate-300"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between gap-2">
-                        <Label htmlFor="name-color" className={`text-xs sm:text-sm ${darkMode ? 'text-slate-100' : ''}`}>Name Color</Label>
-                        <input
-                          type="color"
-                          value={nameColor}
-                          onChange={(e) => setNameColor(e.target.value)}
-                          className="h-8 w-12 sm:w-16 rounded-lg cursor-pointer hover-lift transition-all duration-200 border border-slate-300"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between gap-2">
-                        <Label htmlFor="date-color" className={`text-xs sm:text-sm ${darkMode ? 'text-slate-100' : ''}`}>Date Color</Label>
-                        <input
-                          type="color"
-                          value={dateColor}
-                          onChange={(e) => setDateColor(e.target.value)}
-                          className="h-8 w-12 sm:w-16 rounded-lg cursor-pointer hover-lift transition-all duration-200 border border-slate-300"
-                        />
-                      </div>
-                    </div>
+                    <ColorPicker
+                      id="background-color"
+                      label="Background"
+                      color={backgroundColor}
+                      onChange={setBackgroundColor}
+                      darkMode={darkMode}
+                    />
+                    <ColorPicker
+                      id="name-color"
+                      label="Name Color"
+                      color={nameColor}
+                      onChange={setNameColor}
+                      darkMode={darkMode}
+                    />
+                    <ColorPicker
+                      id="date-color"
+                      label="Date Color"
+                      color={dateColor}
+                      onChange={setDateColor}
+                      darkMode={darkMode}
+                    />
                   </div>
                 </div>
               </div>

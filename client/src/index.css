@@ -215,3 +215,25 @@
     margin-left: 0 !important;
   }
 }
+
+.strip-color-input {
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+.strip-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.strip-color-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.strip-color-input::-moz-color-swatch {
+  border: none;
+  border-radius: 0.5rem;
+}
