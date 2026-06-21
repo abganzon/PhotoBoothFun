@@ -34,8 +34,8 @@ function LayoutPreview({
   if (layoutId === "collage") {
     return (
       <div
-        className={`rounded-lg grid grid-cols-2 gap-1 shadow-inner ${
-          size === "lg" ? "h-[88px] w-[88px] p-1.5" : "h-[56px] w-[56px] p-1"
+        className={`rounded-lg grid grid-cols-2 gap-0.5 shadow-inner sm:gap-1 ${
+          size === "lg" ? "h-[72px] w-[72px] p-1 sm:h-[88px] sm:w-[88px] sm:p-1.5" : "h-[44px] w-[44px] p-0.5 sm:h-[56px] sm:w-[56px] sm:p-1"
         } ${darkMode ? "bg-slate-700" : "bg-slate-200/80"}`}
       >
         {[0, 1, 2, 3].map((i) => (
@@ -49,8 +49,10 @@ function LayoutPreview({
 
   return (
     <div
-      className={`flex flex-col gap-1 rounded-lg shadow-inner ${
-        size === "lg" ? "h-[108px] w-[72px] p-1.5" : "h-[68px] w-[46px] p-1"
+      className={`flex flex-col gap-0.5 rounded-lg shadow-inner sm:gap-1 ${
+        size === "lg"
+          ? "h-[88px] w-[58px] p-1 sm:h-[108px] sm:w-[72px] sm:p-1.5"
+          : "h-[56px] w-[36px] p-0.5 sm:h-[68px] sm:w-[46px] sm:p-1"
       } ${darkMode ? "bg-slate-700" : "bg-slate-200/80"}`}
     >
       {Array.from({ length: count }).map((_, i) => (
@@ -76,7 +78,7 @@ function SideLayoutCard({
       type="button"
       onClick={onSelect}
       aria-label={`Select ${config.name}`}
-      className={`flex w-[88px] shrink-0 flex-col items-center gap-2 rounded-xl p-3 transition-all duration-300 hover:scale-[1.03] sm:w-[96px] ${
+      className={`flex w-[68px] shrink-0 touch-manipulation flex-col items-center gap-1 rounded-xl p-1.5 transition-all duration-300 active:scale-95 sm:w-[96px] sm:gap-2 sm:p-3 sm:hover:scale-[1.03] ${
         darkMode
           ? "border border-slate-600/80 bg-slate-800/60 text-slate-300 hover:border-sky-600/60 hover:bg-slate-800"
           : "border border-slate-200 bg-white/70 text-slate-500 hover:border-sky-200 hover:bg-white"
@@ -84,11 +86,15 @@ function SideLayoutCard({
     >
       <LayoutPreview layoutId={layoutId} selected={false} darkMode={darkMode} size="sm" />
       <div className="space-y-0.5 text-center">
-        <p className="text-[11px] font-semibold leading-tight">{config.name}</p>
-        <p className="text-[10px] leading-tight opacity-80">{config.subtitle}</p>
+        <p className="text-[10px] font-semibold leading-tight sm:text-[11px]">{config.name}</p>
+        <p className="hidden text-[10px] leading-tight opacity-80 sm:block">{config.subtitle}</p>
       </div>
     </button>
   );
+}
+
+function isInteractiveTarget(target: EventTarget | null) {
+  return target instanceof Element && Boolean(target.closest("button"));
 }
 
 export function LayoutPicker({ layout, onLayoutChange, darkMode = false }: LayoutPickerProps) {
@@ -119,17 +125,37 @@ export function LayoutPicker({ layout, onLayoutChange, darkMode = false }: Layou
     if (dragStartX.current === null) return;
 
     const delta = clientX - dragStartX.current;
-    if (delta > 50) {
+    if (delta > 40) {
       goToIndex(currentIndex - 1);
-    } else if (delta < -50) {
+    } else if (delta < -40) {
       goToIndex(currentIndex + 1);
     }
 
     dragStartX.current = null;
   };
 
+  const handleTouchStart = (event: React.TouchEvent) => {
+    if (isInteractiveTarget(event.target)) return;
+    handleDragStart(event.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent) => {
+    if (isInteractiveTarget(event.target)) return;
+    handleDragEnd(event.changedTouches[0].clientX);
+  };
+
+  const carouselShellClass = darkMode
+    ? "border-2 border-sky-500/80 bg-gradient-to-br from-sky-950/40 to-indigo-950/40 shadow-lg shadow-sky-500/10"
+    : "border-2 border-sky-500/80 bg-gradient-to-br from-sky-50 to-indigo-50 shadow-lg shadow-sky-500/10";
+
+  const centerCardClass = darkMode
+    ? "border border-sky-400/40 bg-slate-900/40 shadow-md shadow-sky-500/10"
+    : "border border-sky-300/60 bg-white/80 shadow-md shadow-sky-500/10";
+
+  const navButtonClass = "h-10 w-10 shrink-0 rounded-xl sm:h-11 sm:w-11";
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 sm:space-y-5">
       <div className="flex items-center gap-2 sm:gap-3">
         <Button
           type="button"
@@ -137,26 +163,17 @@ export function LayoutPicker({ layout, onLayoutChange, darkMode = false }: Layou
           size="icon"
           onClick={() => goToIndex(currentIndex - 1)}
           aria-label="Previous layout"
-          className="h-10 w-10 shrink-0 rounded-xl sm:h-11 sm:w-11"
+          className={`${navButtonClass} hidden sm:inline-flex`}
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
 
         <div
-          className={`min-h-[240px] flex-1 touch-pan-y rounded-2xl px-2 py-4 transition-all duration-300 sm:px-4 sm:py-5 ${
-            darkMode
-              ? "border-2 border-sky-500/80 bg-gradient-to-br from-sky-950/40 to-indigo-950/40 shadow-lg shadow-sky-500/10"
-              : "border-2 border-sky-500/80 bg-gradient-to-br from-sky-50 to-indigo-50 shadow-lg shadow-sky-500/10"
-          }`}
-          onTouchStart={(event) => handleDragStart(event.touches[0].clientX)}
-          onTouchEnd={(event) => handleDragEnd(event.changedTouches[0].clientX)}
-          onPointerDown={(event) => {
-            if (event.pointerType === "mouse" && event.button !== 0) return;
-            handleDragStart(event.clientX);
-          }}
-          onPointerUp={(event) => handleDragEnd(event.clientX)}
+          className={`min-h-[210px] w-full min-w-0 flex-1 touch-pan-y rounded-2xl px-1 py-3 sm:min-h-[240px] sm:px-4 sm:py-5 ${carouselShellClass}`}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
-          <div className="flex h-full items-center justify-center gap-2 sm:gap-4">
+          <div className="flex h-full items-center justify-center gap-1 sm:gap-4">
             <SideLayoutCard
               layoutId={prevLayout.id}
               darkMode={darkMode}
@@ -164,19 +181,15 @@ export function LayoutPicker({ layout, onLayoutChange, darkMode = false }: Layou
             />
 
             <div
-              className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-3 rounded-2xl px-3 py-4 sm:gap-4 sm:px-5 sm:py-5 ${
-                darkMode
-                  ? "border border-sky-400/40 bg-slate-900/40 shadow-md shadow-sky-500/10"
-                  : "border border-sky-300/60 bg-white/80 shadow-md shadow-sky-500/10"
-              }`}
+              className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-2 rounded-2xl px-2 py-3 sm:gap-4 sm:px-5 sm:py-5 ${centerCardClass}`}
             >
               <LayoutPreview layoutId={activeLayout.id} selected darkMode={darkMode} size="lg" />
 
-              <div className="space-y-1 text-center">
-                <p className="text-base font-bold text-sky-700 dark:text-sky-300 sm:text-lg">
+              <div className="space-y-0.5 text-center sm:space-y-1">
+                <p className="text-sm font-bold text-sky-700 dark:text-sky-300 sm:text-lg">
                   {activeLayout.name}
                 </p>
-                <p className="text-xs font-medium text-sky-600 dark:text-sky-400">
+                <p className="text-[11px] font-medium text-sky-600 dark:text-sky-400 sm:text-xs">
                   {activeLayout.subtitle}
                 </p>
                 <p className="hidden text-xs text-slate-400 dark:text-slate-500 sm:block">
@@ -199,30 +212,55 @@ export function LayoutPicker({ layout, onLayoutChange, darkMode = false }: Layou
           size="icon"
           onClick={() => goToIndex(currentIndex + 1)}
           aria-label="Next layout"
-          className="h-10 w-10 shrink-0 rounded-xl sm:h-11 sm:w-11"
+          className={`${navButtonClass} hidden sm:inline-flex`}
         >
           <ChevronRight className="h-5 w-5" />
         </Button>
       </div>
 
-      <div className="flex items-center justify-center gap-2">
-        {LAYOUT_OPTIONS.map((item, index) => (
-          <button
-            key={item.id}
-            type="button"
-            aria-label={`Select ${item.name}`}
-            onClick={() => goToIndex(index)}
-            className={`h-2.5 rounded-full transition-all duration-200 ${
-              index === currentIndex
-                ? "w-7 bg-sky-500"
-                : "w-2.5 bg-slate-300 hover:bg-sky-300 dark:bg-slate-600 dark:hover:bg-sky-700"
-            }`}
-          />
-        ))}
+      <div className="flex items-center justify-center gap-3 sm:gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          onClick={() => goToIndex(currentIndex - 1)}
+          aria-label="Previous layout"
+          className={`${navButtonClass} sm:hidden`}
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+
+        <div className="flex items-center justify-center gap-2">
+          {LAYOUT_OPTIONS.map((item, index) => (
+            <button
+              key={item.id}
+              type="button"
+              aria-label={`Select ${item.name}`}
+              aria-current={index === currentIndex ? "true" : undefined}
+              onClick={() => goToIndex(index)}
+              className={`h-2.5 touch-manipulation rounded-full transition-all duration-200 ${
+                index === currentIndex
+                  ? "w-7 bg-sky-500"
+                  : "w-2.5 bg-slate-300 hover:bg-sky-300 dark:bg-slate-600 dark:hover:bg-sky-700"
+              }`}
+            />
+          ))}
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          onClick={() => goToIndex(currentIndex + 1)}
+          aria-label="Next layout"
+          className={`${navButtonClass} sm:hidden`}
+        >
+          <ChevronRight className="h-5 w-5" />
+        </Button>
       </div>
 
       <p className="text-center text-xs text-slate-400 dark:text-slate-500">
-        Swipe, drag, or tap the side layouts to browse
+        Swipe, use arrows, or tap a side layout
       </p>
     </div>
   );
