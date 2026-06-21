@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { randomUUID } from "crypto";
 import { storage } from "./storage";
 import { insertPhotoStripSchema } from "@shared/schema";
+import { mergeStripTextStyle, extractStripTextStyle } from "@shared/strip-text-style";
 import { resolveUserId } from "./resolve-user-id";
 
 type PhotoStripPayload = {
@@ -13,8 +14,19 @@ type PhotoStripPayload = {
   showName?: unknown;
   nameColor?: unknown;
   dateColor?: unknown;
+  nameFont?: unknown;
+  dateFont?: unknown;
+  nameFontSize?: unknown;
+  dateFontSize?: unknown;
   photoStripId?: number;
 };
+
+function withTextStyleExtras<T extends Record<string, unknown>>(
+  photoStrip: T,
+  body: PhotoStripPayload
+) {
+  return mergeStripTextStyle(photoStrip, body);
+}
 
 function hasInlinePhotoStrip(body: PhotoStripPayload): boolean {
   return Array.isArray(body.photos) && body.photos.length > 0;
@@ -40,6 +52,8 @@ export async function createSharedLinkHandler(req: Request, res: Response) {
 
     const linkId = randomUUID();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    const photoStripWithStyle = withTextStyleExtras(photoStrip, body);
+    const textStyle = extractStripTextStyle(photoStripWithStyle);
 
     const sharedLink = await storage.createSharedLink(
       {
@@ -48,7 +62,8 @@ export async function createSharedLinkHandler(req: Request, res: Response) {
         photoStripId: photoStrip.id,
         expiresAt,
       },
-      photoStrip
+      photoStripWithStyle,
+      textStyle
     );
 
     res.setHeader("Content-Type", "application/json");
@@ -81,8 +96,14 @@ export async function getSharedLinkHandler(req: Request, res: Response) {
       return;
     }
 
+    const textStyle = extractStripTextStyle({
+      ...(photoStrip as Record<string, unknown>),
+      ...(sharedLink.textStyle ?? {}),
+    });
+
     res.json({
       ...photoStrip,
+      ...textStyle,
       photos: Array.isArray(photoStrip.photos) ? photoStrip.photos : [],
     });
   } catch (error) {

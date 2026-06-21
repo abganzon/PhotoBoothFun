@@ -4,16 +4,34 @@ import { useAuth } from "@clerk/clerk-react";
 import { Link } from "wouter";
 import { Camera, Trash2, Download, Share2 } from "lucide-react";
 import { ShareQrCode } from "@/components/share-qr-code";
+import { apiFetch } from "@/lib/api";
+import { downloadCanvasAsPng } from "@/lib/download-image";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { PhotoStrip, type FontType } from "@/components/photo-booth/photo-strip";
 import { useToast } from "@/hooks/use-toast";
+import {
+  DEFAULT_DATE_FONT,
+  DEFAULT_DATE_FONT_SIZE,
+  DEFAULT_NAME_FONT,
+  DEFAULT_NAME_FONT_SIZE,
+  drawStripText,
+  getStripTextSpace,
+  parseStripFontSize,
+  parseStripFontStyle,
+} from "@/lib/strip-text-styles";
+import {
+  type PhotoLayout,
+  getLayoutPhotoCount,
+  isGridLayout,
+  isVerticalStackLayout,
+} from "@shared/layouts";
 
 interface SavedStrip {
   id: string;
   photos: string[];
-  layout: "strip" | "collage";
+  layout: PhotoLayout;
   stripName: string;
   backgroundColor: string;
   nameColor: string;
@@ -21,8 +39,31 @@ interface SavedStrip {
   showDate: boolean;
   showName: boolean;
   timestamp: number;
+  nameFont?: FontType;
+  dateFont?: FontType;
+  nameFontSize?: number;
+  dateFontSize?: number;
   fontName?: FontType;
   fontDate?: FontType;
+}
+
+function getSavedStripFonts(strip: SavedStrip) {
+  return {
+    nameFont: parseStripFontStyle(strip.nameFont ?? strip.fontName, DEFAULT_NAME_FONT),
+    dateFont: parseStripFontStyle(strip.dateFont ?? strip.fontDate, DEFAULT_DATE_FONT),
+    nameFontSize: parseStripFontSize(
+      strip.nameFontSize,
+      DEFAULT_NAME_FONT_SIZE,
+      undefined,
+      48
+    ),
+    dateFontSize: parseStripFontSize(
+      strip.dateFontSize,
+      DEFAULT_DATE_FONT_SIZE,
+      undefined,
+      36
+    ),
+  };
 }
 
 export default function Gallery() {
@@ -63,11 +104,19 @@ export default function Gallery() {
     const placeholderWidth = 200;
     const placeholderHeight = Math.floor(placeholderWidth * 0.75);
     const hasText = strip.showName || strip.showDate;
-    const textSpace = hasText ? (strip.showName && strip.showDate ? 80 : 40) : 0;
+    const fonts = getSavedStripFonts(strip);
+    const textSpace = getStripTextSpace({
+      showName: strip.showName,
+      showDate: strip.showDate,
+      nameFontSize: fonts.nameFontSize,
+      dateFontSize: fonts.dateFontSize,
+    });
 
-    if (strip.layout === "strip") {
+    const photoCount = getLayoutPhotoCount(strip.layout);
+
+    if (isVerticalStackLayout(strip.layout)) {
       canvas.width = placeholderWidth + (padding * 2);
-      const gridHeight = (placeholderHeight * 4) + (padding * 3);
+      const gridHeight = (placeholderHeight * photoCount) + (padding * (photoCount - 1));
       canvas.height = padding + gridHeight + (hasText ? padding + textSpace : padding);
     } else {
       canvas.width = 450;
@@ -95,7 +144,7 @@ export default function Gallery() {
         loadedCount++;
         if (loadedCount === images.length) {
           // Draw images on canvas
-          if (strip.layout === "strip") {
+          if (isVerticalStackLayout(strip.layout)) {
             images.forEach((image, i) => {
               const x = padding;
               const y = padding + (i * (placeholderHeight + padding));
@@ -113,38 +162,54 @@ export default function Gallery() {
             });
           }
 
-          // Draw text if needed
-          if (strip.showName || strip.showDate) {
-            let textY = canvas.height - (hasText ? (strip.showName && strip.showDate ? 60 : 30) : padding);
-            
-            if (strip.showName) {
-              ctx!.fillStyle = strip.nameColor;
-              ctx!.font = "bold 16px Arial";
-              ctx!.textAlign = "center";
-              ctx!.fillText(strip.stripName || "Untitled", canvas.width / 2, textY);
-              textY += 25;
-            }
-            
-            if (strip.showDate) {
-              ctx!.fillStyle = strip.dateColor;
-              ctx!.font = "14px Arial";
-              ctx!.textAlign = "center";
-              ctx!.fillText(new Date(strip.timestamp).toLocaleDateString(), canvas.width / 2, textY);
-            }
+          if (hasText) {
+            const gridStartY = padding;
+            const gridHeight = isVerticalStackLayout(strip.layout)
+              ? (placeholderHeight * photoCount) + (padding * (photoCount - 1))
+              : (() => {
+                  const gridSize = canvas.width - padding * 2;
+                  const cellSize = (gridSize - padding) / 2;
+                  return cellSize * 2 + padding;
+                })();
+            const textAreaStartY = gridStartY + gridHeight + padding;
+
+            drawStripText(ctx!, {
+              canvasWidth: canvas.width,
+              textAreaStartY,
+              name: strip.stripName || "Untitled",
+              dateText: new Date(strip.timestamp).toLocaleDateString(),
+              showName: strip.showName,
+              showDate: strip.showDate,
+              nameColor: strip.nameColor,
+              dateColor: strip.dateColor,
+              nameFont: fonts.nameFont,
+              dateFont: fonts.dateFont,
+              nameFontSize: fonts.nameFontSize,
+              dateFontSize: fonts.dateFontSize,
+            });
           }
 
           // Download the canvas
-          const link = document.createElement("a");
-          link.href = canvas.toDataURL("image/png");
-          link.download = `photobooth-${strip.stripName || "photo"}-${new Date(strip.timestamp).getTime()}.png`;
-          link.click();
-
-          toast({
-            title: "Downloaded",
-            description: `${strip.stripName || 'Photo'} has been downloaded`,
-            variant: "default",
-            duration: 2000,
-          });
+          void downloadCanvasAsPng(canvas, `photobooth-${strip.stripName || "photo"}-${new Date(strip.timestamp).getTime()}.png`)
+            .then((result) => {
+              toast({
+                title: result === "opened" ? "Image opened" : "Downloaded",
+                description:
+                  result === "opened"
+                    ? "Tap and hold the image, then choose Save to Photos."
+                    : `${strip.stripName || "Photo"} has been downloaded`,
+                variant: "default",
+                duration: 2000,
+              });
+            })
+            .catch(() => {
+              toast({
+                title: "Download failed",
+                description: "Could not save this photo strip.",
+                variant: "destructive",
+                duration: 2000,
+              });
+            });
         }
       };
     });
@@ -161,7 +226,7 @@ export default function Gallery() {
 
     try {
       // First save the strip to server
-      const response = await fetch("/api/photo-strips", {
+      const response = await apiFetch("/api/photo-strips", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -186,10 +251,17 @@ export default function Gallery() {
       const saved = await response.json();
 
       // Create shared link
-      const shareResponse = await fetch('/api/shared-links', {
+      const fonts = getSavedStripFonts(strip);
+      const shareResponse = await apiFetch('/api/shared-links', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ photoStripId: saved.id }),
+        body: JSON.stringify({
+          photoStripId: saved.id,
+          nameFont: fonts.nameFont,
+          dateFont: fonts.dateFont,
+          nameFontSize: fonts.nameFontSize,
+          dateFontSize: fonts.dateFontSize,
+        }),
       });
 
       if (!shareResponse.ok) {
@@ -242,11 +314,13 @@ export default function Gallery() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-            {savedStrips.map((strip) => (
+            {savedStrips.map((strip) => {
+              const fonts = getSavedStripFonts(strip);
+              return (
               <div key={strip.id} className="group relative rounded-2xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 max-w-sm mx-auto w-full">
                 <div className="h-1 bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-600" />
                 <div className="p-4 flex flex-col items-center">
-                  <div className="w-full flex justify-center" style={{ maxWidth: strip.layout === 'strip' ? '180px' : '260px' }}>
+                  <div className="w-full flex justify-center" style={{ maxWidth: isGridLayout(strip.layout) ? '260px' : '180px' }}>
                     <div className="rounded-lg overflow-hidden bg-transparent flex items-center justify-center transform scale-90 origin-top">
                       <PhotoStrip
                         photos={strip.photos || []}
@@ -257,8 +331,10 @@ export default function Gallery() {
                         dateColor={strip.dateColor || "#666666"}
                         showDate={strip.showDate !== false}
                         showName={strip.showName !== false}
-                        fontName={strip.fontName || "bebas"}
-                        fontDate={strip.fontDate || "oswald"}
+                        nameFont={fonts.nameFont}
+                        dateFont={fonts.dateFont}
+                        nameFontSize={fonts.nameFontSize}
+                        dateFontSize={fonts.dateFontSize}
                         hideButtons={true}
                         darkMode={false}
                       />
@@ -300,7 +376,8 @@ export default function Gallery() {
                   </Button>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
         )}
         

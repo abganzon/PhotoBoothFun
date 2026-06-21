@@ -7,6 +7,12 @@ type StoredSharedLink = {
   createdAt: string | Date;
   expiresAt: string | Date;
   isActive: boolean;
+  textStyle?: {
+    nameFont?: string;
+    dateFont?: string;
+    nameFontSize?: number;
+    dateFontSize?: number;
+  };
   photoStripData?: {
     id: number;
     userId: string;
@@ -19,6 +25,10 @@ type StoredSharedLink = {
     showName: boolean;
     nameColor: string | null;
     dateColor: string | null;
+    nameFont?: string;
+    dateFont?: string;
+    nameFontSize?: number;
+    dateFontSize?: number;
   };
 };
 

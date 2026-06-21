@@ -1,19 +1,40 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Image as ImageIcon, Share2, Save } from "lucide-react";
+import { Download, Share2, Save } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
+import { downloadCanvasAsPng } from "@/lib/download-image";
+import {
+  DEFAULT_DATE_FONT,
+  DEFAULT_DATE_FONT_SIZE,
+  DEFAULT_NAME_FONT,
+  DEFAULT_NAME_FONT_SIZE,
+  drawStripText,
+  getStripTextSpace,
+  waitForStripFonts,
+  type FontType,
+  type StripFontStyle,
+} from "@/lib/strip-text-styles";
 import { ShareModal } from "./share-modal";
+import {
+  type PhotoLayout,
+  getLayoutPhotoCount,
+  isVerticalStackLayout,
+} from "@shared/layouts";
 
 interface PhotoStripProps {
   photos: string[];
-  layout: "strip" | "collage";
+  layout: PhotoLayout;
   name?: string;
   showDate?: boolean;
   showName?: boolean;
   backgroundColor?: string;
   nameColor?: string;
   dateColor?: string;
+  nameFont?: StripFontStyle;
+  dateFont?: StripFontStyle;
+  nameFontSize?: number;
+  dateFontSize?: number;
   hideButtons?: boolean;
   darkMode?: boolean;
   showShareButton?: boolean;
@@ -31,6 +52,10 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
   backgroundColor = "#ffffff",
   nameColor = "#000000",
   dateColor = "#666666",
+  nameFont = DEFAULT_NAME_FONT,
+  dateFont = DEFAULT_DATE_FONT,
+  nameFontSize = DEFAULT_NAME_FONT_SIZE,
+  dateFontSize = DEFAULT_DATE_FONT_SIZE,
   hideButtons = false,
   darkMode = false,
   showShareButton = false,
@@ -40,7 +65,6 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
-  const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
   const [photoStripId, setPhotoStripId] = useState<number | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
 
@@ -67,59 +91,56 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
     // Calculate text space needed for name and date with layout-specific spacing
     const hasText = showName || showDate;
-    const textSpace = hasText ? (showName && showDate ? 80 : 40) : 0;
+    const textSpace = getStripTextSpace({
+      showName,
+      showDate,
+      nameFontSize,
+      dateFontSize,
+    });
 
-    // Define placeholder dimensions for strip layout
-    const placeholderWidth = 200; // Reduced width for placeholder images
+    const photoCount = getLayoutPhotoCount(layout);
+
+    // Define placeholder dimensions for vertical layouts
+    const placeholderWidth = 200;
     const placeholderHeight = Math.floor(placeholderWidth * 0.75);
 
     let photoWidth: number;
     let photoHeight: number;
     let gridHeight: number;
 
-    if (layout === "strip") {
-      canvas.width = placeholderWidth + (padding * 2); // Set width to fit placeholder with padding
-      gridHeight = (placeholderHeight * 4) + (padding * 3); // Height of just the photos and spacing between them
-      // Set canvas height with text at bottom
+    if (isVerticalStackLayout(layout)) {
+      canvas.width = placeholderWidth + (padding * 2);
+      gridHeight = (placeholderHeight * photoCount) + (padding * (photoCount - 1));
       canvas.height = padding + gridHeight + (hasText ? padding + textSpace : padding);
     } else {
       // For collage layout
-      canvas.width = 450; // Reduced from 600 to 450 for collage layout
-      const gridSize = canvas.width - (padding * 2); // Total space for grid
-      const cellSize = (gridSize - padding) / 2; // Size for each image cell, accounting for middle padding
-      gridHeight = (cellSize * 2) + padding; // Height of the 2x2 grid including middle padding
+      canvas.width = 450;
+      const gridSize = canvas.width - (padding * 2);
+      const cellSize = (gridSize - padding) / 2;
+      gridHeight = (cellSize * 2) + padding;
       photoWidth = cellSize;
       photoHeight = cellSize;
 
-      // Set canvas height with text at bottom
       canvas.height = padding + gridHeight + (hasText ? padding + textSpace : padding);
     }
 
     tempCanvas.width = canvas.width;
     tempCanvas.height = canvas.height;
 
-    // Clear canvas and apply background
-    tempCtx.fillStyle = backgroundColor;
-    tempCtx.fillRect(0, 0, canvas.width, canvas.height);
-
-    if (layout === "strip") {
+    if (isVerticalStackLayout(layout)) {
       photoWidth = placeholderWidth;
       photoHeight = placeholderHeight;
-      gridHeight = (photoHeight * 4) + (padding * 3);
+      gridHeight = (photoHeight * photoCount) + (padding * (photoCount - 1));
     } else {
-      // For collage, calculate cell size from total width minus outer and middle padding
-      const availableWidth = canvas.width - (padding * 2); // Space between outer borders
-      photoWidth = (availableWidth - padding) / 2; // Width of each cell
-      photoHeight = photoWidth; // Keep cells square
+      const availableWidth = canvas.width - (padding * 2);
+      photoWidth = (availableWidth - padding) / 2;
+      photoHeight = photoWidth;
       gridHeight = (photoHeight * 2) + padding;
     }
 
     // Calculate grid starting position - now at top when no text, or with padding when text exists
     const gridStartY = padding;
-
-    // Calculate text position - now at the bottom with better spacing
-    const textStartY = gridStartY + gridHeight + padding + 25; // More generous spacing
-    const lineHeight = 42; // Increased line height for better readability
+    const textAreaStartY = gridStartY + gridHeight + padding;
 
     const loadImage = (src: string): Promise<HTMLImageElement> => {
       return new Promise((resolve, reject) => {
@@ -141,15 +162,14 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     };
 
     const drawAllPhotos = async () => {
-      console.log("Drawing photos, count:", photos.length);
-      console.log("Layout:", layout);
-      console.log("Canvas dimensions:", canvas.width, "x", canvas.height);
+      // Clear canvas and apply background
+      tempCtx.fillStyle = backgroundColor;
+      tempCtx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Draw placeholder borders for empty layout
       if (photos.length === 0) {
-        if (layout === "strip") {
-          // Strip layout placeholders
-          for (let i = 0; i < 4; i++) {
+        if (isVerticalStackLayout(layout)) {
+          for (let i = 0; i < photoCount; i++) {
             const x = padding;
             const y = gridStartY + (i * (placeholderHeight + padding));
 
@@ -174,14 +194,14 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
 
       // Draw actual images
       if (photos.length > 0) {
-        const imagesToDraw = Math.min(photos.length, layout === "strip" ? 4 : 4);
+        const imagesToDraw = Math.min(photos.length, photoCount);
         for (let i = 0; i < imagesToDraw; i++) {
           try {
             const img = await loadImage(photos[i]);
             let x: number;
             let y: number;
 
-            if (layout === "strip") {
+            if (isVerticalStackLayout(layout)) {
               x = padding;
               y = gridStartY + (i * (placeholderHeight + padding));
 
@@ -235,53 +255,30 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
         }
       }
 
-      // Draw title and date at bottom after photos with enhanced styling
-      if (showName) {
-        const titleSize = layout === "strip" ? 28 : 32; // Increased font sizes for better visibility
-        tempCtx.font = `bold ${titleSize}px "Georgia", serif`; // Use serif font for elegance
-        tempCtx.textAlign = "center";
+      await waitForStripFonts({
+        showName,
+        showDate,
+        nameFont,
+        dateFont,
+        nameFontSize,
+        dateFontSize,
+      });
 
-        // Add text shadow for depth
-        tempCtx.shadowColor = "rgba(0, 0, 0, 0.3)";
-        tempCtx.shadowOffsetX = 1;
-        tempCtx.shadowOffsetY = 1;
-        tempCtx.shadowBlur = 2;
+      drawStripText(tempCtx, {
+        canvasWidth: canvas.width,
+        textAreaStartY,
+        name,
+        dateText: format(new Date(), "MMMM dd, yyyy").toUpperCase(),
+        showName,
+        showDate,
+        nameColor,
+        dateColor,
+        nameFont,
+        dateFont,
+        nameFontSize,
+        dateFontSize,
+      });
 
-        tempCtx.fillStyle = nameColor;
-        tempCtx.fillText(name || "Photo Strip", canvas.width / 2, textStartY);
-
-        // Reset shadow
-        tempCtx.shadowColor = "transparent";
-        tempCtx.shadowOffsetX = 0;
-        tempCtx.shadowOffsetY = 0;
-        tempCtx.shadowBlur = 0;
-      }
-
-      // Draw date if enabled with enhanced styling
-      if (showDate) {
-        const dateSize = layout === "strip" ? 18 : 20; // Increased font sizes
-        tempCtx.font = `${dateSize}px "Arial", sans-serif`; // Clean sans-serif for date
-        tempCtx.textAlign = "center";
-
-        // Add subtle text shadow
-        tempCtx.shadowColor = "rgba(0, 0, 0, 0.2)";
-        tempCtx.shadowOffsetX = 0.5;
-        tempCtx.shadowOffsetY = 0.5;
-        tempCtx.shadowBlur = 1;
-
-        tempCtx.fillStyle = dateColor;
-        const dateText = format(new Date(), "MMMM dd, yyyy").toUpperCase(); // Uppercase for style
-        const dateY = showName ? textStartY + (lineHeight * 0.9) : textStartY; // Slightly tighter spacing
-        tempCtx.fillText(dateText, canvas.width / 2, dateY);
-
-        // Reset shadow
-        tempCtx.shadowColor = "transparent";
-        tempCtx.shadowOffsetX = 0;
-        tempCtx.shadowOffsetY = 0;
-        tempCtx.shadowBlur = 0;
-      }
-
-      // Update main canvas with the final content
       ctx.canvas.width = canvas.width;
       ctx.canvas.height = canvas.height;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -289,75 +286,31 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     };
 
     drawAllPhotos();
-  }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, layout]);
+  }, [photos, backgroundColor, name, showDate, showName, nameColor, dateColor, nameFont, dateFont, nameFontSize, dateFontSize, layout]);
 
   const handleDownload = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const fileName = `${name || 'photo'}-${format(new Date(), 'yyyy-MM-dd')}.png`;
+    const fileName = `${name || "photo"}-${format(new Date(), "yyyy-MM-dd")}.png`;
 
-    if (isMobile) {
-      try {
-        // Convert canvas to blob
-        const blob = await new Promise<Blob>((resolve) => {
-          canvas.toBlob((blob) => {
-            resolve(blob!);
-          }, 'image/png');
-        });
-
-        // Create a File object
-        const file = new File([blob], fileName, { type: 'image/png' });
-
-        // Check if the Web Share API is available
-        if (navigator.share && navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            files: [file],
-            title: 'Photo Strip',
-            text: 'Download or share your photo strip'
-          });
-
-          toast({
-            title: "Success!",
-            description: "Your photo strip is ready to be saved or shared",
-            variant: "success",
-            duration: 3000,
-          });
-        } else {
-          // Fallback for browsers that don't support sharing files
-          const downloadUrl = canvas.toDataURL();
-          const link = document.createElement("a");
-          link.download = fileName;
-          link.href = downloadUrl;
-          link.click();
-
-          toast({
-            title: "Photo Downloaded",
-            description: "Check your device's download folder",
-            variant: "success",
-            duration: 3000,
-          });
-        }
-      } catch (error) {
-        console.error('Error sharing/downloading:', error);
-        toast({
-          title: "Download Failed",
-          description: "There was an error downloading your photo",
-          variant: "destructive",
-          duration: 3000,
-        });
-      }
-    } else {
-      // Desktop download behavior
-      const link = document.createElement("a");
-      link.download = fileName;
-      link.href = canvas.toDataURL();
-      link.click();
-
+    try {
+      const result = await downloadCanvasAsPng(canvas, fileName);
       toast({
-        title: "Photo Downloaded",
-        description: "Check your downloads folder",
+        title: result === "opened" ? "Image opened" : "Photo downloaded",
+        description:
+          result === "opened"
+            ? "Tap and hold the image, then choose Save to Photos."
+            : "Check your device's downloads folder.",
         variant: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error downloading photo:", error);
+      toast({
+        title: "Download failed",
+        description: "There was an error saving your photo strip.",
+        variant: "destructive",
         duration: 3000,
       });
     }
@@ -389,7 +342,7 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
       {!hideButtons && (
         <div className="flex gap-3 mt-2 flex-wrap justify-center">
           <Button onClick={handleDownload} className="px-4 py-2">
-            {isMobile ? <ImageIcon className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+            <Download className="h-4 w-4" />
             <span className="ml-2">Download</span>
           </Button>
 
@@ -425,3 +378,5 @@ export const PhotoStrip: React.FC<PhotoStripProps> = ({
     </div>
   );
 };
+
+export type { FontType, StripFontStyle };

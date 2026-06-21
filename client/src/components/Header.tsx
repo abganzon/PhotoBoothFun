@@ -1,74 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/clerk-react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { Menu } from "lucide-react";
 import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerFooter, DrawerTitle } from "@/components/ui/drawer";
-import { Badge } from "@/components/ui/badge";
 import { isAuthEnabled } from "@/lib/auth-config";
 
 export function Header() {
   const [, setLocation] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const [visitors, setVisitors] = useState<number | null>(null);
-  
-  // Fetch visitor count and setup polling for real-time sync
-  useEffect(() => {
-    let mounted = true;
-    let pollInterval: NodeJS.Timeout | null = null;
-
-    const fetchCurrent = async () => {
-      try {
-        const res = await fetch('/api/visitors');
-        if (!res.ok) return null;
-        const data = await res.json();
-        return typeof data?.count === 'number' ? data.count : null;
-      } catch (e) {
-        console.error('Visitor count fetch failed', e);
-        return null;
-      }
-    };
-
-    const syncVisitorCount = async () => {
-      const current = await fetchCurrent();
-      if (mounted && current !== null) {
-        setVisitors(current);
-      }
-    };
-
-    syncVisitorCount();
-
-    pollInterval = setInterval(() => {
-      void syncVisitorCount();
-    }, 5000);
-
-    const handleVisitorEvent = (event: Event) => {
-      const detail = (event as CustomEvent<{ count?: number }>).detail;
-      if (detail && typeof detail.count === 'number') {
-        setVisitors(detail.count);
-      }
-    };
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('visitor-count-updated', handleVisitorEvent);
-    }
-
-    return () => {
-      mounted = false;
-      if (pollInterval) clearInterval(pollInterval);
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('visitor-count-updated', handleVisitorEvent);
-      }
-    };
-  }, []);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-white/80 via-blue-50/80 to-indigo-50/80 dark:from-slate-900/80 dark:via-slate-800/80 dark:to-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 md:h-16">
           <div className="flex items-center gap-2">
-            {/* Logo and Title (simplified) */}
             <div
               className="cursor-pointer hover-lift rounded-lg px-2 py-1"
               onClick={() => setLocation("/")}
@@ -77,18 +24,7 @@ export function Header() {
             </div>
           </div>
 
-          {/* Auth & Support Section (simple) */}
           <div className="flex items-center gap-3">
-            {/* Visitor Count (desktop only) as badge */}
-            <div className="hidden lg:flex items-center">
-              <Badge variant="outline" className="flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-sky-500">
-                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM6 20v-1c0-2.21 3.58-4 6-4s6 1.79 6 4v1H6z" fill="currentColor" />
-                </svg>
-                <span className="text-sm">{visitors === null ? 'Visitors: —' : `Visitors: ${visitors.toLocaleString()}`}</span>
-              </Badge>
-            </div>
-            {/* Support button */}
             <Dialog>
               <DialogTrigger asChild>
                 <button className="hidden lg:inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-transparent text-slate-700 dark:text-slate-200 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 dark:hover:from-slate-800 dark:hover:to-slate-800 transition-all duration-200 hover-lift">
@@ -122,7 +58,6 @@ export function Header() {
               </>
             )}
 
-            {/* Mobile menu trigger placed beside the profile */}
             <div className="md:hidden">
               <Drawer open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <DrawerTrigger asChild>
@@ -135,10 +70,6 @@ export function Header() {
                     <DrawerTitle>Menu</DrawerTitle>
                   </DrawerHeader>
                   <div className="px-4 py-3">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="text-sm font-semibold">Visitors</div>
-                      <div className="text-sm text-slate-600"><Badge variant="outline">{visitors === null ? '—' : visitors.toLocaleString()}</Badge></div>
-                    </div>
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button className="w-full justify-start" variant="outline">
@@ -174,8 +105,6 @@ export function Header() {
             </div>
           </div>
         </div>
-
-        
       </div>
     </header>
   );

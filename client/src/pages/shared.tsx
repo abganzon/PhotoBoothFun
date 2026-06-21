@@ -5,17 +5,27 @@ import { PhotoStrip } from "@/components/photo-booth/photo-strip";
 import { Button } from "@/components/ui/button";
 import { Clock, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { type PhotoLayout, isPhotoLayout } from "@shared/layouts";
+import {
+  resolveStripTextStyle,
+} from "@/lib/strip-text-styles";
 
 interface SharedPhotoStrip {
   id: number;
   photos: string[];
-  layout: "strip" | "collage";
+  layout: PhotoLayout;
   backgroundColor: string;
   stripName: string | null;
   showDate: boolean;
   showName: boolean;
   nameColor: string | null;
   dateColor: string | null;
+  nameFont?: string;
+  dateFont?: string;
+  nameFontSize?: number;
+  dateFontSize?: number;
+  fontName?: string;
+  fontDate?: string;
   createdAt: string;
 }
 
@@ -133,6 +143,8 @@ export default function SharedPage() {
     );
   }
 
+  const textStyle = resolveStripTextStyle(photoStrip);
+
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-4xl mx-auto px-4">
@@ -150,13 +162,17 @@ export default function SharedPage() {
           <div className="max-w-lg mx-auto">
             <PhotoStrip
               photos={Array.isArray(photoStrip.photos) ? photoStrip.photos : []}
-              layout={photoStrip.layout as "strip" | "collage"}
+              layout={isPhotoLayout(photoStrip.layout) ? photoStrip.layout : "strip"}
               name={photoStrip.stripName || undefined}
               showDate={photoStrip.showDate}
               showName={photoStrip.showName}
               backgroundColor={photoStrip.backgroundColor}
               nameColor={photoStrip.nameColor || "#000000"}
               dateColor={photoStrip.dateColor || "#666666"}
+              nameFont={textStyle.nameFont}
+              dateFont={textStyle.dateFont}
+              nameFontSize={textStyle.nameFontSize}
+              dateFontSize={textStyle.dateFontSize}
               hideButtons={false}
               darkMode={false}
               showShareButton={false}

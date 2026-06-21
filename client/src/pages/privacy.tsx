@@ -17,7 +17,7 @@ export default function Privacy() {
                   Photo Booth Experience
                 </h3>
                 <ul className="text-gray-600 pl-5 list-disc ml-4 space-y-2">
-                  <li>Take up to 4 photos in sequence</li>
+                  <li>Take 1 to 4 photos depending on layout</li>
                   <li>Automatic countdown timer (customizable 3-10 seconds)</li>
                   <li>Camera flip and mirror controls</li>
                   <li>Recapture individual photos</li>
@@ -31,7 +31,7 @@ export default function Privacy() {
                   Customization Options
                 </h3>
                 <ul className="text-gray-600 pl-5 list-disc ml-4 space-y-2">
-                  <li>Strip and collage (2x2) layouts</li>
+                  <li>Single, duo, strip, and collage layouts</li>
                   <li>Custom strip name with text color selection</li>
                   <li>Adjustable timer duration</li>
                   <li>Background color picker</li>
@@ -64,7 +64,6 @@ export default function Privacy() {
                   <li>Dark/light mode support</li>
                   <li>Real-time camera preview</li>
                   <li>Responsive mobile and desktop layouts</li>
-                  <li>Real-time visitor counter</li>
                   <li>Status notifications and toasts</li>
                 </ul>
               </div>
@@ -124,14 +123,6 @@ export default function Privacy() {
                   User Authentication
                 </h3>
                 <p className="text-gray-600 pl-5">By default, no account is required. A random anonymous ID is stored in your browser and sent only when you create a share link, so uploads can be associated with your session. This ID is not linked to personal information. When sign-in is enabled, authentication is handled by Clerk — we do not store passwords.</p>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                  <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-3"></span>
-                  Analytics & Visitor Tracking
-                </h3>
-                <p className="text-gray-600 pl-5">We track a simple visitor counter displayed on the header for informational purposes only. This counter does not collect personal information or track individual users.</p>
               </div>
 
               <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">

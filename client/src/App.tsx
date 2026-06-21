@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { Header } from "@/components/Header";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { isAuthEnabled } from "@/lib/auth-config";
-import { useVisitorTracking } from "@/hooks/use-visitor-tracking";
 import Home from "@/pages/home";
 import LandingPage from "@/pages/landing";
 import SharedPage from "@/pages/shared";
@@ -21,8 +20,6 @@ const clerkPublishableKey =
   undefined;
 
 function AppRoutes() {
-  useVisitorTracking();
-
   return (
     <QueryClientProvider client={queryClient}>
       <Router>

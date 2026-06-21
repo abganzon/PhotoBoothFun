@@ -15,6 +15,33 @@ import { StepProgress } from "@/components/photo-booth/step-progress";
 import { LayoutPicker } from "@/components/photo-booth/layout-picker";
 import { ShareQrCode } from "@/components/share-qr-code";
 import { useLocation } from 'wouter';
+import {
+  type PhotoLayout,
+  getLayoutDisplayName,
+  getLayoutGridLabel,
+  getLayoutPhotoCount,
+  isGridLayout,
+  isPhotoLayout,
+  isVerticalStackLayout,
+} from "@shared/layouts";
+import {
+  DEFAULT_DATE_FONT,
+  DEFAULT_DATE_FONT_SIZE,
+  DEFAULT_NAME_FONT,
+  DEFAULT_NAME_FONT_SIZE,
+  MAX_DATE_FONT_SIZE,
+  MAX_NAME_FONT_SIZE,
+  MIN_STRIP_FONT_SIZE,
+  STRIP_FONT_OPTIONS,
+  type StripFontStyle,
+} from "@/lib/strip-text-styles";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Define an interface for the stored photo strip data
 interface StoredPhotoStrip {
@@ -22,7 +49,7 @@ interface StoredPhotoStrip {
   timestamp: number;
   stripData: {
     photos: string[];
-    layout: "strip" | "collage";
+    layout: PhotoLayout;
     backgroundColor: string;
     stripName: string;
     showDate: boolean;
@@ -41,7 +68,11 @@ export default function Home() {
   const [showName, setShowName] = useState(true);
   const [nameColor, setNameColor] = useState("#000000");
   const [dateColor, setDateColor] = useState("#666666");
-  const [layout, setLayout] = useState<"strip" | "collage">("strip");
+  const [nameFont, setNameFont] = useState<StripFontStyle>(DEFAULT_NAME_FONT);
+  const [dateFont, setDateFont] = useState<StripFontStyle>(DEFAULT_DATE_FONT);
+  const [nameFontSize, setNameFontSize] = useState(DEFAULT_NAME_FONT_SIZE);
+  const [dateFontSize, setDateFontSize] = useState(DEFAULT_DATE_FONT_SIZE);
+  const [layout, setLayout] = useState<PhotoLayout>("strip");
   const [timerDuration, setTimerDuration] = useState(5);
   const [darkMode, setDarkMode] = useState(() => {
     // Initialize from localStorage if available
@@ -77,9 +108,11 @@ export default function Home() {
     }
   }, [darkMode]);
 
+  const maxPhotos = getLayoutPhotoCount(layout);
+
   useEffect(() => {
     const preselected = sessionStorage.getItem("robooth_layout");
-    if (preselected === "strip" || preselected === "collage") {
+    if (preselected && isPhotoLayout(preselected)) {
       setLayout(preselected);
       setCurrentStep(1);
       sessionStorage.removeItem("robooth_layout");
@@ -114,7 +147,7 @@ export default function Home() {
       clearAutoCaptureTimer();
 
       if (isAutoCapturing) {
-        if (nextPhotoCount < 4) {
+        if (nextPhotoCount < maxPhotos) {
           autoCaptureTimer.current = setTimeout(() => {
             setIsCountingDown(true);
           }, 1500);
@@ -126,7 +159,7 @@ export default function Home() {
   };
 
   const handleStartPhotoSequence = () => {
-    if (photos.length >= 4) {
+    if (photos.length >= maxPhotos) {
       toast({
         title: "Maximum photos reached",
         description: "Please clear the photos to start over.",
@@ -202,6 +235,10 @@ export default function Home() {
           showName,
           nameColor,
           dateColor,
+          nameFont,
+          dateFont,
+          nameFontSize,
+          dateFontSize,
         }),
       });
 
@@ -243,7 +280,7 @@ export default function Home() {
           onNext={handleNext}
           onPrevious={handlePrevious}
           hideNavigation={currentStep === 0}
-          disableNext={currentStep === 1 && photos.length < 4}
+          disableNext={currentStep === 1 && photos.length < maxPhotos}
         />
 
         {currentStep === 0 ? (
@@ -259,7 +296,7 @@ export default function Home() {
                 Choose Your Layout
               </h2>
               <p className={`text-sm sm:text-base max-w-md mx-auto ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
-                Pick how your four photos will be arranged before you start capturing.
+                Swipe or use the arrows to pick how your photos will be arranged.
               </p>
             </div>
 
@@ -294,14 +331,14 @@ export default function Home() {
                   Capture Your Photos
                 </h2>
                 <p className={`text-sm mt-1 ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
-                  {layout === "strip" ? "Photo strip" : "Collage"} layout ·{" "}
-                  {photos.length < 4
-                    ? `Photo ${photos.length + 1} of 4`
-                    : "All 4 photos captured"}
+                  {getLayoutDisplayName(layout)} layout ·{" "}
+                  {photos.length < maxPhotos
+                    ? `Photo ${photos.length + 1} of ${maxPhotos}`
+                    : `All ${maxPhotos} photos captured`}
                 </p>
               </div>
               <div className="flex gap-1">
-                {[0, 1, 2, 3].map((i) => (
+                {Array.from({ length: maxPhotos }).map((_, i) => (
                   <div
                     key={i}
                     className={`h-1.5 w-8 sm:w-10 rounded-full transition-colors duration-300 ${
@@ -318,7 +355,7 @@ export default function Home() {
 
             <div
               className={`grid grid-cols-1 gap-6 lg:gap-8 ${
-                layout === "collage"
+                isGridLayout(layout)
                   ? "lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px]"
                   : "lg:grid-cols-[1fr_280px] xl:grid-cols-[1fr_300px]"
               }`}
@@ -331,6 +368,7 @@ export default function Home() {
                     isCountingDown={isCountingDown}
                     timerDuration={timerDuration}
                     photosLength={photos.length}
+                    maxPhotos={maxPhotos}
                     recaptureIndex={recaptureIndex}
                     onMaxPhotos={() => {
                       toast({
@@ -352,7 +390,7 @@ export default function Home() {
                     darkMode ? "bg-slate-900/50 border border-slate-700" : "bg-slate-50 border border-slate-100"
                   }`}
                 >
-                  {photos.length < 4 || recaptureIndex !== null ? (
+                  {photos.length < maxPhotos || recaptureIndex !== null ? (
                     <Button
                       onClick={() => {
                         if (recaptureIndex !== null) {
@@ -447,34 +485,34 @@ export default function Home() {
                     Your Strip
                   </h3>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300">
-                    {layout === "strip" ? "1×4" : "2×2"}
+                    {getLayoutGridLabel(layout)}
                   </span>
                 </div>
 
                 <div
                   className={`mx-auto w-full ${
-                    layout === "strip" ? "max-w-[140px]" : "max-w-[320px]"
+                    isGridLayout(layout) ? "max-w-[320px]" : "max-w-[140px]"
                   }`}
                 >
                   <div
                     className={`rounded-xl shadow-inner ${
                       darkMode ? "bg-slate-800" : "bg-white"
                     } ring-1 ring-slate-200/80 dark:ring-slate-600 ${
-                      layout === "strip" ? "p-2" : "p-3"
+                      isGridLayout(layout) ? "p-3" : "p-2"
                     }`}
                   >
                     <div
                       className={
-                        layout === "strip"
-                          ? "flex flex-col gap-1.5"
-                          : "grid grid-cols-2 gap-2"
+                        isGridLayout(layout)
+                          ? "grid grid-cols-2 gap-2"
+                          : "flex flex-col gap-1.5"
                       }
                     >
-                      {Array.from({ length: 4 }).map((_, index) => (
+                      {Array.from({ length: maxPhotos }).map((_, index) => (
                         <div
                           key={index}
                           className={`relative overflow-hidden rounded-md transition-all duration-300 group cursor-pointer ${
-                            layout === "strip" ? "aspect-[4/3]" : "aspect-square"
+                            isVerticalStackLayout(layout) ? "aspect-[4/3]" : "aspect-square"
                           } ${
                             photos[index]
                               ? "ring-2 ring-emerald-400 shadow-sm"
@@ -508,7 +546,7 @@ export default function Home() {
                             <div className="w-full h-full flex flex-col items-center justify-center gap-1.5">
                               <Camera
                                 className={`${
-                                  layout === "collage" ? "h-6 w-6" : "h-4 w-4"
+                                  isGridLayout(layout) ? "h-6 w-6" : "h-4 w-4"
                                 } ${
                                   index === photos.length
                                     ? "text-sky-500"
@@ -517,7 +555,7 @@ export default function Home() {
                               />
                               <span
                                 className={`font-medium ${
-                                  layout === "collage" ? "text-xs" : "text-[10px]"
+                                  isGridLayout(layout) ? "text-xs" : "text-[10px]"
                                 } ${
                                   index === photos.length
                                     ? "text-sky-600 dark:text-sky-400"
@@ -582,6 +620,84 @@ export default function Home() {
                         onCheckedChange={setShowDate}
                       />
                     </div>
+
+                    {showName && (
+                      <div className="space-y-3 border-t border-slate-200 dark:border-slate-600 pt-4">
+                        <Label className={`text-xs sm:text-sm font-medium ${darkMode ? "text-slate-100" : ""}`}>
+                          Name Style
+                        </Label>
+                        <Select value={nameFont} onValueChange={(value) => setNameFont(value as StripFontStyle)}>
+                          <SelectTrigger className={`text-xs sm:text-sm ${darkMode ? "bg-slate-800 border-slate-600" : ""}`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {STRIP_FONT_OPTIONS.map((font) => (
+                              <SelectItem key={font.id} value={font.id}>
+                                {font.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between gap-2">
+                            <Label htmlFor="name-font-size" className={`text-xs ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
+                              Name Size
+                            </Label>
+                            <span className={`text-xs ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
+                              {nameFontSize}px
+                            </span>
+                          </div>
+                          <input
+                            id="name-font-size"
+                            type="range"
+                            min={MIN_STRIP_FONT_SIZE}
+                            max={MAX_NAME_FONT_SIZE}
+                            value={nameFontSize}
+                            onChange={(e) => setNameFontSize(Number(e.target.value))}
+                            className="w-full accent-sky-500"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {showDate && (
+                      <div className="space-y-3 border-t border-slate-200 dark:border-slate-600 pt-4">
+                        <Label className={`text-xs sm:text-sm font-medium ${darkMode ? "text-slate-100" : ""}`}>
+                          Date Style
+                        </Label>
+                        <Select value={dateFont} onValueChange={(value) => setDateFont(value as StripFontStyle)}>
+                          <SelectTrigger className={`text-xs sm:text-sm ${darkMode ? "bg-slate-800 border-slate-600" : ""}`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {STRIP_FONT_OPTIONS.map((font) => (
+                              <SelectItem key={font.id} value={font.id}>
+                                {font.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between gap-2">
+                            <Label htmlFor="date-font-size" className={`text-xs ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
+                              Date Size
+                            </Label>
+                            <span className={`text-xs ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
+                              {dateFontSize}px
+                            </span>
+                          </div>
+                          <input
+                            id="date-font-size"
+                            type="range"
+                            min={MIN_STRIP_FONT_SIZE}
+                            max={MAX_DATE_FONT_SIZE}
+                            value={dateFontSize}
+                            onChange={(e) => setDateFontSize(Number(e.target.value))}
+                            className="w-full accent-sky-500"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -628,7 +744,7 @@ export default function Home() {
 
             <div className="space-y-4 sm:space-y-6 order-1 lg:order-2">
               <div className={`w-full flex justify-center ${darkMode ? 'bg-slate-700 border border-slate-600 shadow-xl' : 'bg-white border border-slate-100 shadow-lg'} rounded-2xl p-3 sm:p-4 hover-lift transition-all duration-300`}>
-                <div className={`${layout === 'strip' ? 'max-w-xs' : 'max-w-md'} w-full`}>
+                <div className={`${isGridLayout(layout) ? 'max-w-md' : 'max-w-xs'} w-full`}>
                   <PhotoStrip
                     photos={photos}
                     layout={layout}
@@ -638,6 +754,10 @@ export default function Home() {
                     backgroundColor={backgroundColor}
                     nameColor={nameColor}
                     dateColor={dateColor}
+                    nameFont={nameFont}
+                    dateFont={dateFont}
+                    nameFontSize={nameFontSize}
+                    dateFontSize={dateFontSize}
                     darkMode={darkMode}
                     showShareButton={true}
                     isShareLoading={isShareGenerating}

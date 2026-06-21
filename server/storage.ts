@@ -6,14 +6,31 @@ import {
 } from "./shared-link-blob";
 export interface IStorage {
   createPhotoStrip(photoStrip: InsertPhotoStrip): Promise<PhotoStrip>;
-  createSharedLink(sharedLink: InsertSharedLink, photoStripData?: PhotoStrip): Promise<SharedLink>;
-  getSharedLink(id: string): Promise<(SharedLink & { photoStripData?: PhotoStrip }) | null>;
+  createSharedLink(
+    sharedLink: InsertSharedLink,
+    photoStripData?: PhotoStrip,
+    textStyle?: StoredSharedLink["textStyle"]
+  ): Promise<SharedLink>;
+  getSharedLink(id: string): Promise<(SharedLink & { photoStripData?: PhotoStrip; textStyle?: StoredSharedLink["textStyle"] }) | null>;
   getPhotoStripForSharedLink(link: SharedLink & { photoStripData?: PhotoStrip }): Promise<PhotoStrip | null>;
   getPhotoStrip(id: number): Promise<PhotoStrip | null>;
   getPhotoStripsByUserId(userId: string): Promise<PhotoStrip[]>;
 }
 
-type StoredSharedLink = SharedLink & { photoStripData?: PhotoStrip };
+type StoredSharedLink = SharedLink & {
+  photoStripData?: PhotoStrip & {
+    nameFont?: string;
+    dateFont?: string;
+    nameFontSize?: number;
+    dateFontSize?: number;
+  };
+  textStyle?: {
+    nameFont?: string;
+    dateFont?: string;
+    nameFontSize?: number;
+    dateFontSize?: number;
+  };
+};
 
 export class MemStorage implements IStorage {
   private photoStrips: Map<number, PhotoStrip>;
@@ -42,7 +59,8 @@ export class MemStorage implements IStorage {
 
   async createSharedLink(
     insertSharedLink: InsertSharedLink,
-    photoStripData?: PhotoStrip
+    photoStripData?: PhotoStrip,
+    textStyle?: StoredSharedLink["textStyle"]
   ): Promise<SharedLink> {
     const sharedLink: StoredSharedLink = {
       ...insertSharedLink,
@@ -50,6 +68,7 @@ export class MemStorage implements IStorage {
       createdAt: new Date(),
       isActive: true,
       photoStripData,
+      textStyle,
     };
     this.sharedLinks.set(sharedLink.id, sharedLink);
     await persistSharedLinkToBlob(sharedLink);
@@ -97,6 +116,6 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Prototype extensions removed; visitor count lives in visitor-count.ts.
+// Prototype extensions removed.
 
 export const storage = new MemStorage();

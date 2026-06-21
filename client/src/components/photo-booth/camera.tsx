@@ -8,6 +8,7 @@ interface CameraProps {
   isCountingDown: boolean;
   timerDuration: number;
   photosLength: number;
+  maxPhotos: number;
   recaptureIndex: number | null;
   onMaxPhotos: () => void;
 }
@@ -16,6 +17,7 @@ export function PhotoBoothCamera({
   onCapture,
   isCountingDown,
   photosLength,
+  maxPhotos,
   recaptureIndex,
   onMaxPhotos,
 }: CameraProps) {
@@ -37,7 +39,7 @@ export function PhotoBoothCamera({
   const handleShutter = () => {
     if (recaptureIndex !== null) {
       capture();
-    } else if (photosLength >= 4) {
+    } else if (photosLength >= maxPhotos) {
       onMaxPhotos();
     } else {
       capture();
